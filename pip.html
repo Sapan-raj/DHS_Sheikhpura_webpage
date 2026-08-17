@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Project Implementation Plan — District Health Society, Sheikhpura</title>
+<meta name="description" content="Financial-year wise PIP, RoP, FMR budget heads, allocations and guidelines for Sheikhpura district.">
+<link rel="icon" href="assets/img/favicon.svg">
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+<a class="skip-link" href="#page">Skip to main content</a>
+<div id="shell-top"></div>
+<div id="crumbs"></div>
+<main id="page"><div class="container section"><div class="skel" style="height:70px;margin-bottom:20px"></div><div class="skel" style="height:300px"></div></div></main>
+<div id="shell-footer"></div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/ui.js"></script>
+<script>
+UI.boot('pip.html', function (d) {
+  var Q = PortalData.query, esc = PortalData.esc;
+  var years = Q.years(d);
+
+  if (!years.length) {
+    document.getElementById('page').innerHTML = '<div class="container section">' +
+      UI.emptyState('No financial year has data yet',
+        'Add rows to Programs_FMR in the source sheet and the year will appear here automatically.') + '</div>';
+    return;
+  }
+
+  /* The year comes from the URL if it is real, otherwise the current year.
+     A year can only be selected if it actually has programme rows — the
+     reference site's dead-dropdown failure is structurally impossible here. */
+  var year = Q.yearBySlug(d, UI.param('fy')) || Q.currentYear(d) || years[0];
+  var idx  = years.map(function (y) { return y.Year_ID; }).indexOf(year.Year_ID);
+  var prev = years[idx + 1] || null;   // years are newest-first
+  var next = years[idx - 1] || null;
+
+  UI.crumbs([{ label: 'Project Implementation Plan', url: 'pip.html' }, { label: year.Display_Name }]);
+  document.title = 'PIP ' + year.Financial_Year + ' — ' + (d.settings.site_title || '');
+
+  var H = [];
+
+  /* ---------- year toolbar ---------- */
+  H.push('<section class="section"><div class="container">' +
+    '<div class="section-head"><div class="head-row">' +
+      '<div><h2>Project Implementation Plan — ' + esc(year.Display_Name) + '</h2>' +
+      '<p>Budget heads (FMR), allocations and guidelines approved for Sheikhpura district.</p></div>' +
+      '<div class="spacer"></div>' +
+      '<div class="field" style="min-width:210px">' +
+        '<label for="fySel">Financial Year</label>' +
+        '<select id="fySel">' + years.map(function (y) {
+          return '<option value="' + esc(y.Financial_Year) + '"' +
+                 (y.Year_ID === year.Year_ID ? ' selected' : '') + '>' + esc(y.Display_Name) +
+                 (PortalData.yes(y.Is_Current) ? ' — current' : (y._archived ? ' — archived' : '')) +
+                 (y._hasPrograms ? '' : ' (documents only)') + '</option>';
+        }).join('') + '</select>' +
+      '</div>' +
+      '<div style="display:flex;gap:8px;align-items:flex-end">' +
+        (prev ? '<a class="btn btn-outline btn-sm" href="pip.html?fy=' + esc(prev.Financial_Year) + '">← ' + esc(prev.Financial_Year) + '</a>' : '') +
+        (next ? '<a class="btn btn-outline btn-sm" href="pip.html?fy=' + esc(next.Financial_Year) + '">' + esc(next.Financial_Year) + ' →</a>' : '') +
+      '</div>' +
+    '</div></div>');
+
+  /* ---------- year-level document strip ---------- */
+  var pd = Q.pipDocs(d, year.Year_ID);
+  H.push('<h3 style="margin-bottom:12px">Key documents — ' + esc(year.Financial_Year) + '</h3>');
+  if (pd.length) {
+    H.push('<div class="grid grid-3" style="margin-bottom:32px">' + pd.map(function (x) {
+      var body = '<div class="card" style="display:flex;gap:12px;align-items:flex-start;height:100%">' +
+        UI.docIcon(x.File_Type) +
+        '<div style="min-width:0;flex:1"><div style="font-weight:600;margin-bottom:4px">' + esc(x.Document_Name) + '</div>' +
+        '<div class="doc-meta"><span class="chip">' + esc(x.Document_Type) + '</span>' +
+        (x.Issue_Date ? '<span class="chip">' + esc(PortalData.fmtDate(x.Issue_Date)) + '</span>' : '') + '</div>' +
+        (x._url ? '' : '<div class="unavailable" style="margin-top:6px">Not yet published</div>') +
+        '</div></div>';
+      return x._url
+        ? '<a class="card--link" style="text-decoration:none" href="' + esc(x._url) + '" target="_blank" rel="noopener noreferrer">' + body + '</a>'
+        : body;
+    }).join('') + '</div>');
+  } else {
+    H.push('<div class="card" style="margin-bottom:32px">' +
+      UI.emptyState('No key documents for this year', 'Add rows to PIP_Documents for ' + year.Financial_Year + '.') + '</div>');
+  }
+
+  /* ---------- in-page filter ---------- */
+  H.push('<div class="filters filters--2">' +
+    '<div class="field search-field"><label for="q">Search this year</label>' +
+      '<input id="q" type="search" placeholder="FMR code, programme name, keyword…" autocomplete="off"></div>' +
+    '<div class="field"><label for="catSel">Category</label><select id="catSel"><option value="">All categories</option>' +
+      Q.categories(d).map(function (c) { return '<option value="' + esc(c.Category_ID) + '">' + esc(c.Short_Name) + ' — ' + esc(c.Category_Name) + '</option>'; }).join('') +
+    '</select></div>' +
+    '<div class="field"><label>&nbsp;</label><button class="btn btn-outline" id="reset" type="button">Reset</button></div>' +
+  '</div>');
+
+  H.push('<div class="result-line" id="rl"></div><div id="pools"></div></div></section>');
+  document.getElementById('page').innerHTML = H.join('');
+
+  /* ---------- pool rendering ---------- */
+  function money(v) { return UI.money(v); }
+
+  function poolDocBtn(doc, label) {
+    if (doc && doc._url) {
+      return '<a class="btn btn-outline btn-sm" href="' + esc(doc._url) + '" target="_blank" rel="noopener noreferrer">⭳ ' + esc(label) + '</a>';
+    }
+    return '<span class="btn btn-outline btn-sm" aria-disabled="true" title="Not published yet">⭳ ' + esc(label) + '</span>';
+  }
+
+  function draw() {
+    var q = (document.getElementById('q').value || '').toLowerCase().trim();
+    var cat = document.getElementById('catSel').value;
+    var total = 0, shown = 0, html = '';
+
+    Q.categories(d).forEach(function (c) {
+      if (cat && c.Category_ID !== cat) return;
+      var rows = Q.programs(d, year.Year_ID, c.Category_ID);
+      total += rows.length;
+      if (q) {
+        rows = rows.filter(function (p) {
+          return [p.FMR_Code, p.Program_Name, p.Program_Name_HI, p.Program_Description,
+                  p.Budget_Guidelines, p.Nodal_Officer].join(' ').toLowerCase().indexOf(q) > -1;
+        });
+      }
+      if (!rows.length) return;
+      shown += rows.length;
+
+      var alloc = Q.categoryDoc(d, year.Year_ID, c.Category_ID, 'Category Allocation');
+      var guide = Q.categoryDoc(d, year.Year_ID, c.Category_ID, 'Category Guidelines');
+      var sum = rows.reduce(function (a, p) { return a + PortalData.num(p.Budget_Allocation_Lakh); }, 0);
+
+      html += '<div class="pool" id="' + esc(c.Category_ID) + '">' +
+        '<div class="pool-head"><div><h3>' + esc(c.Category_Name) + '</h3>' +
+          '<div class="meta">' + rows.length + ' budget head' + (rows.length === 1 ? '' : 's') +
+          (sum ? ' &nbsp;·&nbsp; Total ' + money(sum) : '') + '</div></div>' +
+          '<div class="pool-docs">' + poolDocBtn(alloc, 'Budget Allocation') + poolDocBtn(guide, 'Budget Guidelines') + '</div>' +
+        '</div>' +
+        '<div class="pool-body"><div class="table-wrap"><table class="data">' +
+          '<thead><tr><th style="width:110px">FMR Code</th><th>FMR Details</th>' +
+          '<th class="num" style="width:140px">Allocation</th><th style="width:200px">Nodal Officer</th>' +
+          '<th style="width:110px"></th></tr></thead><tbody>' +
+          rows.map(function (p) {
+            return '<tr>' +
+              '<td data-label="FMR Code"><span class="chip chip--code">' + esc(p.FMR_Code) + '</span></td>' +
+              '<td data-label="FMR Details"><a href="program.html?fy=' + esc(year.Financial_Year) + '&fmr=' + encodeURIComponent(p.FMR_Code) + '">' +
+                esc(UI.t(p.Program_Name, p.Program_Name_HI)) + '</a></td>' +
+              '<td class="num" data-label="Allocation">' + money(p.Budget_Allocation_Lakh) + '</td>' +
+              '<td data-label="Nodal Officer">' + esc(p.Nodal_Officer || '—') + '</td>' +
+              '<td data-label=""><a class="btn btn-outline btn-sm" href="program.html?fy=' + esc(year.Financial_Year) +
+                '&fmr=' + encodeURIComponent(p.FMR_Code) + '">Details →</a></td>' +
+            '</tr>';
+          }).join('') +
+        '</tbody></table></div></div></div>';
+    });
+
+    if (!html) {
+      html = total === 0
+        ? UI.emptyState('No budget heads published for ' + year.Financial_Year,
+            'This year currently has documents only. Add rows to Programs_FMR with Year_ID "' +
+            year.Year_ID + '" and the FMR table will appear here automatically.')
+        : UI.emptyState('No matching budget heads', 'Try a different search term or category.');
+    }
+    document.getElementById('pools').innerHTML = html;
+    document.getElementById('rl').innerHTML = total === 0
+      ? 'Documents-only year — no FMR budget heads recorded'
+      : ((q || cat)
+        ? 'Showing <strong>' + shown + '</strong> of <strong>' + total + '</strong> budget heads'
+        : '<strong>' + total + '</strong> budget heads across ' +
+          (cat ? 1 : Q.categories(d).length) + ' categories in ' + esc(year.Financial_Year));
+  }
+
+  document.getElementById('fySel').addEventListener('change', function () {
+    location.href = 'pip.html?fy=' + encodeURIComponent(this.value);
+  });
+  document.getElementById('q').addEventListener('input', draw);
+  document.getElementById('catSel').addEventListener('change', draw);
+  document.getElementById('reset').addEventListener('click', function () {
+    document.getElementById('q').value = ''; document.getElementById('catSel').value = ''; draw();
+  });
+
+  draw();
+  if (location.hash) {
+    var el = document.getElementById(location.hash.slice(1));
+    el && el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+});
+</script>
+</body>
+</html>

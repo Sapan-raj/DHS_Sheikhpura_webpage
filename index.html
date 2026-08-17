@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>District Health Society, Sheikhpura — PIP Portal</title>
+<meta name="description" content="Project Implementation Plan, Record of Proceedings, budget allocations and programme guidelines of the District Health Society, Sheikhpura, Bihar.">
+<link rel="icon" href="assets/img/favicon.svg">
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+<a class="skip-link" href="#page">Skip to main content</a>
+<div id="shell-top"></div>
+<div id="crumbs"></div>
+<main id="page"><div class="container section">
+  <div class="skel" style="height:220px;margin-bottom:24px"></div>
+  <div class="grid grid-4"><div class="skel" style="height:96px"></div><div class="skel" style="height:96px"></div><div class="skel" style="height:96px"></div><div class="skel" style="height:96px"></div></div>
+</div></main>
+<div id="shell-footer"></div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/ui.js"></script>
+<script>
+UI.boot('index.html', function (d) {
+  var Q = PortalData.query, esc = PortalData.esc, H = [];
+  var cy = Q.currentYear(d);
+
+  /* ---- hero ---- */
+  var hTitle = Q.home(d, 'hero_title') || {};
+  var hSub   = Q.home(d, 'hero_subtitle') || {};
+  var hCta2  = Q.home(d, 'hero_cta2') || {};
+  H.push('<section class="hero"><div class="container">' +
+    '<span class="eyebrow">' + esc(hTitle.Subtitle || 'Project Implementation Plan') + '</span>' +
+    '<h1>' + esc(UI.t(hTitle.Title_EN, hTitle.Title_HI)) + '</h1>' +
+    (hSub.Body_Text ? '<p class="lede">' + esc(hSub.Body_Text) + '</p>' : '') +
+    '<div class="hero-actions">' +
+      (hSub.Link_URL ? '<a class="btn btn-primary" href="' + esc(hSub.Link_URL) +
+          (cy ? '?fy=' + esc(cy.Financial_Year) : '') + '">' + esc(hSub.Link_Label || 'View PIP') + '</a>' : '') +
+      (hCta2.Link_URL ? '<a class="btn btn-ghost" href="' + esc(hCta2.Link_URL) + '">' + esc(hCta2.Link_Label || 'Documents') + '</a>' : '') +
+    '</div></div></section>');
+
+  /* ---- announcement strip: featured notice, else the sheet's banner text ---- */
+  var feat = Q.notices(d).filter(function (n) { return PortalData.yes(n.Is_Featured); })[0];
+  var banner = Q.home(d, 'notice_banner');
+  if (feat || banner) {
+    var text = feat ? feat.Title : (banner ? banner.Body_Text : '');
+    var href = feat ? (PortalData.validUrl(feat.External_URL) || PortalData.validUrl(feat.Attachment_URL) || 'notices.html')
+                    : (banner && banner.Link_URL) || 'notices.html';
+    H.push('<div class="container" style="margin-top:24px"><div class="ann-strip">' +
+      '<span class="lbl">' + esc((banner && banner.Title_EN) || 'Announcement') + '</span>' +
+      '<span>' + esc(text) + '</span>' +
+      '<a href="' + esc(href) + '">' + esc((banner && banner.Link_Label) || 'Read more') + ' →</a>' +
+    '</div></div>');
+  }
+
+  /* ---- What's New / Events — sits high on the page, straight after the hero ---- */
+  var wnSec = Q.home(d, 'sec_whatsnew');
+  var wnAll = Q.posts(d, { limit: 6 });
+  if (wnAll.length) {
+    H.push('<section class="section whatsnew" id="whatsnew"><div class="container">' +
+      '<div class="section-head"><div class="head-row"><div>' +
+        '<h2>' + esc(wnSec ? UI.t(wnSec.Title_EN, wnSec.Title_HI) : "What's New") + '</h2>' +
+        (wnSec && wnSec.Body_Text ? '<p>' + esc(wnSec.Body_Text) + '</p>' : '') +
+      '</div><div class="spacer"></div>' +
+      '<div class="wn-tabs" role="tablist">' +
+        '<button role="tab" data-wn="all" aria-selected="true">All</button>' +
+        '<button role="tab" data-wn="upcoming" aria-selected="false">Upcoming</button>' +
+        '<button role="tab" data-wn="Event" aria-selected="false">Events</button>' +
+        '<button role="tab" data-wn="News" aria-selected="false">News</button>' +
+      '</div></div></div>' +
+      '<div class="grid grid-3" id="wnGrid"></div>' +
+      '<div style="text-align:center;margin-top:28px">' +
+        '<a class="btn btn-primary" href="events.html">View all events &amp; updates →</a></div>' +
+    '</div></section>');
+  }
+
+  /* ---- stat tiles: sheet value, or computed live when the cell is blank ---- */
+  var st = Q.stats(d);
+  var computed = {
+    stat_programs: st.programs, stat_categories: st.categories,
+    stat_documents: st.documents, stat_years: st.years, stat_notices: st.notices
+  };
+  var tiles = Q.homeByType(d, 'stat').map(function (s) {
+    var v = String(s.Body_Text || '').trim() || computed[s.Section_Key] || '0';
+    var inner = '<div class="card stat"><div class="num">' + esc(v) + '</div>' +
+                '<div class="lbl">' + esc(UI.t(s.Title_EN, s.Title_HI)) + '</div></div>';
+    return s.Link_URL ? '<a class="card--link" style="text-decoration:none" href="' + esc(s.Link_URL) + '">' + inner + '</a>' : inner;
+  }).join('');
+  if (tiles) H.push('<section class="section"><div class="container"><div class="grid grid-4">' + tiles + '</div></div></section>');
+
+  /* ---- programme categories, counted from the current year's rows ---- */
+  var secP = Q.home(d, 'sec_programs');
+  if (cy) {
+    var cards = Q.categories(d).map(function (c) {
+      var n = Q.programs(d, cy.Year_ID, c.Category_ID).length;
+      return '<a class="card card--link cat-card" href="pip.html?fy=' + esc(cy.Financial_Year) + '#' + esc(c.Category_ID) + '">' +
+        '<div class="cat-top"><span class="cat-icon">' + esc(c.Short_Name) + '</span>' +
+          '<div><h3 style="margin:0">' + esc(c.Category_Name) + '</h3>' +
+          '<span class="count">' + n + ' budget head' + (n === 1 ? '' : 's') + ' in ' + esc(cy.Financial_Year) + '</span></div></div>' +
+        (c.Description ? '<p>' + esc(c.Description) + '</p>' : '') + '</a>';
+    }).join('');
+    H.push('<section class="section section--alt"><div class="container">' +
+      '<div class="section-head"><div class="head-row"><div>' +
+        '<h2>' + esc(secP ? UI.t(secP.Title_EN, secP.Title_HI) : 'Programme Categories') + '</h2>' +
+        (secP && secP.Body_Text ? '<p>' + esc(secP.Body_Text) + '</p>' : '') +
+      '</div><div class="spacer"></div>' +
+      '<a class="btn btn-outline btn-sm" href="pip.html?fy=' + esc(cy.Financial_Year) + '">' +
+        esc((secP && secP.Link_Label) || 'View all') + ' →</a></div></div>' +
+      '<div class="grid grid-3">' + cards + '</div></div></section>');
+  }
+
+  /* ---- latest documents ---- */
+  var secD = Q.home(d, 'sec_documents');
+  var docs = Q.allDocuments(d).slice();
+  docs.sort(function (a, b) {
+    if (a.featured !== b.featured) return a.featured ? -1 : 1;   // featured first
+    if (!!a.url !== !!b.url) return a.url ? -1 : 1;              // then actually-downloadable
+    var da = PortalData.parseDate(a.date), db = PortalData.parseDate(b.date);
+    return (db ? db.getTime() : 0) - (da ? da.getTime() : 0);
+  });
+  var top = docs.slice(0, 6);
+  H.push('<section class="section"><div class="container">' +
+    '<div class="section-head"><div class="head-row"><div>' +
+      '<h2>' + esc(secD ? UI.t(secD.Title_EN, secD.Title_HI) : 'Latest Documents') + '</h2>' +
+      (secD && secD.Body_Text ? '<p>' + esc(secD.Body_Text) + '</p>' : '') +
+    '</div><div class="spacer"></div>' +
+    '<a class="btn btn-outline btn-sm" href="documents.html">All documents →</a></div></div>' +
+    '<div class="card">' + (top.length ? top.map(function (x) { return UI.docRow(x); }).join('')
+      : UI.emptyState('No documents yet', 'Documents will appear here once they are added to the source sheet.')) +
+    '</div></div></section>');
+
+  /* ---- notices + quick links ---- */
+  var secN = Q.home(d, 'sec_notices'), secQ = Q.home(d, 'sec_quicklinks');
+  var nList = Q.notices(d).slice(0, 5).map(function (n) {
+    var dt = PortalData.parseDate(n.Notice_Date);
+    var url = PortalData.validUrl(n.External_URL) || PortalData.validUrl(n.Attachment_URL) || 'notices.html';
+    return '<div class="notice-item"><div class="notice-date">' +
+      '<div class="d">' + (dt ? String(dt.getDate()).padStart(2, '0') : '—') + '</div>' +
+      '<div class="m">' + (dt ? dt.toLocaleString('en-IN', { month: 'short' }) : '') + '</div></div>' +
+      '<div class="notice-body"><h3><a href="' + esc(url) + '">' + esc(n.Title) + '</a>' +
+      (PortalData.yes(n.Is_New) ? ' <span class="chip chip--new">NEW</span>' : '') + '</h3>' +
+      (String(n.Priority).toLowerCase() === 'high' ? '<span class="chip chip--high">Priority</span> ' : '') +
+      '<span class="chip">' + esc(n.Category) + '</span></div></div>';
+  }).join('');
+
+  var qLinks = Q.links(d, 'home').map(function (l) {
+    return '<li><a href="' + esc(l.URL) + '" target="_blank" rel="noopener noreferrer">' +
+      esc(l.Link_Name) + ' <span class="ext-mark">' + UI.icon('external') + '</span></a>' +
+      (l.Description ? '<div style="font-size:.8rem;color:var(--text-muted)">' + esc(l.Description) + '</div>' : '') + '</li>';
+  }).join('');
+
+  H.push('<section class="section section--alt"><div class="container"><div class="grid grid-2">' +
+    '<div><div class="section-head"><div class="head-row"><div><h2>' +
+      esc(secN ? UI.t(secN.Title_EN, secN.Title_HI) : 'Notices') + '</h2></div><div class="spacer"></div>' +
+      '<a class="btn btn-outline btn-sm" href="notices.html">All →</a></div></div>' +
+      '<div class="card">' + (nList || UI.emptyState('No notices', 'Nothing has been published yet.')) + '</div></div>' +
+    '<div><div class="section-head"><h2>' + esc(secQ ? UI.t(secQ.Title_EN, secQ.Title_HI) : 'Quick Links') + '</h2></div>' +
+      '<div class="card"><ul style="list-style:none;margin:0;padding:0;display:grid;gap:12px">' + qLinks + '</ul></div></div>' +
+  '</div></div></section>');
+
+  /* ---- about ---- */
+  var ab = Q.home(d, 'about_text');
+  if (ab && ab.Body_Text) {
+    H.push('<section class="section"><div class="container"><div class="card">' +
+      '<h2>' + esc(UI.t(ab.Title_EN, ab.Title_HI)) + '</h2>' +
+      '<p style="max-width:90ch;color:var(--text-muted)">' + esc(ab.Body_Text) + '</p>' +
+    '</div></div></section>');
+  }
+
+  document.getElementById('page').innerHTML = H.join('');
+  document.title = (d.settings.site_title || 'PIP Portal') + ' — ' + (d.settings.site_subtitle || '');
+
+  /* What's New tab filtering — re-queries the data, never a hard-coded list */
+  var grid = document.getElementById('wnGrid');
+  if (grid) {
+    var drawWN = function (mode) {
+      var opts = { limit: 6 };
+      if (mode === 'upcoming') opts.when = 'upcoming';
+      else if (mode === 'Event' || mode === 'News') opts.type = mode;
+      var rows = Q.posts(d, opts);
+      grid.innerHTML = rows.length
+        ? rows.map(function (p) { return UI.postCard(p); }).join('')
+        : '<div style="grid-column:1/-1">' +
+          UI.emptyState('Nothing here yet',
+            mode === 'upcoming' ? 'No upcoming events are scheduled at the moment.'
+                                : 'No posts match this filter.') + '</div>';
+    };
+    Array.prototype.forEach.call(document.querySelectorAll('.wn-tabs button'), function (b) {
+      b.addEventListener('click', function () {
+        Array.prototype.forEach.call(document.querySelectorAll('.wn-tabs button'), function (x) {
+          x.setAttribute('aria-selected', String(x === b));
+        });
+        drawWN(b.dataset.wn);
+      });
+    });
+    drawWN('all');
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin — District Health Society, Sheikhpura</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="assets/img/favicon.svg">
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+<a class="skip-link" href="#page">Skip to main content</a>
+<div id="shell-top"></div>
+<div id="crumbs"></div>
+<main id="page"><div class="container section"><div class="skel" style="height:300px"></div></div></main>
+<div id="shell-footer"></div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/ui.js"></script>
+<script src="assets/js/composer.js"></script>
+<script>
+/* ------------------------------------------------------------------
+   Admin area.
+   No credential, key or Sheet ID is present in this file. Authentication
+   happens entirely inside the Apps Script Web App, which holds the
+   password hash in Script Properties and returns a short-lived
+   HMAC-signed token. The Google Sheet itself is never shared publicly.
+   ------------------------------------------------------------------ */
+(function () {
+  var TOKEN_KEY = 'shk_admin_token';
+  var API = String((window.PORTAL_CONFIG || {}).API_URL || '').trim();
+  var SHEET_ID = String((window.PORTAL_CONFIG || {}).SHEET_ID || '').trim();
+  var SHEET_URL = SHEET_ID ? 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/edit' : '';
+
+  function token()      { try { return sessionStorage.getItem(TOKEN_KEY) || ''; } catch (_) { return ''; } }
+  function setToken(t)  { try { t ? sessionStorage.setItem(TOKEN_KEY, t) : sessionStorage.removeItem(TOKEN_KEY); } catch (_) {} }
+
+  /* text/plain keeps this a CORS "simple request" — Apps Script cannot answer preflight */
+  function post(payload) {
+    if (!API) return Promise.reject(new Error('API_URL is not configured in assets/js/config.js'));
+    return fetch(API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    }).then(function (r) { return r.json(); });
+  }
+
+  UI.boot('admin.html', function (d) {
+    var esc = PortalData.esc, Q = PortalData.query;
+    UI.crumbs([{ label: 'Admin' }]);
+    var page = document.getElementById('page');
+
+    /* ---------- login ---------- */
+    function renderLogin(msg, kind) {
+      page.innerHTML =
+        '<div class="container"><div class="login-wrap"><div class="login-card">' +
+          '<h2 style="margin-bottom:6px">Administrator Sign In</h2>' +
+          '<p style="color:var(--text-muted);font-size:.86rem">Access to the data management area for the ' +
+            esc(d.settings.district_name || '') + ' district health portal.</p>' +
+          (msg ? '<div class="alert alert-' + (kind || 'err') + '">' + esc(msg) + '</div>' : '') +
+          (!API ? '<div class="alert alert-warn">The portal is running from the local data snapshot. ' +
+                  'Set <code>API_URL</code> in <code>assets/js/config.js</code> to enable sign-in.</div>' : '') +
+          '<form id="lf" autocomplete="off">' +
+            '<div class="field"><label for="u">Username</label><input id="u" type="text" required autocomplete="username"></div>' +
+            '<div class="field"><label for="p">Password</label><input id="p" type="password" required autocomplete="current-password"></div>' +
+            '<button class="btn btn-primary" type="submit" id="sb" style="width:100%"' + (API ? '' : ' disabled') + '>Sign In</button>' +
+          '</form>' +
+          '<p style="font-size:.78rem;color:var(--text-muted);margin:16px 0 0">' +
+            'Credentials are verified by the Google Apps Script service. Nothing is stored in this page, and the ' +
+            'master spreadsheet is never shared publicly.</p>' +
+        '</div></div></div>';
+
+      document.getElementById('lf').addEventListener('submit', function (e) {
+        e.preventDefault();
+        var b = document.getElementById('sb');
+        b.disabled = true; b.textContent = 'Signing in…';
+        post({ action: 'login',
+               username: document.getElementById('u').value,
+               password: document.getElementById('p').value })
+          .then(function (r) {
+            if (r && r.ok && r.token) { setToken(r.token); renderDashboard(); }
+            else renderLogin((r && r.error) || 'Sign in failed.');
+          })
+          .catch(function (err) { renderLogin('Could not reach the data service: ' + err.message); });
+      });
+    }
+
+    /* ---------- Posts & Events ---------- */
+
+    /* Admin sees every post; the public GET endpoint strips Drafts and
+       unreleased Scheduled posts, so re-fetch through postList when live. */
+    var adminPosts = null;
+
+    function loadAdminPosts() {
+      if (!API) return Promise.resolve(d.posts);
+      return post({ action: 'postList', token: token() })
+        .then(function (r) { if (r && r.ok) { adminPosts = r.posts; } return adminPosts || d.posts; })
+        .catch(function () { return d.posts; });
+    }
+
+    function allPosts() { return adminPosts || d.posts; }
+
+    function openComposer(existing) {
+      var mount = document.getElementById('page');
+      mount.innerHTML = '<section class="section"><div class="container">' +
+        '<div class="section-head"><h2>' + (existing ? 'Edit post' : 'Create a new post') + '</h2>' +
+        '<p>Write the post, add photos from this device, then publish now or schedule it for later.</p></div>' +
+        '<div id="composerMount"></div></div></section>';
+      Composer.open({
+        mount: document.getElementById('composerMount'),
+        data: d, post: existing || null,
+        api: function (payload) { return post(payload); },
+        canPublish: !!API,
+        onSaved: function () { adminPosts = null; renderPosts(); },
+        onCancel: function () { renderPosts(); }
+      });
+    }
+
+    function renderPosts() {
+      var mount = document.getElementById('page');
+      var cats = {}; d.postCategories.forEach(function (c) { cats[c.Category_ID] = c.Category_Name; });
+
+      mount.innerHTML = '<section class="section"><div class="container">' +
+        '<div class="section-head"><div class="head-row">' +
+          '<div><h2>Posts &amp; Events</h2><p>Everything published under What\'s New — events, news and updates.</p></div>' +
+          '<div class="spacer"></div>' +
+          '<button class="btn btn-outline btn-sm" type="button" id="backDash">← Dashboard</button>' +
+          '<button class="btn btn-primary btn-sm" type="button" id="newPost">＋ Create New Post</button>' +
+        '</div></div>' +
+        '<div id="pMsg"></div>' +
+        '<div class="admin-grid" id="pStats"></div>' +
+        '<div class="filters filters--4">' +
+          '<div class="field search-field"><label for="pq">Search</label><input id="pq" type="search" placeholder="Title or description…"></div>' +
+          '<div class="field"><label for="pty">Type</label><select id="pty"><option value="">All</option><option>Event</option><option>News</option><option>Update</option></select></div>' +
+          '<div class="field"><label for="pst">Status</label><select id="pst"><option value="">All</option><option>Published</option><option>Draft</option><option>Scheduled</option><option>Archived</option></select></div>' +
+          '<div class="field"><label for="pcat">Category</label><select id="pcat"><option value="">All</option>' +
+            Q.postCategories(d).map(function (c) { return '<option value="' + esc(c.Category_ID) + '">' + esc(c.Category_Name) + '</option>'; }).join('') +
+          '</select></div>' +
+          '<div class="field"><label>&nbsp;</label><button class="btn btn-outline" type="button" id="preset">Reset</button></div>' +
+        '</div>' +
+        '<div class="result-line" id="prl"></div>' +
+        '<div class="table-wrap"><table class="data"><thead><tr>' +
+          '<th>Title</th><th style="width:80px">Type</th><th style="width:150px">Category</th>' +
+          '<th style="width:130px">Date</th><th style="width:100px">Status</th>' +
+          '<th style="width:110px">Published</th><th style="width:230px">Actions</th>' +
+        '</tr></thead><tbody id="pBody"></tbody></table></div>' +
+      '</div></section>';
+
+      document.getElementById('backDash').addEventListener('click', renderDashboard);
+      document.getElementById('newPost').addEventListener('click', function () { openComposer(null); });
+
+      function pmsg(kind, text) {
+        document.getElementById('pMsg').innerHTML = text
+          ? '<div class="alert alert-' + kind + '">' + esc(text) + '</div>' : '';
+      }
+
+      function drawStats() {
+        var s = Q.postStats({ posts: allPosts() });
+        document.getElementById('pStats').innerHTML = [
+          [s.total, 'Total posts', ''], [s.published, 'Published', 'var(--green)'],
+          [s.draft, 'Drafts', ''], [s.scheduled, 'Scheduled', 'var(--amber)'],
+          [s.archived, 'Archived', ''], [s.upcoming, 'Upcoming events', 'var(--accent)']
+        ].map(function (t) {
+          return '<div class="card stat"' + (t[2] ? ' style="border-left-color:' + t[2] + '"' : '') + '>' +
+            '<div class="num"' + (t[2] ? ' style="color:' + t[2] + '"' : '') + '>' + t[0] + '</div>' +
+            '<div class="lbl">' + t[1] + '</div></div>';
+        }).join('');
+      }
+
+      function drawTable() {
+        var q = document.getElementById('pq').value.toLowerCase().trim();
+        var ty = document.getElementById('pty').value;
+        var st = document.getElementById('pst').value;
+        var ct = document.getElementById('pcat').value;
+
+        var rows = allPosts().filter(function (p) {
+          if (ty && p.Content_Type !== ty) return false;
+          if (st && p.Status !== st) return false;
+          if (ct && p.Category_ID !== ct) return false;
+          if (q && [p.Title, p.Short_Description, p.Venue].join(' ').toLowerCase().indexOf(q) === -1) return false;
+          return true;
+        }).sort(function (a, b) {
+          var da = PortalData.parseDate(a.Updated_Date || a.Published_Date || a.Created_Date);
+          var db = PortalData.parseDate(b.Updated_Date || b.Published_Date || b.Created_Date);
+          return (db ? db.getTime() : 0) - (da ? da.getTime() : 0);
+        });
+
+        document.getElementById('prl').innerHTML = '<strong>' + rows.length + '</strong> post' + (rows.length === 1 ? '' : 's');
+        document.getElementById('pBody').innerHTML = rows.length ? rows.map(function (p) {
+          var when = p.Content_Type === 'Event'
+            ? PortalData.fmtRange(p.Event_Start_Date, p.Event_End_Date)
+            : PortalData.fmtDate(p.Published_Date);
+          var live = String(p.Status) === 'Published';
+          return '<tr>' +
+            '<td data-label="Title"><strong>' + esc(p.Title) + '</strong>' +
+              (PortalData.yes(p.Is_Featured) ? ' <span class="chip chip--ok">Featured</span>' : '') +
+              '<div style="font-size:.76rem;color:var(--text-muted)">' + esc(p.Slug) + '</div></td>' +
+            '<td data-label="Type">' + esc(p.Content_Type) + '</td>' +
+            '<td data-label="Category">' + esc(cats[p.Category_ID] || '—') + '</td>' +
+            '<td data-label="Date">' + esc(when || '—') + '</td>' +
+            '<td data-label="Status"><span class="status-pill st-' + esc(p.Status) + '">' + esc(p.Status) + '</span></td>' +
+            '<td data-label="Published">' + esc(PortalData.fmtDate(p.Published_Date) || '—') + '</td>' +
+            '<td data-label="Actions"><div class="row-actions">' +
+              '<button type="button" data-act="view" data-id="' + esc(p.Post_ID) + '">View</button>' +
+              '<button type="button" data-act="edit" data-id="' + esc(p.Post_ID) + '">Edit</button>' +
+              (live ? '<button type="button" data-act="Draft" data-id="' + esc(p.Post_ID) + '">Unpublish</button>'
+                    : '<button type="button" data-act="Published" data-id="' + esc(p.Post_ID) + '">Publish</button>') +
+              '<button type="button" data-act="Archived" data-id="' + esc(p.Post_ID) + '">Archive</button>' +
+              '<button type="button" class="danger" data-act="delete" data-id="' + esc(p.Post_ID) + '">Delete</button>' +
+            '</div></td></tr>';
+        }).join('') : '<tr><td colspan="7">' + UI.emptyState('No posts match',
+          'Try clearing the filters, or create the first post.') + '</td></tr>';
+
+        Array.prototype.forEach.call(document.querySelectorAll('#pBody button[data-act]'), function (b) {
+          b.addEventListener('click', function () { action(this.dataset.act, this.dataset.id); });
+        });
+      }
+
+      function action(act, id) {
+        var p = allPosts().filter(function (x) { return x.Post_ID === id; })[0];
+        if (!p) return;
+
+        if (act === 'view') { window.open('event.html?slug=' + encodeURIComponent(p.Slug), '_blank'); return; }
+        if (act === 'edit') { openComposer(p); return; }
+
+        if (!API) {
+          pmsg('warn', 'Local preview mode — no data service is configured, so posts cannot be changed. ' +
+                       'Set API_URL in assets/js/config.js to enable this.');
+          return;
+        }
+
+        if (act === 'delete') {
+          if (!confirm('Delete "' + p.Title + '" permanently?\n\nThis removes the post and its gallery rows. ' +
+                       'Uploaded images stay in Drive. Consider Archive instead if you may need it later.')) return;
+          pmsg('', '');
+          post({ action: 'postDelete', token: token(), postId: id })
+            .then(function (r) {
+              if (!r.ok) throw new Error(r.error);
+              pmsg('ok', 'Post deleted.');
+              PortalData.clear(); adminPosts = null;
+              loadAdminPosts().then(function () { drawStats(); drawTable(); });
+            })
+            .catch(function (e) { pmsg('err', e.message); });
+          return;
+        }
+
+        post({ action: 'postStatus', token: token(), postId: id, status: act })
+          .then(function (r) {
+            if (!r.ok) throw new Error(r.error);
+            pmsg('ok', '"' + p.Title + '" is now ' + act + '.');
+            PortalData.clear(); adminPosts = null;
+            loadAdminPosts().then(function () { drawStats(); drawTable(); });
+          })
+          .catch(function (e) { pmsg('err', e.message); });
+      }
+
+      ['pq', 'pty', 'pst', 'pcat'].forEach(function (id) {
+        document.getElementById(id).addEventListener(id === 'pq' ? 'input' : 'change', drawTable);
+      });
+      document.getElementById('preset').addEventListener('click', function () {
+        ['pq', 'pty', 'pst', 'pcat'].forEach(function (id) { document.getElementById(id).value = ''; });
+        drawTable();
+      });
+
+      if (!API) {
+        pmsg('warn', 'Local preview mode — the composer, image compression and preview all work, ' +
+                     'but nothing can be saved until API_URL is set in assets/js/config.js. ' +
+                     'Drafts and scheduled posts are also hidden from this list, because the public ' +
+                     'data file deliberately excludes them.');
+      }
+      loadAdminPosts().then(function () { drawStats(); drawTable(); });
+    }
+
+    /* ---------- dashboard ---------- */
+    function renderDashboard() {
+      var st = Q.stats(d);
+      var V = d.validation || { errors: [], warnings: [] };
+      var sheetUrl = '';
+
+      page.innerHTML =
+        '<section class="section"><div class="container">' +
+          '<div class="section-head"><div class="head-row">' +
+            '<div><h2>Data Management Dashboard</h2>' +
+            '<p>Content is maintained in the master Google Sheet. Changes appear on the website within the cache window, or immediately after a manual sync.</p></div>' +
+            '<div class="spacer"></div>' +
+            '<button class="btn btn-outline btn-sm" id="logout" type="button">Sign out</button>' +
+          '</div></div>' +
+          (!API ? '<div class="alert alert-warn">Local preview mode — no Apps Script service is configured, so this dashboard is ' +
+                  'read-only and reflects the bundled JSON snapshot. Sign-in is not enforced here because there is nothing ' +
+                  'private to protect: the snapshot is a public file. Set <code>API_URL</code> in ' +
+                  '<code>assets/js/config.js</code> to switch to the live Google Sheet with real authentication.</div>' : '') +
+          '<div id="msg"></div>' +
+          '<div class="admin-grid">' +
+            tile(st.programs, 'Budget heads (current FY)') +
+            tile(st.documents, 'Documents') +
+            tile(st.notices, 'Active notices') +
+            tile(V.errors.length, 'Rows skipped', V.errors.length ? 'var(--red)' : '') +
+          '</div>' +
+          /* ---- Posts & Events ---- */
+          '<div class="card" style="margin-bottom:24px;border-top:4px solid var(--accent)">' +
+            '<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:16px">' +
+              '<h3 style="margin:0">Posts &amp; Events</h3>' +
+              '<div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap">' +
+                '<button class="btn btn-primary btn-sm" type="button" id="dNewPost">＋ Create New Post</button>' +
+                '<button class="btn btn-outline btn-sm" type="button" id="dManagePosts">Manage Posts</button>' +
+                '<a class="btn btn-outline btn-sm" href="events.html" target="_blank" rel="noopener">View public page ↗</a>' +
+              '</div></div>' +
+            '<div class="admin-grid" id="dPostStats" style="margin-bottom:0"></div>' +
+            '<p style="font-size:.83rem;color:var(--text-muted);margin:14px 0 0">' +
+              'Publish an event, campaign, achievement or announcement. Photos upload straight from this ' +
+              'device — no need to host them anywhere first. Posts appear under What\'s New on the home page.</p>' +
+          '</div>' +
+
+          '<div class="grid grid-2" style="align-items:start">' +
+            '<div class="card"><h3>Source &amp; sync</h3><dl class="kv" id="statusKv">' +
+              '<dt>Data source</dt><dd>' + (API ? 'Google Sheets via Apps Script' : 'Local JSON snapshot') + '</dd>' +
+              '<dt>Loaded from</dt><dd>' + esc((d.meta || {}).source || 'unknown') + (d.meta && d.meta.cached ? ' (server cache)' : '') + '</dd>' +
+              '<dt>Generated</dt><dd>' + esc((d.meta || {}).generated || '—') + '</dd>' +
+            '</dl>' +
+            '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px">' +
+              '<button class="btn btn-primary btn-sm" id="sync" type="button">↻ Clear cache &amp; sync now</button>' +
+              '<a class="btn btn-outline btn-sm" id="openSheet" href="' + esc(SHEET_URL || '#') + '" target="_blank" rel="noopener noreferrer"' +
+                (SHEET_URL ? '' : ' aria-disabled="true"') + '>▤ Open Google Sheet</a>' +
+              '<button class="btn btn-outline btn-sm" id="recheck" type="button">Re-check status</button>' +
+            '</div></div>' +
+
+            '<div class="card"><h3>Record counts</h3><dl class="kv">' +
+              Object.keys(d.meta.counts || {}).map(function (k) {
+                return '<dt>' + esc(k) + '</dt><dd>' + esc(d.meta.counts[k]) + '</dd>';
+              }).join('') +
+            '</dl></div>' +
+          '</div>' +
+
+          '<div class="card" style="margin-top:24px"><h3>Data validation</h3>' +
+            (V.errors.length
+              ? '<div class="alert alert-err">' + V.errors.length + ' row(s) were skipped. Fix these in the sheet — the affected content is not on the website.</div>'
+              : '<div class="alert alert-ok">No errors. Every row passed validation.</div>') +
+            (V.warnings.length ? '<div class="alert alert-warn">' + V.warnings.length + ' warning(s) — content is shown but incomplete.</div>' : '') +
+            (V.errors.length || V.warnings.length
+              ? '<ul class="log-list" style="margin:0;padding:0">' +
+                V.errors.map(function (e) {
+                  return '<li><strong style="color:var(--red)">ERROR</strong> ' + esc(e.sheet) +
+                         (e.row ? ' row ' + e.row : (e.id ? ' [' + esc(e.id) + ']' : '')) + ' — ' + esc(e.message) + '</li>';
+                }).join('') +
+                V.warnings.map(function (e) {
+                  return '<li><strong style="color:var(--amber)">WARN</strong> ' + esc(e.sheet) +
+                         (e.id ? ' [' + esc(e.id) + ']' : '') + ' — ' + esc(e.message) + '</li>';
+                }).join('') + '</ul>'
+              : '') +
+          '</div>' +
+
+          '<div class="card" style="margin-top:24px"><h3>How to update content</h3>' +
+            '<dl class="kv">' +
+              '<dt>Add a notice</dt><dd>One row in <strong>Notices</strong></dd>' +
+              '<dt>Publish a document</dt><dd>Upload the file, share it as “Anyone with the link”, then add a row in <strong>Documents</strong> (or <strong>PIP_Documents</strong> for a headline PIP/RoP file) with the link in <code>File_URL</code></dd>' +
+              '<dt>Add a budget head</dt><dd>One row in <strong>Programs_FMR</strong> with the correct <code>Year_ID</code> and <code>Category_ID</code></dd>' +
+              '<dt>Open a new financial year</dt><dd>One row in <strong>Financial_Years</strong> (set <code>Is_Current=Yes</code>), then copy last year’s <strong>Programs_FMR</strong> rows and change <code>Year_ID</code></dd>' +
+              '<dt>Change home page text</dt><dd><strong>Home_Content</strong></dd>' +
+              '<dt>Change contact details</dt><dd><strong>Contact_Information</strong> and the <code>contact_*</code> keys in <strong>Settings</strong></dd>' +
+              '<dt>Change the menu</dt><dd><strong>Navigation</strong></dd>' +
+            '</dl>' +
+            '<p style="font-size:.83rem;color:var(--text-muted);margin:14px 0 0">' +
+            'Never delete a row — set <code>Status</code> to <code>Inactive</code> instead. Deleting breaks the ID links other sheets rely on.</p>' +
+          '</div>' +
+        '</div></section>';
+
+      function tile(v, l, colour) {
+        return '<div class="card stat"' + (colour ? ' style="border-left-color:' + colour + '"' : '') + '>' +
+               '<div class="num"' + (colour ? ' style="color:' + colour + '"' : '') + '>' + v + '</div>' +
+               '<div class="lbl">' + l + '</div></div>';
+      }
+
+      function say(kind, text) {
+        document.getElementById('msg').innerHTML = '<div class="alert alert-' + kind + '">' + esc(text) + '</div>';
+      }
+
+      /* posts panel */
+      document.getElementById('dNewPost').addEventListener('click', function () { openComposer(null); });
+      document.getElementById('dManagePosts').addEventListener('click', renderPosts);
+      loadAdminPosts().then(function () {
+        var s = Q.postStats({ posts: allPosts() });
+        document.getElementById('dPostStats').innerHTML = [
+          [s.total, 'Total'], [s.published, 'Published', 'var(--green)'],
+          [s.draft, 'Drafts'], [s.scheduled, 'Scheduled', 'var(--amber)'],
+          [s.archived, 'Archived'], [s.upcoming, 'Upcoming events', 'var(--accent)']
+        ].map(function (t) {
+          return '<div class="card stat"' + (t[2] ? ' style="border-left-color:' + t[2] + '"' : '') + '>' +
+            '<div class="num"' + (t[2] ? ' style="color:' + t[2] + '"' : '') + '>' + t[0] + '</div>' +
+            '<div class="lbl">' + t[1] + '</div></div>';
+        }).join('');
+      });
+
+      document.getElementById('logout').addEventListener('click', function () {
+        var t = token();
+        setToken('');
+        if (API && t) post({ action: 'logout', token: t }).catch(function () {});
+        renderLogin('You have been signed out.', 'ok');
+      });
+
+      document.getElementById('recheck').addEventListener('click', loadStatus);
+
+      document.getElementById('sync').addEventListener('click', function () {
+        var b = this; b.disabled = true; b.textContent = 'Syncing…';
+        post({ action: 'refresh', token: token() })
+          .then(function (r) {
+            if (r && r.ok) {
+              PortalData.clear();
+              say('ok', 'Cache cleared. Reloading with the latest sheet data…');
+              setTimeout(function () { location.reload(); }, 900);
+            } else {
+              b.disabled = false; b.textContent = '↻ Clear cache & sync now';
+              if (r && /Not authorised/i.test(r.error || '')) { setToken(''); renderLogin('Session expired. Please sign in again.'); }
+              else say('err', (r && r.error) || 'Sync failed.');
+            }
+          })
+          .catch(function (e) {
+            b.disabled = false; b.textContent = '↻ Clear cache & sync now';
+            say('err', 'Sync failed: ' + e.message);
+          });
+      });
+
+      /* live status pulls the sheet URL + last-modified straight from Apps Script */
+      function loadStatus() {
+        if (!API) return;
+        fetch(API + (API.indexOf('?') > -1 ? '&' : '?') + 'action=status')
+          .then(function (r) { return r.json(); })
+          .then(function (s) {
+            if (!s || !s.ok) return;
+            sheetUrl = s.sheetUrl || '';
+            var a = document.getElementById('openSheet');
+            if (sheetUrl) { a.href = sheetUrl; a.removeAttribute('aria-disabled'); }
+            var kv = document.getElementById('statusKv');
+            kv.insertAdjacentHTML('beforeend',
+              '<dt>Spreadsheet</dt><dd>' + esc(s.sheetName || '—') + '</dd>' +
+              '<dt>Sheet last edited</dt><dd>' + esc(s.lastModified || '—') + '</dd>' +
+              '<dt>Server cache</dt><dd>' + (s.cached ? 'warm' : 'rebuilt just now') + '</dd>');
+          })
+          .catch(function () {});
+      }
+      loadStatus();
+    }
+
+    /* ---------- entry ---------- */
+    if (!token()) { renderLogin(); return; }
+    if (!API) { renderDashboard(); return; }
+    post({ action: 'session', token: token() })
+      .then(function (r) { (r && r.valid) ? renderDashboard() : (setToken(''), renderLogin('Session expired. Please sign in again.')); })
+      .catch(function () { renderDashboard(); });
+  });
+})();
+</script>
+</body>
+</html>

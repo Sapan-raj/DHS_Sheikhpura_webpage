@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Event — District Health Society, Sheikhpura</title>
+<link rel="icon" href="assets/img/favicon.svg">
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+<a class="skip-link" href="#page">Skip to main content</a>
+<div id="shell-top"></div>
+<div id="crumbs"></div>
+<main id="page"><div class="container section"><div class="skel" style="height:360px"></div></div></main>
+<div id="shell-footer"></div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/ui.js"></script>
+<script>
+UI.boot('events.html', function (d) {
+  var Q = PortalData.query, esc = PortalData.esc;
+
+  /* Canonical route is ?slug=… — a static host cannot rewrite /events/<slug>
+     without a server rule. See docs/07 for the Netlify/Apache rewrite. */
+  var slug = UI.param('slug') || location.hash.replace(/^#\/?/, '');
+  var p = Q.postBySlug(d, slug);
+
+  if (!p) {
+    UI.crumbs([{ label: "Events & What's New", url: 'events.html' }, { label: 'Not found' }]);
+    document.getElementById('page').innerHTML = '<div class="container section">' +
+      UI.emptyState('Post not found',
+        'No published post matches "' + (slug || '(none)') + '". It may have been unpublished, archived or renamed.') +
+      '<div style="text-align:center"><a class="btn btn-primary" href="events.html">Browse all events</a></div></div>';
+    return;
+  }
+
+  var cat = p._category;
+  UI.crumbs([{ label: "Events & What's New", url: 'events.html' }, { label: p.Title }]);
+  document.title = p.Title + ' — ' + (d.settings.site_title || '');
+
+  var gallery = Q.postGallery(d, p.Post_ID);
+  var when = UI.postWhen(p);
+  var att = PortalData.validUrl(p.Attachment_URL);
+  var ext = PortalData.validUrl(p.External_URL);
+
+  /* Newest few others, excluding this one */
+  var others = Q.posts(d, { limit: 4 }).filter(function (x) { return x.Post_ID !== p.Post_ID; }).slice(0, 3);
+
+  var paras = String(p.Full_Description || p.Short_Description || '')
+    .split(/\n{2,}/).filter(function (s) { return s.trim(); })
+    .map(function (s) { return '<p>' + esc(s.trim()).replace(/\n/g, '<br>') + '</p>'; }).join('');
+
+  var H = '<section class="section"><div class="container">';
+
+  H += '<div class="post-hero">' + UI.postCover(p, 380) + '</div>';
+
+  H += '<div class="grid grid-2" style="align-items:start;grid-template-columns:2fr 1fr">';
+
+  /* ── main column ── */
+  H += '<div>' +
+    '<div class="post-chips" style="margin-bottom:12px">' +
+      '<span class="chip chip--code">' + esc(p.Content_Type) + '</span>' +
+      (cat ? '<span class="chip" style="background:' + esc(cat.Colour) + ';color:#fff;border-color:' +
+             esc(cat.Colour) + '">' + esc(cat.Category_Name) + '</span>' : '') +
+      UI.postTiming(p) +
+      (p._archived ? '<span class="chip">Archived</span>' : '') +
+    '</div>' +
+    '<h1 style="font-size:1.85rem;margin-bottom:10px">' + esc(p.Title) + '</h1>' +
+    (p.Short_Description ? '<p style="font-size:1.02rem;color:var(--text-muted);margin-bottom:24px">' +
+      esc(p.Short_Description) + '</p>' : '') +
+    '<div class="post-detail-body">' + (paras || '') + '</div>';
+
+  if (gallery.length) {
+    H += '<h3 style="margin-top:32px">Photos</h3><div class="gallery" id="gal">' +
+      gallery.map(function (g, i) {
+        return '<figure><img src="' + esc(g._url) + '" alt="' + esc(g.Caption || p.Title) +
+          '" loading="lazy" data-i="' + i + '" onerror="this.closest(\'figure\').style.display=\'none\'">' +
+          (g.Caption ? '<figcaption>' + esc(g.Caption) + '</figcaption>' : '') + '</figure>';
+      }).join('') + '</div>';
+  }
+
+  if (att || ext) {
+    H += '<h3 style="margin-top:32px">Links &amp; attachments</h3><div class="card">';
+    if (att) {
+      H += UI.docRow({ title: p.Attachment_Name || 'Attachment', type: 'Attachment',
+                       url: att, fileType: String(p.Attachment_Name || '').split('.').pop().toUpperCase() });
+    } else if (String(p.Attachment_URL || '') === 'NEEDS MANUAL INPUT') {
+      H += '<p class="unavailable" style="margin:0">Attachment not yet uploaded</p>';
+    }
+    if (ext) {
+      H += '<div class="doc-row"><span class="doc-ico" aria-hidden="true">↗</span>' +
+        '<div class="doc-main"><div class="t">Related link</div>' +
+        '<div class="d">' + esc(ext) + '</div></div>' +
+        '<div class="doc-act"><a class="btn btn-outline btn-sm" href="' + esc(ext) +
+        '" target="_blank" rel="noopener noreferrer">Open ↗</a></div></div>';
+    }
+    H += '</div>';
+  }
+  H += '</div>';
+
+  /* ── sidebar ── */
+  H += '<div><div class="card"><h3>Details</h3><dl class="kv">' +
+    (when ? '<dt>' + (p._isEvent ? 'Event date' : 'Published') + '</dt><dd>' + esc(when.replace('📅 ', '')) + '</dd>' : '') +
+    (p.Event_Time && p._isEvent ? '<dt>Time</dt><dd>' + esc(p.Event_Time) + '</dd>' : '') +
+    (p.Venue ? '<dt>Venue</dt><dd>' + esc(p.Venue) + '</dd>' : '') +
+    (p.Location ? '<dt>Location</dt><dd>' + esc(p.Location) + '</dd>' : '') +
+    (cat ? '<dt>Category</dt><dd>' + esc(cat.Category_Name) + '</dd>' : '') +
+    '<dt>Type</dt><dd>' + esc(p.Content_Type) + '</dd>' +
+    (p.Author ? '<dt>Posted by</dt><dd>' + esc(p.Author) + '</dd>' : '') +
+    (p.Published_Date && p._isEvent ? '<dt>Published</dt><dd>' + esc(PortalData.fmtDate(p.Published_Date)) + '</dd>' : '') +
+  '</dl>' +
+  '<div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">' +
+    '<button class="btn btn-outline btn-sm" type="button" id="share">⧉ Copy link</button>' +
+    '<button class="btn btn-outline btn-sm" type="button" onclick="window.print()">⎙ Print</button>' +
+  '</div></div>';
+
+  if (others.length) {
+    H += '<div class="card" style="margin-top:16px"><h3>More from the district</h3>' +
+      '<ul style="list-style:none;margin:0;padding:0;display:grid;gap:12px">' +
+      others.map(function (o) {
+        return '<li><a href="event.html?slug=' + encodeURIComponent(o.Slug) + '" style="font-weight:600;font-size:.9rem">' +
+          esc(o.Title) + '</a>' +
+          '<div style="font-size:.78rem;color:var(--text-muted)">' + esc(UI.postWhen(o).replace('📅 ', '')) + '</div></li>';
+      }).join('') + '</ul></div>';
+  }
+  H += '</div>';
+
+  H += '</div></div></section>';
+  document.getElementById('page').innerHTML = H;
+
+  document.getElementById('share').addEventListener('click', function () {
+    var self = this;
+    navigator.clipboard.writeText(location.href).then(function () {
+      self.textContent = '✓ Link copied';
+      setTimeout(function () { self.textContent = '⧉ Copy link'; }, 2000);
+    }).catch(function () { self.textContent = location.href; });
+  });
+
+  /* lightbox */
+  if (gallery.length) {
+    var open = function (i) {
+      var g = gallery[i];
+      var box = document.createElement('div');
+      box.className = 'lightbox';
+      box.innerHTML = '<button class="lb-close" aria-label="Close">×</button>' +
+        (gallery.length > 1 ? '<button class="lb-nav lb-prev" aria-label="Previous">‹</button>' +
+                              '<button class="lb-nav lb-next" aria-label="Next">›</button>' : '') +
+        '<div><img src="' + esc(g._url) + '" alt="' + esc(g.Caption || '') + '">' +
+        (g.Caption ? '<div class="lb-cap">' + esc(g.Caption) + '</div>' : '') + '</div>';
+      document.body.appendChild(box);
+      var close = function () { box.remove(); document.removeEventListener('keydown', key); };
+      var go = function (n) { close(); open((n + gallery.length) % gallery.length); };
+      var key = function (e) {
+        if (e.key === 'Escape') close();
+        if (e.key === 'ArrowRight' && gallery.length > 1) go(i + 1);
+        if (e.key === 'ArrowLeft' && gallery.length > 1) go(i - 1);
+      };
+      box.addEventListener('click', function (e) { if (e.target === box) close(); });
+      box.querySelector('.lb-close').addEventListener('click', close);
+      var pv = box.querySelector('.lb-prev'), nx = box.querySelector('.lb-next');
+      pv && pv.addEventListener('click', function () { go(i - 1); });
+      nx && nx.addEventListener('click', function () { go(i + 1); });
+      document.addEventListener('keydown', key);
+      box.querySelector('.lb-close').focus();
+    };
+    Array.prototype.forEach.call(document.querySelectorAll('#gal img'), function (img) {
+      img.addEventListener('click', function () { open(PortalData.num(this.dataset.i)); });
+    });
+  }
+});
+</script>
+</body>
+</html>

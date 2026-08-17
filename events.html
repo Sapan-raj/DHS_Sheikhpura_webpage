@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Events &amp; What's New — District Health Society, Sheikhpura</title>
+<meta name="description" content="Health campaigns, camps, training programmes, meetings, achievements and announcements from the District Health Society, Sheikhpura.">
+<link rel="icon" href="assets/img/favicon.svg">
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+<a class="skip-link" href="#page">Skip to main content</a>
+<div id="shell-top"></div>
+<div id="crumbs"></div>
+<main id="page"><div class="container section"><div class="skel" style="height:90px;margin-bottom:20px"></div><div class="skel" style="height:320px"></div></div></main>
+<div id="shell-footer"></div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/ui.js"></script>
+<script>
+UI.boot('events.html', function (d) {
+  var Q = PortalData.query, esc = PortalData.esc;
+  UI.crumbs([{ label: "Events & What's New" }]);
+
+  var cats = Q.postCategories(d);
+  var perPage = 9, page = 1;
+
+  document.getElementById('page').innerHTML =
+    '<section class="section"><div class="container">' +
+      '<div class="section-head"><h2>Events &amp; What\'s New</h2>' +
+      '<p>Health campaigns, camps, training programmes, meetings, achievements and announcements from across Sheikhpura district.</p></div>' +
+
+      '<div class="filters filters--4">' +
+        '<div class="field search-field"><label for="q">Search</label>' +
+          '<input id="q" type="search" placeholder="Title, description, venue…" value="' + esc(UI.param('q')) + '" autocomplete="off"></div>' +
+        '<div class="field"><label for="ty">Type</label><select id="ty">' +
+          '<option value="">All types</option><option>Event</option><option>News</option><option>Update</option></select></div>' +
+        '<div class="field"><label for="wh">When</label><select id="wh">' +
+          '<option value="">All</option><option value="upcoming">Upcoming &amp; ongoing</option><option value="past">Past events</option></select></div>' +
+        '<div class="field"><label for="cat">Category</label><select id="cat"><option value="">All categories</option>' +
+          cats.map(function (c) { return '<option value="' + esc(c.Category_ID) + '">' + esc(c.Category_Name) + '</option>'; }).join('') +
+        '</select></div>' +
+        '<div class="field"><label>&nbsp;</label><button class="btn btn-outline" id="reset" type="button">Reset</button></div>' +
+      '</div>' +
+
+      '<div class="result-line" id="rl"></div>' +
+      '<div class="grid grid-3" id="grid"></div>' +
+      '<div class="pager" id="pager"></div>' +
+    '</div></section>';
+
+  /* deep link from the home tabs, e.g. events.html?when=upcoming */
+  if (UI.param('when')) document.getElementById('wh').value = UI.param('when');
+  if (UI.param('type')) document.getElementById('ty').value = UI.param('type');
+
+  function rows() {
+    return Q.posts(d, {
+      q: document.getElementById('q').value,
+      type: document.getElementById('ty').value,
+      when: document.getElementById('wh').value,
+      categoryId: document.getElementById('cat').value,
+      includeArchived: true
+    });
+  }
+
+  function draw() {
+    var all = rows();
+    var pages = Math.max(1, Math.ceil(all.length / perPage));
+    if (page > pages) page = pages;
+    var slice = all.slice((page - 1) * perPage, page * perPage);
+
+    document.getElementById('grid').innerHTML = slice.length
+      ? slice.map(function (p) { return UI.postCard(p); }).join('')
+      : '<div style="grid-column:1/-1">' + UI.emptyState('No posts found',
+          'Try clearing a filter or searching for something else.') + '</div>';
+
+    var up = all.filter(function (p) { return p._upcoming || p._ongoing; }).length;
+    document.getElementById('rl').innerHTML = all.length
+      ? 'Showing <strong>' + ((page - 1) * perPage + 1) + '–' + Math.min(page * perPage, all.length) +
+        '</strong> of <strong>' + all.length + '</strong> posts' +
+        (up ? ' &nbsp;·&nbsp; <strong>' + up + '</strong> upcoming or ongoing' : '')
+      : 'No posts found';
+
+    var pg = '';
+    if (pages > 1) {
+      pg += '<button type="button" data-p="' + (page - 1) + '"' + (page === 1 ? ' disabled' : '') + '>‹ Prev</button>';
+      for (var i = 1; i <= pages; i++) {
+        pg += '<button type="button" data-p="' + i + '"' + (i === page ? ' aria-current="true"' : '') + '>' + i + '</button>';
+      }
+      pg += '<button type="button" data-p="' + (page + 1) + '"' + (page === pages ? ' disabled' : '') + '>Next ›</button>';
+    }
+    document.getElementById('pager').innerHTML = pg;
+    Array.prototype.forEach.call(document.querySelectorAll('#pager button[data-p]'), function (b) {
+      b.addEventListener('click', function () {
+        page = PortalData.num(this.dataset.p); draw();
+        document.getElementById('grid').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+  }
+
+  ['q', 'ty', 'wh', 'cat'].forEach(function (id) {
+    document.getElementById(id).addEventListener(id === 'q' ? 'input' : 'change', function () { page = 1; draw(); });
+  });
+  document.getElementById('reset').addEventListener('click', function () {
+    ['q', 'ty', 'wh', 'cat'].forEach(function (id) { document.getElementById(id).value = ''; });
+    page = 1; draw();
+  });
+
+  draw();
+});
+</script>
+</body>
+</html>

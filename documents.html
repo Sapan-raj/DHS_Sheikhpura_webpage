@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Documents — District Health Society, Sheikhpura</title>
+<meta name="description" content="Searchable repository of PIP, RoP, budget allocations, guidelines, formats and circulars.">
+<link rel="icon" href="assets/img/favicon.svg">
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+<a class="skip-link" href="#page">Skip to main content</a>
+<div id="shell-top"></div>
+<div id="crumbs"></div>
+<main id="page"><div class="container section"><div class="skel" style="height:90px;margin-bottom:20px"></div><div class="skel" style="height:280px"></div></div></main>
+<div id="shell-footer"></div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/ui.js"></script>
+<script>
+UI.boot('documents.html', function (d) {
+  var Q = PortalData.query, esc = PortalData.esc;
+  UI.crumbs([{ label: 'Documents' }]);
+
+  var all = Q.allDocuments(d);
+  var years = Q.years(d);
+  var cats = Q.categories(d);
+  var yearName = {}; d.financialYears.forEach(function (y) { yearName[y.Year_ID] = y.Display_Name; });
+  var catName = {}; d.categories.forEach(function (c) { catName[c.Category_ID] = c.Short_Name; });
+  var types = all.map(function (x) { return x.type; })
+                 .filter(function (v, i, a) { return v && a.indexOf(v) === i; }).sort();
+  var perPage = PortalData.num(d.settings.records_per_page) || 25;
+  var page = 1;
+
+  document.getElementById('page').innerHTML =
+    '<section class="section"><div class="container">' +
+      '<div class="section-head"><h2>Document Repository</h2>' +
+      '<p>Every published document — PIP, RoP, budget allocations, guidelines, formats and circulars.</p></div>' +
+      '<div class="filters">' +
+        '<div class="field search-field"><label for="q">Search</label>' +
+          '<input id="q" type="search" placeholder="Title, description, type…" value="' + esc(UI.param('q')) + '" autocomplete="off"></div>' +
+        '<div class="field"><label for="fy">Financial Year</label><select id="fy"><option value="">All years</option>' +
+          years.map(function (y) { return '<option value="' + esc(y.Year_ID) + '">' + esc(y.Display_Name) + '</option>'; }).join('') + '</select></div>' +
+        '<div class="field"><label for="cat">Category</label><select id="cat"><option value="">All categories</option>' +
+          cats.map(function (c) { return '<option value="' + esc(c.Category_ID) + '">' + esc(c.Short_Name) + '</option>'; }).join('') + '</select></div>' +
+        '<div class="field"><label for="ty">Document Type</label><select id="ty"><option value="">All types</option>' +
+          types.map(function (t) { return '<option value="' + esc(t) + '">' + esc(t) + '</option>'; }).join('') + '</select></div>' +
+        '<div class="field"><label>&nbsp;</label><button class="btn btn-outline" id="reset" type="button">Reset</button></div>' +
+      '</div>' +
+      '<div class="result-line" id="rl"></div>' +
+      '<div class="card" id="list"></div>' +
+      '<div class="pager" id="pager"></div>' +
+    '</div></section>';
+
+  function filtered() {
+    var q = document.getElementById('q').value.toLowerCase().trim();
+    var fy = document.getElementById('fy').value;
+    var cat = document.getElementById('cat').value;
+    var ty = document.getElementById('ty').value;
+
+    return all.filter(function (x) {
+      if (fy && x.yearId !== fy) return false;
+      if (cat && x.catId !== cat) return false;
+      if (ty && x.type !== ty) return false;
+      if (q && [x.title, x.desc, x.type, x.fileType, yearName[x.yearId], catName[x.catId]]
+                .join(' ').toLowerCase().indexOf(q) === -1) return false;
+      return true;
+    }).sort(function (a, b) {
+      var da = PortalData.parseDate(a.date), db = PortalData.parseDate(b.date);
+      if (da && db && da.getTime() !== db.getTime()) return db - da;
+      return String(a.title).localeCompare(String(b.title));
+    });
+  }
+
+  function draw() {
+    var rows = filtered();
+    var pages = Math.max(1, Math.ceil(rows.length / perPage));
+    if (page > pages) page = pages;
+    var slice = rows.slice((page - 1) * perPage, page * perPage);
+
+    document.getElementById('list').innerHTML = slice.length
+      ? slice.map(function (x) {
+          var extra = [];
+          if (x.yearId && yearName[x.yearId]) extra.push('<span class="chip">' + esc(yearName[x.yearId]) + '</span>');
+          if (x.catId && catName[x.catId]) extra.push('<span class="chip">' + esc(catName[x.catId]) + '</span>');
+          if (x.featured) extra.push('<span class="chip chip--ok">Featured</span>');
+          return UI.docRow(x, extra);
+        }).join('')
+      : UI.emptyState('No documents match your filters', 'Clear a filter or try a different search term.');
+
+    document.getElementById('rl').innerHTML = rows.length
+      ? 'Showing <strong>' + ((page - 1) * perPage + 1) + '–' + Math.min(page * perPage, rows.length) +
+        '</strong> of <strong>' + rows.length + '</strong> documents'
+      : 'No documents found';
+
+    var pg = '';
+    if (pages > 1) {
+      pg += '<button type="button" data-p="' + (page - 1) + '"' + (page === 1 ? ' disabled' : '') + '>‹ Prev</button>';
+      var from = Math.max(1, page - 2), to = Math.min(pages, from + 4);
+      from = Math.max(1, to - 4);
+      if (from > 1) pg += '<button type="button" data-p="1">1</button>' + (from > 2 ? '<span style="padding:0 4px">…</span>' : '');
+      for (var i = from; i <= to; i++) pg += '<button type="button" data-p="' + i + '"' + (i === page ? ' aria-current="true"' : '') + '>' + i + '</button>';
+      if (to < pages) pg += (to < pages - 1 ? '<span style="padding:0 4px">…</span>' : '') + '<button type="button" data-p="' + pages + '">' + pages + '</button>';
+      pg += '<button type="button" data-p="' + (page + 1) + '"' + (page === pages ? ' disabled' : '') + '>Next ›</button>';
+    }
+    document.getElementById('pager').innerHTML = pg;
+    Array.prototype.forEach.call(document.querySelectorAll('#pager button[data-p]'), function (b) {
+      b.addEventListener('click', function () {
+        page = PortalData.num(this.dataset.p);
+        draw();
+        document.getElementById('list').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+  }
+
+  ['q', 'fy', 'cat', 'ty'].forEach(function (id) {
+    var el = document.getElementById(id);
+    el.addEventListener(id === 'q' ? 'input' : 'change', function () { page = 1; draw(); });
+  });
+  document.getElementById('reset').addEventListener('click', function () {
+    ['q', 'fy', 'cat', 'ty'].forEach(function (id) { document.getElementById(id).value = ''; });
+    page = 1; draw();
+  });
+
+  draw();
+});
+</script>
+</body>
+</html>

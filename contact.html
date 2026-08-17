@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contact Us — District Health Society, Sheikhpura</title>
+<link rel="icon" href="assets/img/favicon.svg">
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+<a class="skip-link" href="#page">Skip to main content</a>
+<div id="shell-top"></div>
+<div id="crumbs"></div>
+<main id="page"><div class="container section"><div class="skel" style="height:260px"></div></div></main>
+<div id="shell-footer"></div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/ui.js"></script>
+<script>
+UI.boot('contact.html', function (d) {
+  var Q = PortalData.query, esc = PortalData.esc, S = d.settings;
+  UI.crumbs([{ label: 'Contact Us' }]);
+
+  function pending(v) {
+    var s = String(v || '').trim();
+    return (!s || s === 'NEEDS MANUAL INPUT');
+  }
+  function val(v, kind) {
+    if (pending(v)) return '<span class="unavailable">To be updated</span>';
+    if (kind === 'tel') return '<a href="tel:' + esc(String(v).replace(/\s/g, '')) + '">' + esc(v) + '</a>';
+    if (kind === 'mail') return '<a href="mailto:' + esc(v) + '">' + esc(v) + '</a>';
+    return esc(v);
+  }
+
+  var cards = Q.contacts(d).map(function (c) {
+    /* Address often already names the district/state — join without repeating them. */
+    var addr = [c.Address, c.District, c.State, c.PIN].filter(Boolean).reduce(function (acc, part) {
+      var p = String(part).trim();
+      if (!p) return acc;
+      var seen = acc.join(', ').toLowerCase();
+      if (seen.indexOf(p.toLowerCase()) > -1) return acc;
+      acc.push(p);
+      return acc;
+    }, []).join(', ');
+
+    var person = String(c.Person_Name || '').trim();
+    var showPerson = person && person !== '—' && !pending(person);
+
+    return '<div class="card">' +
+      '<h3 style="margin-bottom:4px">' + esc(c.Office_Name) + '</h3>' +
+      (c.Designation ? '<div style="font-size:.83rem;color:var(--text-muted);margin-bottom:12px">' + esc(c.Designation) +
+        (showPerson ? ' — ' + esc(person) : '') + '</div>' : '') +
+      '<dl class="kv">' +
+        (addr ? '<dt>Address</dt><dd>' + esc(addr) + '</dd>' : '') +
+        (c.Phone ? '<dt>Phone</dt><dd>' + val(c.Phone, 'tel') + '</dd>' : '') +
+        (c.Alt_Phone ? '<dt>Alternate</dt><dd>' + val(c.Alt_Phone, 'tel') + '</dd>' : '') +
+        (c.Email ? '<dt>Email</dt><dd>' + val(c.Email, 'mail') + '</dd>' : '') +
+        (c.Office_Hours ? '<dt>Office Hours</dt><dd>' + esc(c.Office_Hours) + '</dd>' : '') +
+      '</dl>' +
+      (PortalData.validUrl(c.Google_Maps_URL)
+        ? '<div style="margin-top:14px"><a class="btn btn-outline btn-sm" href="' + esc(c.Google_Maps_URL) +
+          '" target="_blank" rel="noopener noreferrer">◎ Get directions</a></div>' : '') +
+    '</div>';
+  }).join('');
+
+  var helplines = [
+    { n: S.helpline_104, l: 'Health Helpline', s: 'Medical advice and information, 24×7' },
+    { n: S.helpline_102, l: 'Ambulance', s: 'Free emergency transport, 24×7' }
+  ].filter(function (h) { return h.n; }).map(function (h) {
+    return '<a class="card card--link stat" style="text-decoration:none" href="tel:' + esc(h.n) + '">' +
+      '<div class="num">' + esc(h.n) + '</div>' +
+      '<div class="lbl">' + esc(h.l) + '</div>' +
+      '<p style="margin-top:6px">' + esc(h.s) + '</p></a>';
+  }).join('');
+
+  document.getElementById('page').innerHTML =
+    '<section class="section"><div class="container">' +
+      '<div class="section-head"><h2>Contact Us</h2>' +
+      '<p>' + esc(S.office_address || '') + '</p></div>' +
+      (helplines ? '<div class="grid grid-2" style="margin-bottom:32px">' + helplines + '</div>' : '') +
+      '<div class="grid grid-2">' + (cards || UI.emptyState('No contact records', 'Add rows to Contact_Information.')) + '</div>' +
+      '<div class="card" style="margin-top:24px">' +
+        '<h3>About this portal</h3>' +
+        '<p style="color:var(--text-muted);max-width:88ch;margin:0">' + esc(S.footer_about || '') + '</p>' +
+        '<p style="color:var(--text-muted);font-size:.85rem;margin:14px 0 0">' +
+        'For corrections to any published document or programme detail, contact the District Programme Management Unit. ' +
+        'Content on this portal is maintained by the district office and updated as documents are received from the State Health Society, Bihar.</p>' +
+      '</div>' +
+    '</div></section>';
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Notices &amp; Announcements — District Health Society, Sheikhpura</title>
+<link rel="icon" href="assets/img/favicon.svg">
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+<a class="skip-link" href="#page">Skip to main content</a>
+<div id="shell-top"></div>
+<div id="crumbs"></div>
+<main id="page"><div class="container section"><div class="skel" style="height:260px"></div></div></main>
+<div id="shell-footer"></div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/ui.js"></script>
+<script>
+UI.boot('notices.html', function (d) {
+  var Q = PortalData.query, esc = PortalData.esc;
+  UI.crumbs([{ label: 'Notices & Announcements' }]);
+
+  var cats = Q.notices(d, true).map(function (n) { return n.Category; })
+              .filter(function (v, i, a) { return v && a.indexOf(v) === i; }).sort();
+
+  document.getElementById('page').innerHTML =
+    '<section class="section"><div class="container">' +
+      '<div class="section-head"><h2>Notices &amp; Announcements</h2>' +
+      '<p>Circulars, meeting notices and programme announcements from the District Health Society.</p></div>' +
+      '<div class="filters filters--3">' +
+        '<div class="field search-field"><label for="q">Search</label>' +
+          '<input id="q" type="search" placeholder="Search notices…" autocomplete="off"></div>' +
+        '<div class="field"><label for="cat">Category</label><select id="cat"><option value="">All</option>' +
+          cats.map(function (c) { return '<option value="' + esc(c) + '">' + esc(c) + '</option>'; }).join('') + '</select></div>' +
+        '<div class="field"><label for="pr">Priority</label><select id="pr">' +
+          '<option value="">All</option><option>High</option><option>Normal</option><option>Low</option></select></div>' +
+        '<div class="field"><label for="arch">&nbsp;</label>' +
+          '<label style="display:flex;gap:7px;align-items:center;font-size:.85rem;text-transform:none;letter-spacing:0;font-weight:500;padding:9px 0">' +
+          '<input type="checkbox" id="arch" style="width:auto"> Include archived</label></div>' +
+      '</div>' +
+      '<div class="result-line" id="rl"></div>' +
+      '<div class="card" id="list"></div>' +
+    '</div></section>';
+
+  function draw() {
+    var q = document.getElementById('q').value.toLowerCase().trim();
+    var cat = document.getElementById('cat').value;
+    var pr = document.getElementById('pr').value;
+    var arch = document.getElementById('arch').checked;
+
+    var rows = Q.notices(d, arch).filter(function (n) {
+      if (cat && n.Category !== cat) return false;
+      if (pr && String(n.Priority) !== pr) return false;
+      if (q && [n.Title, n.Description, n.Category].join(' ').toLowerCase().indexOf(q) === -1) return false;
+      return true;
+    });
+
+    document.getElementById('list').innerHTML = rows.length ? rows.map(function (n) {
+      var dt = PortalData.parseDate(n.Notice_Date);
+      var att = PortalData.validUrl(n.Attachment_URL);
+      var ext = PortalData.validUrl(n.External_URL);
+      var isArchived = String(n.Status).toLowerCase() === 'archived';
+
+      var actions = '';
+      if (att) actions += '<a class="btn btn-outline btn-sm" href="' + esc(att) + '" target="_blank" rel="noopener noreferrer">⭳ Attachment</a> ';
+      if (ext) actions += '<a class="btn btn-outline btn-sm" href="' + esc(ext) + '"' +
+                          (/^https?:/i.test(ext) ? ' target="_blank" rel="noopener noreferrer"' : '') + '>Open →</a>';
+      if (!att && !ext && String(n.Attachment_URL || '') === 'NEEDS MANUAL INPUT') {
+        actions = '<span class="unavailable">Attachment not yet uploaded</span>';
+      }
+
+      return '<div class="notice-item"><div class="notice-date">' +
+        '<div class="d">' + (dt ? String(dt.getDate()).padStart(2, '0') : '—') + '</div>' +
+        '<div class="m">' + (dt ? dt.toLocaleString('en-IN', { month: 'short' }) + " '" + String(dt.getFullYear()).slice(2) : '') + '</div>' +
+        '</div><div class="notice-body">' +
+        '<h3>' + esc(n.Title) +
+          (PortalData.yes(n.Is_New) ? ' <span class="chip chip--new">NEW</span>' : '') +
+          (isArchived ? ' <span class="chip">Archived</span>' : '') + '</h3>' +
+        (n.Description ? '<p>' + esc(n.Description) + '</p>' : '') +
+        '<div class="doc-meta" style="margin-bottom:10px">' +
+          '<span class="chip">' + esc(n.Category) + '</span>' +
+          (String(n.Priority).toLowerCase() === 'high' ? '<span class="chip chip--high">High priority</span>' : '') +
+          (n.Expiry_Date ? '<span class="chip">Valid till ' + esc(PortalData.fmtDate(n.Expiry_Date)) + '</span>' : '') +
+        '</div>' + actions + '</div></div>';
+    }).join('') : UI.emptyState('No notices found', 'Try clearing the filters or including archived notices.');
+
+    document.getElementById('rl').innerHTML = '<strong>' + rows.length + '</strong> notice' + (rows.length === 1 ? '' : 's');
+  }
+
+  ['q', 'cat', 'pr', 'arch'].forEach(function (id) {
+    var el = document.getElementById(id);
+    el.addEventListener(id === 'q' ? 'input' : 'change', draw);
+  });
+  draw();
+});
+</script>
+</body>
+</html>
