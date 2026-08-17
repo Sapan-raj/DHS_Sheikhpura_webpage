@@ -18,6 +18,9 @@ Open <http://localhost:8791>. It works immediately from the bundled data snapsho
 
 ---
 
+> **📘 [MASTER_REFERENCE.md](MASTER_REFERENCE.md) — everything about this website in one file.**
+> Architecture, all 16 sheets field by field, every page, the full code and API reference, security, the image pipeline, deployment, the operations runbook, the complete verification record, known limits and the outstanding-items register. Start there if you want the whole picture; the numbered docs below go deeper on single topics.
+
 ## Deliverables
 
 | # | Deliverable | Where |
