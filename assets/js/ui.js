@@ -386,6 +386,28 @@
     return new URLSearchParams(w.location.search).get(name) || '';
   }
 
+  /**
+   * Reads a value out of the PATH, for the pretty URLs in vercel.json:
+   *   /events/world-breastfeeding-week-2026  → pathSeg('events') === 'world-…'
+   *   /pip/2025-26                           → pathSeg('pip')    === '2025-26'
+   *
+   * A server rewrite only decides which FILE is served — the browser's URL,
+   * and therefore location.search, still has no query string. So the pretty
+   * routes have to be read from the path here, or they silently fall back to
+   * the default view.
+   */
+  function pathSeg(prefix) {
+    var parts = w.location.pathname.split('/').filter(Boolean);
+    var i = parts.indexOf(prefix);
+    return (i > -1 && parts[i + 1]) ? decodeURIComponent(parts[i + 1]) : '';
+  }
+
+  /** Query string first (canonical), then pretty path, then hash. */
+  function route(name, prefix) {
+    return param(name) || pathSeg(prefix) ||
+           (w.location.hash ? decodeURIComponent(w.location.hash.replace(/^#\/?/, '')) : '');
+  }
+
   function money(v) {
     var n = D.num(v);
     if (!n) return '—';
@@ -423,7 +445,8 @@
     docRow: docRow, docIcon: docIcon, emptyState: emptyState, errorState: errorState,
     postCard: postCard, postCover: postCover, postArt: postArt,
     postTiming: postTiming, postWhen: postWhen,
-    skeleton: skeleton, icon: icon, t: t, lang: lang, param: param, money: money,
+    skeleton: skeleton, icon: icon, t: t, lang: lang,
+    param: param, pathSeg: pathSeg, route: route, money: money,
     setTheme: setTheme, Prefs: Prefs
   };
 })(window, window.PortalData);

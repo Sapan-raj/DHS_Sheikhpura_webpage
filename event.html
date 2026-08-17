@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<base href="/">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Event — District Health Society, Sheikhpura</title>
 <link rel="icon" href="assets/img/favicon.svg">
@@ -21,9 +22,10 @@
 UI.boot('events.html', function (d) {
   var Q = PortalData.query, esc = PortalData.esc;
 
-  /* Canonical route is ?slug=… — a static host cannot rewrite /events/<slug>
-     without a server rule. See docs/07 for the Netlify/Apache rewrite. */
-  var slug = UI.param('slug') || location.hash.replace(/^#\/?/, '');
+  /* Accepts both /event.html?slug=… (canonical) and the pretty /events/<slug>
+     rewrite from vercel.json — a rewrite does not put the slug in the query
+     string, so it has to be read out of the path. */
+  var slug = UI.route('slug', 'events');
   var p = Q.postBySlug(d, slug);
 
   if (!p) {

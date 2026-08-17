@@ -69,6 +69,10 @@ There is no build step — it is static HTML, CSS and JS with no dependencies.
 - security headers, including a CSP that allows exactly Apps Script and Drive images
 - `noindex` on `admin.html`
 
+> **The site must live at a domain root**, not a subpath like `example.com/portal/`. Every page carries `<base href="/">`, which is what makes the pretty URLs load their assets. A Vercel project URL or a custom domain is always a root, so this is only a constraint if you later move the site under a folder on some other server.
+
+The CSP was tested against the running site before deploy — all pages render with **zero violations**, `data:` image previews in the composer are allowed, and a request to a non-allowlisted host is correctly blocked.
+
 ## A3. Check it
 
 Open the Vercel URL. The site loads from the bundled snapshot (`assets/data/portal-data.json`). Admin sign-in is disabled until Part B — that is expected.

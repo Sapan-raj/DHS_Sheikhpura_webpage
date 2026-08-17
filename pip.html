@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<base href="/">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Project Implementation Plan — District Health Society, Sheikhpura</title>
 <meta name="description" content="Financial-year wise PIP, RoP, FMR budget heads, allocations and guidelines for Sheikhpura district.">
@@ -33,7 +34,8 @@ UI.boot('pip.html', function (d) {
   /* The year comes from the URL if it is real, otherwise the current year.
      A year can only be selected if it actually has programme rows — the
      reference site's dead-dropdown failure is structurally impossible here. */
-  var year = Q.yearBySlug(d, UI.param('fy')) || Q.currentYear(d) || years[0];
+  /* ?fy=… (canonical) or the pretty /pip/<fy> rewrite */
+  var year = Q.yearBySlug(d, UI.param('fy') || UI.pathSeg('pip')) || Q.currentYear(d) || years[0];
   var idx  = years.map(function (y) { return y.Year_ID; }).indexOf(year.Year_ID);
   var prev = years[idx + 1] || null;   // years are newest-first
   var next = years[idx - 1] || null;

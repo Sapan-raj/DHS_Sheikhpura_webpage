@@ -154,20 +154,31 @@ Canonical route: `event.html?slug=world-breastfeeding-week-2026`
 
 Slugs are generated from the title, forced URL-safe, and made unique by the server (`-2`, `-3`, …) so two posts can never collide. Slug uniqueness is enforced in three places — the workbook integrity check, `crossValidate()` in Apps Script, and `normalise()` in the browser.
 
-Static hosting cannot rewrite `/events/<slug>` without a server rule. To get the prettier form:
+**Pretty URL (live on Vercel):** `/events/world-breastfeeding-week-2026`
 
-**Netlify** — add a `_redirects` file:
+`vercel.json` rewrites `/events/:slug` → `/event.html?slug=:slug`, and `/pip/:fy` → `/pip.html?fy=:fy`.
+
+Two things were needed to make that actually work, and both are easy to miss:
+
+1. **`<base href="/">` on every page.** Served at `/events/<slug>`, relative asset paths would resolve to `/events/assets/js/…` and 404 — the page would render completely blank. *Consequence: the site must be deployed at a domain root, not a subpath.*
+2. **Client-side path parsing.** A rewrite decides which *file* is served; it does not change the browser's URL, so `location.search` is still empty and `?slug=` is not there to read. `UI.route('slug', 'events')` therefore checks the query string first, then the path, then the hash.
+
+Internal links deliberately keep the canonical `event.html?slug=…` form so the site behaves identically under `python -m http.server`, which has no rewrite support. The pretty URL is what visitors get when they share a link.
+
+Equivalent rules for other hosts:
+
+**Netlify** — `_redirects`:
 ```
 /events/:slug  /event.html?slug=:slug  200
+/pip/:fy       /pip.html?fy=:fy        200
 ```
 
-**Apache** — add to `.htaccess`:
+**Apache** — `.htaccess`:
 ```
 RewriteEngine On
 RewriteRule ^events/([a-z0-9-]+)/?$ event.html?slug=$1 [L,QSA]
+RewriteRule ^pip/([0-9-]+)/?$        pip.html?fy=$1    [L,QSA]
 ```
-
-Both are optional; nothing depends on them.
 
 ---
 
