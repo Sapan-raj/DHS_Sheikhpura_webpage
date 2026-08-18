@@ -8,7 +8,7 @@ window.PORTAL_CONFIG = {
   /* Paste the Apps Script Web App /exec URL here after deploying.
      NOTE: this is the script's /exec URL, NOT the Google Sheets URL.
      Leave empty to run entirely from the local JSON snapshot. */
-  API_URL: 'https://script.google.com/macros/s/AKfycbzE5l0rJpLY8h372TZPdLKfCjyLO_oofSwah3mZKci2blZUbNJlWtXL4QvrMrSJVTwn/exec',
+  API_URL: 'https://script.google.com/macros/s/AKfycbwZ8OFOMmOUAKbbUWyltHpXhXEBSJcAHFG5YV6D49towlcOoZ7HylTPgHvUsrapiITQ/exec',
 
   /* The master Google Sheet. Used only for the "Open Google Sheet" button on the
      Admin dashboard — no data is read from here directly, and this ID is not a
