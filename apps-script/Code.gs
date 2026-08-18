@@ -314,34 +314,31 @@ function crossValidate(d) {
   });
   d.programs = keep;
 
-  ['pipDocuments', 'documents'].forEach(function (k) {
-    var sheetName = (k === 'documents') ? 'Documents' : 'PIP_Documents';
-    d[k] = d[k].filter(function (doc) {
-      if (doc.Year_ID && !years[doc.Year_ID]) {
-        V.errors.push({ sheet: sheetName, id: doc.Document_ID || doc.Doc_ID,
-          message: 'Year_ID "' + doc.Year_ID + '" not found — row skipped' });
-        return false;
-      }
-      if (doc.Category_ID && !cats[doc.Category_ID]) {
-        V.errors.push({ sheet: sheetName, id: doc.Document_ID || doc.Doc_ID,
-          message: 'Category_ID "' + doc.Category_ID + '" not found — row skipped' });
-        return false;
-      }
-      if (doc.Program_ID && !progs[doc.Program_ID]) {
-        V.warnings.push({ sheet: sheetName, id: doc.Document_ID || doc.Doc_ID,
-          message: 'Program_ID "' + doc.Program_ID + '" not found — document kept but not linked' });
-        doc.Program_ID = '';
-      }
-      var url = String(doc.File_URL || '');
-      if (!url || url === 'NEEDS MANUAL INPUT') {
-        V.warnings.push({ sheet: sheetName, id: doc.Document_ID || doc.Doc_ID,
-          message: 'File_URL not set — link shown as unavailable' });
-      } else if (!/^https?:\/\//i.test(url)) {
-        V.warnings.push({ sheet: sheetName, id: doc.Document_ID || doc.Doc_ID,
-          message: 'File_URL is not a valid http(s) link — link disabled' });
-      }
-      return true;
-    });
+  d.documents = (d.documents || []).filter(function (doc) {
+    if (doc.Year_ID && !years[doc.Year_ID]) {
+      V.errors.push({ sheet: 'Documents', id: doc.Document_ID,
+        message: 'Year_ID "' + doc.Year_ID + '" not found — row skipped' });
+      return false;
+    }
+    if (doc.Category_ID && !cats[doc.Category_ID]) {
+      V.errors.push({ sheet: 'Documents', id: doc.Document_ID,
+        message: 'Category_ID "' + doc.Category_ID + '" not found — row skipped' });
+      return false;
+    }
+    if (doc.Program_ID && !progs[doc.Program_ID]) {
+      V.warnings.push({ sheet: 'Documents', id: doc.Document_ID,
+        message: 'Program_ID "' + doc.Program_ID + '" not found — document kept but not linked' });
+      doc.Program_ID = '';
+    }
+    var url = String(doc.File_URL || '');
+    if (!url || url === 'NEEDS MANUAL INPUT') {
+      V.warnings.push({ sheet: 'Documents', id: doc.Document_ID,
+        message: 'File_URL not set — link shown as unavailable' });
+    } else if (!/^https?:\/\//i.test(url)) {
+      V.warnings.push({ sheet: 'Documents', id: doc.Document_ID,
+        message: 'File_URL is not a valid http(s) link — link disabled' });
+    }
+    return true;
   });
 
   /* Posts: category FK, unique slug, status/date coherence */
@@ -417,8 +414,8 @@ function crossValidate(d) {
 
   // A year reaches the selector only if it has programme rows or documents.
   var hasProg = {}, hasDoc = {};
-  d.programs.forEach(function (p) { hasProg[p.Year_ID] = true; });
-  d.pipDocuments.concat(d.documents).forEach(function (x) { if (x.Year_ID) hasDoc[x.Year_ID] = true; });
+  (d.programs || []).forEach(function (p) { hasProg[p.Year_ID] = true; });
+  (d.documents || []).forEach(function (x) { if (x.Year_ID) hasDoc[x.Year_ID] = true; });
   d.financialYears.forEach(function (y) {
     y._hasPrograms = !!hasProg[y.Year_ID];
     y._hasData = y._hasPrograms || !!hasDoc[y.Year_ID];
