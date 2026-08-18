@@ -22,7 +22,7 @@ Open <http://localhost:8791>. Runs against the same live Google Sheet as product
 ---
 
 > **📘 [MASTER_REFERENCE.md](MASTER_REFERENCE.md) — everything about this website in one file.**
-> Architecture, all 16 sheets field by field, every page, the full code and API reference, security, the image pipeline, deployment, the operations runbook, the complete verification record, known limits and the outstanding-items register. Start there if you want the whole picture; the numbered docs below go deeper on single topics.
+> Architecture, all 17 sheets field by field, every page, the full code and API reference, security, the image pipeline, deployment, the operations runbook, the complete verification record, known limits and the outstanding-items register. Start there if you want the whole picture; the numbered docs below go deeper on single topics.
 
 ## Deliverables
 
@@ -57,7 +57,7 @@ Sheikhpura_PIP_Portal/
 ├── admin.html              Admin login, dashboard, post composer, Manage Posts
 │
 ├── assets/
-│   ├── css/site.css        One stylesheet (~22 KB), CSS-variable tokens
+│   ├── css/site.css        One stylesheet (~40 KB), CSS-variable tokens
 │   ├── js/config.js        ← the ONLY file edited to connect Google Sheets
 │   ├── js/data.js          Fetch, cache, validate, query
 │   ├── js/ui.js            Shell, theme, language, shared components
@@ -68,7 +68,7 @@ Sheikhpura_PIP_Portal/
 ├── apps-script/Code.gs     Google Apps Script Web App — API + admin auth
 ├── build_database.py       Generates the .xlsx + runs integrity checks
 ├── export_json.py          .xlsx → portal-data.json (the API's data contract)
-├── docs/                   All eight deliverables
+├── docs/                   All ten deliverables
 └── Sheikhpura_Health_PIP_Website_Database.xlsx
 ```
 
