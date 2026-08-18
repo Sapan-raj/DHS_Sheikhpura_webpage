@@ -1,5 +1,13 @@
 # Deploy — GitHub → Vercel → Google Sheets
 
+> **🟢 This is done.** Site live at <https://dhs-sheikhpura-webpage-is6g.vercel.app>,
+> repo at <https://github.com/Sapan-raj/DHS_Sheikhpura_webpage>, Apps Script deployed
+> and connected. Kept as the reference for redeploying or rebuilding.
+>
+> **When you change `Code.gs`, use Deploy → Manage deployments → ✏️ → New version.**
+> *New deployment* mints a different `/exec` URL and silently orphans the site until
+> `config.js` is updated and pushed.
+
 Your setup: **sheet stays private**, **edit in Google Sheets → click Sync → website updates**, hosted on Vercel from GitHub.
 
 There are two independent halves. Do them in either order; the site works (from the bundled snapshot) even before Part B exists.

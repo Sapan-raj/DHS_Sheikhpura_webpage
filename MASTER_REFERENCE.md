@@ -2,7 +2,15 @@
 
 **Single source of truth for the whole system.** Everything about the website: what it is, why it was built this way, how every part works, how to run it, and what is still outstanding.
 
-*Last updated: 18 August 2026 · 38 files · Citizen Benefits module added*
+**Status: 🟢 LIVE** — deployed on Vercel, reading the live Google Sheet through Apps Script.
+
+| | |
+|---|---|
+| **Website** | <https://dhs-sheikhpura-webpage-is6g.vercel.app> |
+| **Repository** | <https://github.com/Sapan-raj/DHS_Sheikhpura_webpage> |
+| **Admin** | `/admin.html` |
+
+*Last updated: 18 August 2026 · 40 files · 8 commits · live end to end*
 
 ---
 
@@ -42,7 +50,9 @@
 | **Core principle** | **One Google Sheet → one source of truth → dynamic website** |
 | **Stack** | Static HTML/CSS/JS · Google Apps Script API · Google Sheets database · Google Drive media |
 | **Frameworks** | None. No React, no jQuery, no Bootstrap, no build step, no npm |
-| **Hosting** | Vercel (static), from GitHub |
+| **Hosting** | Vercel (static), from GitHub — **live** |
+| **Data source** | `google-sheets` via Apps Script — **live**, not the bundled snapshot |
+| **Validation** | **0 errors**, 56 warnings (all expected — see §17) |
 | **Master sheet** | `1V2FbGpfVuX1Z7OhL0yEWQMs43t4QgvwQ4DSfmHEm0vs` |
 | **Pages** | 10 |
 | **Sheets** | 17 data + 1 README |
@@ -885,6 +895,36 @@ Built against the gaps found in the reference site:
 
 ## 13. Deployment
 
+### 13.0 Live configuration (as deployed)
+
+| Component | Value |
+|---|---|
+| Website | <https://dhs-sheikhpura-webpage-is6g.vercel.app> |
+| Repository | `Sapan-raj/DHS_Sheikhpura_webpage` (public, `main`) |
+| Apps Script project | `PIP Portal API`, bound to the master sheet |
+| Deployment | Execute as **Me** · Access **Anyone** |
+| `API_URL` | set in `assets/js/config.js` — the `/exec` endpoint |
+| Google Sheet | `Sheikhpura Website` · ID `1V2FbGpf…m0vs` |
+
+**Verified live:** `meta.source = "google-sheets"`, 0 validation errors, drafts and
+unreleased scheduled posts withheld from the public payload, admin auth rejecting
+bad credentials with *"Invalid username or password."* (not *"not configured"* —
+which confirms `setupCredentials()` ran).
+
+**Cold-start latency ~9–10 s.** Apps Script spins up and reads 17 tabs on the first
+request after a cache expiry. Every subsequent visitor is served from cache — 6 h
+server-side, 30 min browser-side. Only the first person after an expiry waits.
+
+> ### ⚠️ Redeploying the script: use *Manage deployments*
+>
+> **Deploy → Manage deployments → ✏️ → Version: New version → Deploy.**
+>
+> *New deployment* mints a **different `/exec` URL**, which silently orphans the
+> site until `config.js` is updated and pushed. This happened once during setup and
+> cost a round trip. *Manage deployments* keeps the URL stable.
+
+---
+
 Full guide: [`docs/08_Deploy_GitHub_Vercel.md`](docs/08_Deploy_GitHub_Vercel.md)
 
 ### ⚠️ Before anything
@@ -1045,6 +1085,34 @@ Everything below was tested in a real browser against the running site — not a
 | Console errors | **none on any page** |
 | Hard-coded content in source files | **none** (automated grep) |
 
+### Live deployment verification (18 Aug 2026)
+
+Run against the **production** site and the **live** Apps Script endpoint, not locally.
+
+| Check | Result |
+|---|---|
+| All 13 routes (incl. `/events/<slug>`, `/pip/<fy>`) | **HTTP 200** |
+| `meta.source` | **`google-sheets`** — live sheet, not the snapshot |
+| Degraded-source banner | absent |
+| Validation errors | **0** |
+| Programmes / benefits / posts / gallery | 157 / 40 / 8 / 8 |
+| **Drafts in the public payload** | **none** |
+| **Unreleased Scheduled in the public payload** | **none** |
+| Free Services page | 40 cards, 4 health areas, 41 tappable helplines |
+| Admin auth — wrong credentials | `"Invalid username or password."` (not *"not configured"*) |
+| Console errors | none |
+| CSP · HSTS · nosniff · frame-options | all present on the live response |
+| `admin.html` | `X-Robots-Tag: noindex, nofollow` |
+
+### Bugs found and fixed during deployment
+
+| Bug | Cause | Fix |
+|---|---|---|
+| **8 hard errors on `Post_Media`** | `Media_URL` was in `REQUIRED`, so the 8 placeholder gallery rows (caption written, image not yet uploaded) were dropped and reported as errors | `Media_URL` removed from `REQUIRED`; rows are kept, filtered at render by `postGallery()`, and reported as a **warning**. Errors 8 → 0. |
+| **Default password would have shipped publicly** | `setupCredentials()` carried `ChangeThisNow!2026` as a placeholder; in a public repo that publishes the default | Line ships blank; the function now refuses to run on a blank, <12-character or predictable password |
+| **`vercel.json` rejected by the schema** | a `"//"` comment key is not valid in `vercel.json` | comment removed |
+| **Site orphaned from its data source** | *New deployment* was used instead of *Manage deployments → New version*, minting a different `/exec` URL | `config.js` repointed; documented in §13.0 |
+
 ### Bugs found and fixed during the build
 
 | Bug | Fix |
@@ -1079,22 +1147,58 @@ Everything below was tested in a real browser against the running site — not a
 
 ## 17. NEEDS MANUAL INPUT register
 
-Cells with this red text are placeholders. The site hides or disables anything still marked this way. **None of it was invented** — these are verifiable facts that must come from the district office.
+**Live status: 0 errors, 56 warnings.** Nothing is broken. Every warning is an
+item of content the district office still has to supply.
+
+### What the 56 live warnings are
+
+| Count | Warning | Effect on the public site |
+|---|---|---|
+| **47** | `File_URL` not published | Every download button reads *"Not yet published"* |
+| **8** | Gallery row has no image yet | Caption exists, no photo shown |
+| **1** | FY 2023-24 has documents but no programme rows | Labelled *"— archived (documents only)"* in the year selector |
+
+A further **5 warnings appear on the Admin dashboard but not in the API response** —
+the `(VERIFY …)` cash amounts. That check lives in `data.js` (client-side), so it is
+raised when the browser processes the data, not by Apps Script.
+
+### Outstanding content
 
 | Sheet | Field | Rows | Needed |
 |---|---|---|---|
 | `Settings` | `Setting_Value` | `contact_email`, `contact_phone` | Official district health email + phone |
-| `PIP_Documents` | `File_URL` | all 12 | Real links to district PIP, RoP, letters |
-| `Documents` | `File_URL` | all 35 | Real links to allocation and guideline files |
-| `Contact_Information` | `Person_Name`, `Phone`, `Email` | CON01–CON04 | Serving officers' names and numbers |
+| `PIP_Documents` | `File_URL` | 12 | Drive links to the district PIP, RoP, letters |
+| `Documents` | `File_URL` | 35 | Drive links to allocation and guideline files |
+| `Contact_Information` | `Person_Name`, `Phone`, `Email` | CON01–CON04 | Names and numbers of serving officers |
 | `Notices` | `Attachment_URL` | NOT03 | Meeting circular |
 | `Posts` | `Attachment_URL` | POST007 | AAM reporting format |
 
-**Also verify before go-live:**
+### Cash amounts to confirm
 
-- PIN code `811105` and LGD district code `225` — plausible but unconfirmed
-- Every `Budget_Allocation_Lakh` figure — **illustrative placeholders**, replace from the district RoP
-- The eight sample posts are realistic district content but are **sample data**; they have no cover images because none have been uploaded yet (cards render generated placeholder art)
+Five `Program_Benefits` rows carry `(VERIFY …)` in `Amount`. The marker is **stripped
+before display** — citizens never see it — so it functions purely as a checklist.
+Delete the `(VERIFY …)` text once each figure is confirmed and the warning clears.
+
+| Row | Benefit | Confirm |
+|---|---|---|
+| BEN001 | Janani Suraksha Yojana | Current Bihar JSY rate, rural and urban |
+| BEN006 | Nutrition Rehabilitation Centre | Mother's wage compensation |
+| BEN014 | Sterilisation | Male and female compensation rates |
+| BEN016 | Kala-azar | Wage compensation rate |
+| BEN020 | Ni-kshay Poshan Yojana | Current monthly amount |
+
+### Also verify
+
+- PIN code `811105` and LGD district code `225` — plausible, unconfirmed
+- Every `Budget_Allocation_Lakh` — **illustrative placeholders**, replace from the district RoP
+- The eight sample posts are realistic district content but remain **sample data**
+
+### 🔴 Open security item
+
+**The Google Sheet is still shared "Anyone with the link."** It was verified readable
+without authentication. Now that Apps Script is the reader, this should be
+**Share → General access → Restricted**. The website will not notice the change —
+the script reads the sheet as the owner, and the public never touches it.
 
 ---
 
@@ -1198,32 +1302,43 @@ Cells with this red text are placeholders. The site hides or disables anything s
 
 ## 21. What to do next
 
-### Immediate
+### ✅ Done
 
-- [ ] Delete `C:\Users\sapan\.git` if it was accidental
-- [ ] Set the Google Sheet back to **Restricted**
-- [ ] Create a GitHub repo, `git push` (repo is committed and ready)
-- [ ] Import to Vercel — Build/Output/Install all empty
-- [ ] Install `Code.gs`, run `setupCredentials()`, deploy as Web App
-- [ ] Paste the `/exec` URL into `config.js`, push
-- [ ] Confirm Admin → *Data source* reads **Google Sheets via Apps Script**
+- [x] Repository pushed to GitHub (`Sapan-raj/DHS_Sheikhpura_webpage`)
+- [x] Deployed on Vercel — all 13 routes live, security headers applied
+- [x] Google Sheet built and validated — 18 tabs, 0 structural errors
+- [x] `Program_Benefits` added — 40 citizen entitlements across 24 FMR codes
+- [x] Apps Script installed, `setupCredentials()` run, deployed as a Web App
+- [x] `API_URL` connected — site reads the live sheet
+- [x] Verified end to end — 0 errors, drafts withheld, admin auth rejecting correctly
 
-### Before go-live
+### 🔴 Next — security
 
-- [ ] Replace every `NEEDS MANUAL INPUT` (§17)
-- [ ] Replace budget figures from the district RoP
-- [ ] Verify PIN and LGD codes
-- [ ] Confirm every `File_URL` opens for a signed-out user
-- [ ] Admin dashboard shows **0 rows skipped**
-- [ ] Create one real post end to end, including a photo from a phone
-- [ ] Test on a real phone
-- [ ] Walk the district admin through the runbook (§14) unaided
-- [ ] Store the password in the office register
+- [ ] **Set the Google Sheet to Restricted.** Still world-readable; nothing depends on it being public any more.
+
+### 🟠 Next — content, before telling the public about it
+
+- [ ] Replace the 47 `File_URL` placeholders (§17) — until then every download says *"Not yet published"*
+- [ ] Confirm the 5 `(VERIFY …)` cash amounts
+- [ ] Fill officer names, phones and the district email
+- [ ] Replace `Budget_Allocation_Lakh` figures from the district RoP
+- [ ] Confirm PIN `811105` and LGD code `225`
+
+### 🟢 Next — prove the write path
+
+- [ ] Sign in at `/admin.html`
+- [ ] **↻ Clear cache & sync now** — should report row counts back
+- [ ] **＋ Create New Post** with a photo from a phone → Preview → Publish
+- [ ] Confirm it appears under **What's New** on the home page
+
+That last sequence exercises Drive upload, browser-side image compression and the
+authenticated write path in one go — the only parts not yet proven against
+production, because they need a real login.
 
 ### Later, if useful
 
 - Custom domain (Vercel → Settings → Domains; CNAME via NIC)
-- Multi-user admin (`Users` sheet with per-user hashes)
-- Cloudinary migration if image traffic grows (only `mediaUpload()` changes)
-- Gzip or split the cache payload if the dataset outgrows 100 KB meaningfully
-- Real Hindi translations (the toggle and `_HI` columns already exist)
+- Multi-user admin — a `Users` sheet with per-user salted hashes; the token payload already carries a username field
+- Cloudinary migration if image traffic grows — only `mediaUpload()` changes
+- Gzip or split the cache payload if the dataset meaningfully outgrows 100 KB
+- Real Hindi translations beyond `Program_Benefits` (the toggle and `_HI` columns already exist throughout)

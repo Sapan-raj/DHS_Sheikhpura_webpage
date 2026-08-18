@@ -4,6 +4,9 @@ A data-driven Project Implementation Plan portal for the **District Health Socie
 
 > **One Google Sheet → One Source of Truth → Dynamic Website**
 
+**🟢 Live:** <https://dhs-sheikhpura-webpage-is6g.vercel.app>
+Reading the live Google Sheet through Apps Script. **0 validation errors.**
+
 ---
 
 ## Run it now
@@ -12,7 +15,7 @@ A data-driven Project Implementation Plan portal for the **District Health Socie
 python -m http.server 8791
 ```
 
-Open <http://localhost:8791>. It works immediately from the bundled data snapshot — no Google account required.
+Open <http://localhost:8791>. Runs against the same live Google Sheet as production, or falls back to the bundled snapshot if the API is unreachable.
 
 > Double-clicking `index.html` will not work: browsers block `fetch()` on `file://`.
 
@@ -34,6 +37,7 @@ Open <http://localhost:8791>. It works immediately from the bundled data snapsho
 | 7 | Website Implementation | this folder |
 | 8 | Setup & Operations Guide | [`docs/06_Setup_Guide.md`](docs/06_Setup_Guide.md) |
 | 9 | Media Storage Architecture (Events module) | [`docs/07_Media_Architecture.md`](docs/07_Media_Architecture.md) |
+| 10 | Deployment — GitHub → Vercel → Sheets | [`docs/08_Deploy_GitHub_Vercel.md`](docs/08_Deploy_GitHub_Vercel.md) |
 
 ---
 
@@ -136,6 +140,7 @@ Tested in-browser against the running site, not asserted:
 | Tap targets | all 67 controls ≥ 24×24 px |
 | Theme / font size | token-based, reversible, persisted |
 | Console errors | none on any page |
+| **Live deployment** — 13 routes, live sheet, 0 errors, drafts withheld, admin auth rejecting | verified against production |
 | **Events** — post validation (duplicate ID, duplicate slug, blank slug, unknown category, scheduled-without-date, orphan media) | all 6 caught; good posts survive |
 | **Events** — draft & unreleased scheduled posts | withheld server-side; absent from the public payload |
 | **Events** — scheduling | past-due scheduled post visible, future one hidden, no cron job |
