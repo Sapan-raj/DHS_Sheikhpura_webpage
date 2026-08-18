@@ -82,7 +82,7 @@ Open the Vercel URL. The site loads from the bundled snapshot (`assets/data/port
 # PART B — Google Sheet → Apps Script
 
 Your sheet: `1V2FbGpfVuX1Z7OhL0yEWQMs43t4QgvwQ4DSfmHEm0vs`
-Structure already verified: **16 tabs, every header correct, 392 rows.** Nothing to fix.
+Structure verified against the live sheet: **18 tabs, every header correct, 453 rows, 0 errors.** Nothing to fix.
 
 ## B1. Make the sheet private again
 
@@ -101,11 +101,12 @@ This is safe *because* of Apps Script: the script runs as you and reads the shee
 ## B3. Set your admin password
 
 1. Find `setupCredentials()` near the bottom of the file
-2. Set the username and a strong password:
+2. Set the username and a strong password (the line ships **blank** on purpose — this is a public repo, so a default password would be public too):
    ```javascript
    var USERNAME = 'admin';
-   var PASSWORD = 'your-strong-password-here';
+   var PASSWORD = 'your-strong-password-here';   // min 12 chars
    ```
+   `setupCredentials()` refuses to run on a blank, short or predictable password.
 3. Function dropdown → `setupCredentials` → **Run**
 4. Authorise. On *"Google hasn't verified this app"* → **Advanced → Go to PIP Portal API (unsafe)**. It is your own script; this warning appears for every personal unpublished script.
 5. **Delete the password from the code and save again.** It now exists only as a salted SHA-256 hash in Script Properties.

@@ -27,7 +27,7 @@ Follow `04_Google_Sheets_Integration.md` §2, steps 1–4. In short: upload the 
 Sheet → **Extensions → Apps Script** → paste all of `apps-script/Code.gs` → Save.
 
 ## A4. Set the admin password
-1. Edit `setupCredentials()`: set `USERNAME` and a strong `PASSWORD`
+1. Edit `setupCredentials()`: set `USERNAME` and a strong `PASSWORD` (min 12 chars — the line ships blank because this is a public repo)
 2. Run `setupCredentials` once → authorise
 3. **Delete the password from the code** and save
 

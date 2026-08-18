@@ -784,7 +784,21 @@ function postListAll() {
  */
 function setupCredentials() {
   var USERNAME = 'admin';
-  var PASSWORD = 'ChangeThisNow!2026';   // ← set, run once, then blank this out
+  var PASSWORD = '';   // ← type your password here, Run once, then clear it again
+
+  /* Deliberately blank. This file lives in a public repository, so shipping a
+     default password would publish it to everyone. The guards below refuse to
+     run rather than let a weak or well-known password reach production. */
+  if (!PASSWORD) {
+    throw new Error('Set a PASSWORD in setupCredentials() before running it, ' +
+                    'then clear the line again once it has run.');
+  }
+  if (PASSWORD.length < 12) {
+    throw new Error('Password must be at least 12 characters.');
+  }
+  if (/^(admin|password|changethis|123456|sheikhpura)/i.test(PASSWORD)) {
+    throw new Error('That password is too predictable. Choose something else.');
+  }
 
   var props = PropertiesService.getScriptProperties();
   var salt = Utilities.getUuid();
@@ -794,7 +808,7 @@ function setupCredentials() {
     ADMIN_HASH: sha256(salt + PASSWORD),
     TOKEN_SECRET: Utilities.getUuid() + Utilities.getUuid()
   }, false);
-  Logger.log('Credentials stored. Now clear the PASSWORD literal above.');
+  Logger.log('Credentials stored for user "' + USERNAME + '". Now clear the PASSWORD line above and save.');
 }
 
 function changePassword(newPassword) {
