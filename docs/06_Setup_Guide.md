@@ -116,6 +116,9 @@ Leave a `stat` row's `Body_Text` **blank** and the website counts it live; type 
 
 You never need to touch the `Posts` sheet by hand. Upcoming vs past is worked out from the event date, so no status needs changing when a date goes by.
 
+### Add or edit a citizen benefit
+`Program_Benefits` → new row. Link it to a programme with `FMR_Code` (e.g. `NCD.5`), leave `Year_ID` blank so it applies to every year, and write it for a resident — what they get, who qualifies, where to go, what to carry, which helpline. It appears on the Free Services page, the programme page and as a chip in the PIP table after the next sync.
+
 ### Add an event category
 `Post_Categories` → new row → `Category_ID`, `Category_Name`, `Slug`, `Colour` (hex), `Display_Order`, `Status = Active`. It appears in the composer dropdown and the public filter straight away.
 

@@ -35,6 +35,7 @@ SHEET_MAP = {
     "Post_Categories":     "postCategories",
     "Posts":               "posts",
     "Post_Media":          "postMedia",
+    "Program_Benefits":    "benefits",
 }
 
 

@@ -1,0 +1,11 @@
+﻿Menu_ID,Menu_Label_EN,Menu_Label_HI,URL,Parent_Menu_ID,Display_Order,Is_Active,Link_Type,Icon,Target
+NAV01,Home,होम,index.html,,1,Yes,Internal,home,_self
+NAV02,PIP,पीआईपी,pip.html,,2,Yes,Internal,file,_self
+NAV03,Programmes,कार्यक्रम,pip.html#fmr,,3,Yes,Internal,grid,_self
+NAV04,Free Services,नि:शुल्क सेवाएं,benefits.html,,4,Yes,Internal,heart,_self
+NAV05,Events,कार्यक्रम एवं समाचार,events.html,,5,Yes,Internal,bell,_self
+NAV06,Documents,दस्तावेज़,documents.html,,6,Yes,Internal,download,_self
+NAV07,Notices,सूचनाएँ,notices.html,,7,Yes,Internal,bell,_self
+NAV08,Contact Us,संपर्क करें,contact.html,,8,Yes,Internal,phone,_self
+NAV09,SHS Bihar,एसएचएस बिहार,https://shs.bihar.gov.in/,,9,Yes,External,external,_blank
+NAV10,NHM India,एनएचएम भारत,https://nhm.gov.in/,,10,No,External,external,_blank

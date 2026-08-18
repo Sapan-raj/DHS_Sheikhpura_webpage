@@ -44,6 +44,7 @@ Sheikhpura_PIP_Portal/
 ├── index.html              Home
 ├── pip.html                PIP — year selector, documents, FMR tables
 ├── program.html            One FMR budget head
+├── benefits.html           Free health services for citizens — what you get, where to go
 ├── documents.html          Searchable repository, filtered + paginated
 ├── notices.html            Notices and announcements
 ├── events.html             Events & What's New listing
@@ -71,7 +72,7 @@ Sheikhpura_PIP_Portal/
 
 ## Data model
 
-16 sheets, 392 sample records.
+17 sheets, 453 sample records.
 
 ```
 Financial_Years ──┬─→ Programs_FMR (Year_ID + Category_ID) ──→ Documents
@@ -80,6 +81,7 @@ Financial_Years ──┬─→ Programs_FMR (Year_ID + Category_ID) ──→ D
 Program_Categories ─┴─→ Programs_FMR / Documents
 
 Post_Categories ──→ Posts ──→ Post_Media          What's New / Events
+Programs_FMR (FMR_Code) ──→ Program_Benefits    What citizens actually get
 
 Settings · Navigation · Home_Content · Important_Links · Notices · Contact_Information · Footer
 ```

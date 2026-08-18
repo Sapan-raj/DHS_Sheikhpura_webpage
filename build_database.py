@@ -18,6 +18,7 @@ from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.datavalidation import DataValidation
+from benefits_data import BENEFITS, BENEFIT_COLUMNS, BENEFIT_TYPES
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                    "Sheikhpura_Health_PIP_Website_Database.xlsx")
@@ -103,12 +104,13 @@ NAV = [
     ("NAV01", "Home",              "होम",                    "index.html",     "", 1,  "Yes", "Internal", "home",     "_self"),
     ("NAV02", "PIP",               "पीआईपी",                  "pip.html",       "", 2,  "Yes", "Internal", "file",     "_self"),
     ("NAV03", "Programmes",        "कार्यक्रम",                "pip.html#fmr",   "", 3,  "Yes", "Internal", "grid",     "_self"),
-    ("NAV04", "Events",            "कार्यक्रम एवं समाचार",      "events.html",    "", 4,  "Yes", "Internal", "bell",     "_self"),
-    ("NAV05", "Documents",         "दस्तावेज़",                "documents.html", "", 5,  "Yes", "Internal", "download", "_self"),
-    ("NAV06", "Notices",           "सूचनाएँ",                  "notices.html",   "", 6,  "Yes", "Internal", "bell",     "_self"),
-    ("NAV07", "Contact Us",        "संपर्क करें",              "contact.html",   "", 7,  "Yes", "Internal", "phone",    "_self"),
-    ("NAV08", "SHS Bihar",         "एसएचएस बिहार",            "https://shs.bihar.gov.in/", "", 8, "Yes", "External", "external", "_blank"),
-    ("NAV09", "NHM India",         "एनएचएम भारत",             "https://nhm.gov.in/", "", 9, "No",  "External", "external", "_blank"),
+    ("NAV04", "Free Services",     "नि:शुल्क सेवाएं",           "benefits.html",  "", 4,  "Yes", "Internal", "heart",    "_self"),
+    ("NAV05", "Events",            "कार्यक्रम एवं समाचार",      "events.html",    "", 5,  "Yes", "Internal", "bell",     "_self"),
+    ("NAV06", "Documents",         "दस्तावेज़",                "documents.html", "", 6,  "Yes", "Internal", "download", "_self"),
+    ("NAV07", "Notices",           "सूचनाएँ",                  "notices.html",   "", 7,  "Yes", "Internal", "bell",     "_self"),
+    ("NAV08", "Contact Us",        "संपर्क करें",              "contact.html",   "", 8,  "Yes", "Internal", "phone",    "_self"),
+    ("NAV09", "SHS Bihar",         "एसएचएस बिहार",            "https://shs.bihar.gov.in/", "", 9, "Yes", "External", "external", "_blank"),
+    ("NAV10", "NHM India",         "एनएचएम भारत",             "https://nhm.gov.in/", "", 10, "No",  "External", "external", "_blank"),
 ]
 
 # ───────────────────────── 3. FINANCIAL YEARS ─────────────────────────
@@ -378,6 +380,7 @@ HOME = [
     ("stat_programs",  "stat",    "FMR Programme Heads", "एफएमआर कार्यक्रम", "", "", "list", "pip.html", "", 6, "Active"),
     ("stat_categories","stat",    "Flexi Pools", "फ्लेक्सी पूल", "", "", "layers", "pip.html", "", 7, "Active"),
     ("stat_documents", "stat",    "Published Documents", "प्रकाशित दस्तावेज़", "", "", "download", "documents.html", "", 8, "Active"),
+    ("sec_benefits",   "section", "Free Health Services for You", "आपके लिए नि:शुल्क स्वास्थ्य सेवाएं", "Know what you are entitled to", "Every one of these services is free at government health facilities in Sheikhpura. Nobody may charge you for them.", "", "benefits.html", "See all free services", 3, "Active"),
     ("sec_whatsnew",   "section", "What's New", "नया क्या है", "Events, campaigns and announcements", "Health campaigns, camps, training programmes, meetings and achievements from across Sheikhpura district.", "", "events.html", "View all", 4, "Active"),
     ("sec_programs",   "section", "Programme Categories", "कार्यक्रम श्रेणियाँ", "Flexi pools under the National Health Mission", "Every budget head published in the district PIP, grouped by flexible pool.", "", "pip.html", "View all programmes", 9, "Active"),
     ("sec_documents",  "section", "Latest Documents", "नवीनतम दस्तावेज़", "Recently published", "PIP, RoP, allocations, guidelines and formats as they are released.", "", "documents.html", "All documents", 10, "Active"),
@@ -670,6 +673,13 @@ LISTS = [
     ("Link_Category",    "State",                   ""),
     ("Link_Category",    "District",                ""),
     ("Link_Category",    "Portal",                  ""),
+    ("Benefit_Type",     "Cash Benefit",            "Money paid to the citizen"),
+    ("Benefit_Type",     "Free Service",            "A service given without charge"),
+    ("Benefit_Type",     "Free Medicine",           ""),
+    ("Benefit_Type",     "Free Test",               "Laboratory or diagnostic test"),
+    ("Benefit_Type",     "Free Transport",          "Ambulance or travel support"),
+    ("Benefit_Type",     "Free Equipment",          "Spectacles, hearing aid, mobility aid"),
+    ("Benefit_Type",     "Awareness / Counselling", ""),
     ("Content_Type",     "News",                    "Announcement, achievement or update — no event date"),
     ("Content_Type",     "Event",                   "Has a date and usually a venue"),
     ("Content_Type",     "Update",                  "Short operational update or instruction"),
@@ -805,6 +815,11 @@ def main():
            "File_Name", "File_Size_KB", "Display_Order", "Status"], POST_MEDIA,
           {"Media_URL": 34, "Caption": 44, "File_Name": 26})
 
+    sheet(wb, "Program_Benefits", BENEFIT_COLUMNS, BENEFITS,
+          {"Benefit_Title": 52, "Benefit_Title_HI": 46, "Benefit_Description": 96,
+           "Benefit_Description_HI": 96, "Who_Is_Eligible": 56, "Where_To_Avail": 56,
+           "Documents_Required": 44, "Amount": 42, "Benefit_Type": 22})
+
     ws = sheet(wb, "_Lists", ["List_Name", "Value", "Meaning"], LISTS,
                {"List_Name": 20, "Value": 30, "Meaning": 60})
     ws.sheet_properties.tabColor = "98A2B3"
@@ -843,6 +858,8 @@ def main():
     add_dv("Posts",              "T", "Yes_No",          len(POSTS))
     add_dv("Post_Media",         "D", "Media_Type",      len(POST_MEDIA))
     add_dv("Post_Media",         "I", "Status",          len(POST_MEDIA))
+    add_dv("Program_Benefits",   "H", "Benefit_Type",    len(BENEFITS))
+    add_dv("Program_Benefits",   "O", "Status",          len(BENEFITS))
 
     wb.save(OUT)
 
@@ -890,6 +907,18 @@ def main():
             errs.append(f"Posts {pid}: Status=Published requires a Published_Date")
         if r[8] and r[9] and str(r[9]) < str(r[8]):
             errs.append(f"Posts {pid}: Event_End_Date is before Event_Start_Date")
+    uniq("Program_Benefits", [r[0] for r in BENEFITS])
+    all_codes = {r[3] for r in PROGRAMS}
+    for r in BENEFITS:
+        if r[1] not in all_codes:
+            errs.append(f"Program_Benefits {r[0]}: FMR_Code {r[1]} does not exist in Programs_FMR")
+        if r[2] and r[2] not in fy_ids:
+            errs.append(f"Program_Benefits {r[0]}: bad Year_ID {r[2]}")
+        if r[7] not in set(BENEFIT_TYPES):
+            errs.append(f"Program_Benefits {r[0]}: bad Benefit_Type {r[7]}")
+        if not str(r[3]).strip() or not str(r[5]).strip():
+            errs.append(f"Program_Benefits {r[0]}: missing title or description")
+
     for r in POST_MEDIA:
         if r[1] not in post_ids:
             errs.append(f"Post_Media {r[0]}: bad Post_ID {r[1]}")
@@ -938,6 +967,8 @@ def main():
     print(f"  Posts               {len(POSTS):>4}   " +
           "  ".join(f"{k}={v}" for k, v in sorted(pstat.items())))
     print(f"  Post_Media          {len(POST_MEDIA):>4}")
+    bcodes = len({r[1] for r in BENEFITS})
+    print(f"  Program_Benefits    {len(BENEFITS):>4}   across {bcodes} FMR codes")
     print(f"  _Lists              {len(LISTS):>4}")
     print(f"\nIntegrity: {'PASS — no errors' if not errs else 'FAIL'}")
     for e in errs:

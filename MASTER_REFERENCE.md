@@ -2,7 +2,7 @@
 
 **Single source of truth for the whole system.** Everything about the website: what it is, why it was built this way, how every part works, how to run it, and what is still outstanding.
 
-*Last updated: 17 August 2026 · Commits: `e2487b6`, `a41fbcd` · 32 files · 1.2 MB*
+*Last updated: 18 August 2026 · 38 files · Citizen Benefits module added*
 
 ---
 
@@ -11,7 +11,7 @@
 1. [At a glance](#1-at-a-glance)
 2. [Origin — what the reference site taught us](#2-origin--what-the-reference-site-taught-us)
 3. [Architecture](#3-architecture)
-4. [Data model — all 16 sheets](#4-data-model--all-16-sheets)
+4. [Data model — all 17 sheets](#4-data-model--all-17-sheets)
 5. [Pages and routes](#5-pages-and-routes)
 6. [Code reference](#6-code-reference)
 7. [Apps Script API reference](#7-apps-script-api-reference)
@@ -44,9 +44,9 @@
 | **Frameworks** | None. No React, no jQuery, no Bootstrap, no build step, no npm |
 | **Hosting** | Vercel (static), from GitHub |
 | **Master sheet** | `1V2FbGpfVuX1Z7OhL0yEWQMs43t4QgvwQ4DSfmHEm0vs` |
-| **Pages** | 9 |
-| **Sheets** | 16 data + 1 README |
-| **Sample records** | 413 |
+| **Pages** | 10 |
+| **Sheets** | 17 data + 1 README |
+| **Sample records** | 453 |
 | **Public payload** | 151.2 KB |
 | **CSS** | 34 KB, one file |
 | **JS** | 74 KB across 4 files |
@@ -133,7 +133,7 @@ FY 2026-27 adds `NDCP.7`, `NDCP.9`, `NCD.9`, `NCD.12`, `HSS.15`–`HSS.21`; remo
 ```
 ┌────────────────┐   editor    ┌──────────────────┐   HTTPS/JSON   ┌───────────────┐        ┌────────┐
 │  Google Sheet  │ ──────────► │  Apps Script     │ ─────────────► │  Static site  │ ─────► │  User  │
-│  16 sheets     │             │  Web App         │                │  on Vercel    │        │        │
+│  17 sheets     │             │  Web App         │                │  on Vercel    │        │        │
 │  PRIVATE       │ ◄────────── │  runs as owner   │ ◄───────────── │  no server    │        │        │
 └────────────────┘  read/write └──────────────────┘  POST + token  └───────────────┘        └────────┘
         ▲                              ▲                                   ▲
@@ -193,9 +193,9 @@ The site never renders a blank page or a stack trace. Individual bad rows disapp
 
 ---
 
-## 4. Data model — all 16 sheets
+## 4. Data model — all 17 sheets
 
-413 sample rows. Every website section maps to exactly one sheet.
+453 sample rows. Every website section maps to exactly one sheet.
 
 ### Relationships
 
@@ -208,6 +208,8 @@ Program_Categories (Category_ID) ──┬─→ Programs_FMR (Category_ID)
                                    └─→ Documents (Category_ID)
 
 Post_Categories (Category_ID) ──→ Posts (Category_ID) ──→ Post_Media (Post_ID)
+
+Programs_FMR (FMR_Code) ──→ Program_Benefits (FMR_Code)   what citizens actually get
 
 Navigation (Parent_Menu_ID → Menu_ID)  self-referencing, one level
 
@@ -242,7 +244,8 @@ Settings · Home_Content · Important_Links · Notices · Contact_Information ·
 | `Post_Categories` | 18 | 7 | Event/news taxonomy |
 | `Posts` | 10 | 23 | ★ What's New / Events / News |
 | `Post_Media` | 8 | 9 | Gallery images, one row per image |
-| `_Lists` | 59 | 3 | Controlled vocabularies for dropdowns |
+| `Program_Benefits` | **40** | 15 | ★ What a citizen gets — free services, eligibility, where to go |
+| `_Lists` | 66 | 3 | Controlled vocabularies for dropdowns |
 
 ---
 
@@ -458,7 +461,44 @@ Public payload carries **8** (Draft and unreleased Scheduled withheld).
 
 ---
 
-### 4.16 `_Lists` — 59 rows
+### 4.16 `Program_Benefits` — 40 rows ★ citizen entitlements
+
+The portal is for the **people of Sheikhpura**, not only for officials. `Programs_FMR`
+answers *"what does this budget head fund"*; this answers *"what do I get, am I
+eligible, and where do I go"*.
+
+| Field | Type | Req | Notes |
+|---|---|---|---|
+| `Benefit_ID` | Text | ✓ | PK |
+| `FMR_Code` | Text | ✓ | **FK by code**, not Program_ID — see below |
+| `Year_ID` | Text | | Blank = applies to every year |
+| `Benefit_Title` / `_HI` | Text | EN ✓ | Plain language, not scheme jargon |
+| `Benefit_Description` / `_HI` | Text | | Two or three sentences |
+| `Benefit_Type` | List | ✓ | Cash Benefit · Free Service · Free Medicine · Free Test · Free Transport · Free Equipment · Awareness |
+| `Amount` | Text | | `Free`, or the rupee figure |
+| `Who_Is_Eligible` | Text | | Written as the citizen would ask |
+| `Where_To_Avail` | Text | | Named real places |
+| `Documents_Required` | Text | | Or `None` |
+| `Helpline` | Text | | Rendered as a tappable `tel:` link |
+| `Display_Order` / `Status` | | ✓ | |
+
+**Why keyed on `FMR_Code` and not `Program_ID`:** entitlements such as JSY, JSSK and
+free dialysis are stable across years, while `Program_ID` is year-scoped. Keying on the
+code means a benefit is written once and shows for every year that has that code. Set
+`Year_ID` only to override for one year.
+
+**The `(VERIFY …)` convention.** Cash amounts carry the standard national /
+Low-Performing-State figures Bihar follows, with `(VERIFY current state rate)` appended
+where the rate is revised periodically. That marker is **stripped before display** —
+citizens never see it — and instead raises a warning on the Admin dashboard, so it works
+as a pre-launch checklist. Five rows carry it: BEN001, BEN006, BEN014, BEN016, BEN020.
+
+Coverage: 40 benefits across 24 FMR codes. Codes with no citizen-facing benefit
+(Technical Assistance, Programme Management, Untied Grants) correctly have none.
+
+---
+
+### 4.18 `_Lists` — 66 rows
 
 Controlled vocabularies backing every dropdown: `List_Name` · `Value` · `Meaning`.
 
@@ -466,7 +506,7 @@ Lists: Status · Yes_No · Document_Type · File_Type · Priority · Notice_Cate
 
 ---
 
-### 4.17 Derived, never stored
+### 4.19 Derived, never stored
 
 | Concept | Computed from | Why not a column |
 |---|---|---|
@@ -475,6 +515,7 @@ Lists: Status · Yes_No · Document_Type · File_Type · Priority · Notice_Cate
 | **Sort order** | event date for events, publish date for news | a manual order column goes stale immediately |
 | **Year has data** | presence of programme/document rows | prevents the reference site's dead-dropdown failure |
 | **Stat tile numbers** | live counts | stale numbers are worse than none |
+| **"N free services" chip** | count of matching benefit rows | keeps the PIP table honest as benefits are added |
 
 ---
 
@@ -482,9 +523,10 @@ Lists: Status · Yes_No · Document_Type · File_Type · Priority · Notice_Cate
 
 | Page | Route | What it does |
 |---|---|---|
-| **Home** | `/index.html` | Hero · announcement strip · **What's New** (tabbed) · stat tiles · programme categories · latest documents · notices · quick links · about |
+| **Home** | `/index.html` | Hero · announcement strip · **Free Services for You** · **What's New** (tabbed) · stat tiles · programme categories · latest documents · notices · quick links · about |
 | **PIP** | `/pip.html`, `?fy=2025-26`, `/pip/2025-26` | Year selector · key documents · in-page search + category filter · one block per flexi pool with allocation/guideline buttons and the FMR table |
-| **Programme detail** | `/program.html?fy=2026-27&fmr=RCH.1` | Full head detail · category docs · at-a-glance · **same code in other years** · sibling heads |
+| **Programme detail** | `/program.html?fy=2026-27&fmr=RCH.1` | **"What you get from this programme"** first · full head detail · category docs · at-a-glance · **same code in other years** · sibling heads |
+| **Free Services** | `/benefits.html` | ★ Citizen-facing. 40 entitlements grouped by health area, searchable, with a "Know your rights" panel |
 | **Documents** | `/documents.html` | Searchable repository, 4 filters, pagination |
 | **Notices** | `/notices.html` | Search, category, priority, include-archived |
 | **Events** | `/events.html` | Search · type · when (upcoming/past) · category · pagination |
@@ -532,6 +574,7 @@ Fetch, cache, validate, query. **No DOM access.**
 
 | Group | Methods |
 |---|---|
+| Benefits | `benefitsFor` `allBenefits` `benefitTypes` |
 | Years | `years` `currentYear` `yearBySlug` |
 | Programmes | `categories` `programs` `programById` `programByCode` |
 | Documents | `categoryDoc` `pipDocs` `docsForProgram` `allDocuments` |
@@ -1097,6 +1140,9 @@ Cells with this red text are placeholders. The site hides or disables anything s
 | `docs/05_Admin_Architecture.md` | 133 | Auth and security |
 | `docs/06_Setup_Guide.md` | 215 | Operations for non-developers |
 | `docs/07_Media_Architecture.md` | 214 | Image storage and pipeline |
+| `benefits.html` | — | Citizen free-services page |
+| `benefits_data.py` | — | The 40 citizen entitlements |
+| `sheet-import/` | — | CSVs + instructions for updating the live Google Sheet |
 | `docs/08_Deploy_GitHub_Vercel.md` | 210 | Deployment |
 
 ---

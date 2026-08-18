@@ -178,6 +178,7 @@
       postCategories: raw.postCategories || [],
       posts: raw.posts || [],
       postMedia: raw.postMedia || [],
+      benefits: raw.benefits || [],
       validation: raw.validation || { errors: [], warnings: [] },
       degraded: raw._degraded || ''
     };
@@ -196,7 +197,8 @@
      ['links', 'Link_ID', 'Important_Links'],
      ['postCategories', 'Category_ID', 'Post_Categories'],
      ['posts', 'Post_ID', 'Posts'],
-     ['postMedia', 'Media_ID', 'Post_Media']
+     ['postMedia', 'Media_ID', 'Post_Media'],
+     ['benefits', 'Benefit_ID', 'Program_Benefits']
     ].forEach(function (t) {
       var seen = {};
       d[t[0]] = d[t[0]].filter(function (r) {
@@ -316,6 +318,26 @@
         return false;
       }
       m._url = validUrl(m.Media_URL);
+      return true;
+    });
+
+    /* ---- benefits: attach to an FMR code, valid for one year or all ---- */
+    var fmrCodes = {};
+    d.programs.forEach(function (p) { fmrCodes[String(p.FMR_Code).toUpperCase().trim()] = true; });
+    d.benefits = d.benefits.filter(function (b) {
+      var c = String(b.FMR_Code || '').toUpperCase().trim();
+      if (!c) { err('Program_Benefits', b.Benefit_ID, 'Blank FMR_Code — row skipped'); return false; }
+      if (!fmrCodes[c]) {
+        warn('Program_Benefits', b.Benefit_ID,
+             'FMR_Code "' + b.FMR_Code + '" not found in Programs_FMR — benefit hidden');
+        return false;
+      }
+      b._code = c;
+      if (/VERIFY/i.test(String(b.Amount || ''))) {
+        warn('Program_Benefits', b.Benefit_ID,
+             'Amount is marked VERIFY — confirm "' + b.Benefit_Title +
+             '" against the current Bihar rate. The marker is hidden from the public page.');
+      }
       return true;
     });
 
@@ -493,6 +515,57 @@
 
     postCategories: function (d) { return active(d.postCategories).sort(byOrder); },
 
+    /* ── Citizen benefits ──
+       Keyed on FMR_Code so an entitlement written once shows for every year.
+       A row with a Year_ID set applies only to that year. */
+    benefitsFor: function (d, fmrCode, yearId) {
+      var c = String(fmrCode || '').toUpperCase().trim();
+      return active(d.benefits).filter(function (b) {
+        if (b._code !== c) return false;
+        return !b.Year_ID || b.Year_ID === yearId;
+      }).sort(byOrder);
+    },
+
+    /** Every benefit, for the citizen-facing services page. */
+    allBenefits: function (d, opts) {
+      var o = opts || {};
+      var q = String(o.q || '').toLowerCase().trim();
+      var byCode = {};
+      d.programs.forEach(function (p) {
+        var c = String(p.FMR_Code).toUpperCase().trim();
+        if (!byCode[c]) byCode[c] = p;
+      });
+      var catOf = {};
+      d.categories.forEach(function (c) { catOf[c.Category_ID] = c; });
+
+      return active(d.benefits).filter(function (b) {
+        var prog = byCode[b._code];
+        b._program = prog || null;
+        b._category = prog ? (catOf[prog.Category_ID] || null) : null;
+        if (o.type && b.Benefit_Type !== o.type) return false;
+        if (o.categoryId && (!b._category || b._category.Category_ID !== o.categoryId)) return false;
+        if (q) {
+          var hay = [b.Benefit_Title, b.Benefit_Title_HI, b.Benefit_Description,
+                     b.Benefit_Description_HI, b.Who_Is_Eligible, b.Where_To_Avail,
+                     b.Benefit_Type, b.FMR_Code, prog && prog.Program_Name,
+                     b._category && b._category.Category_Name].join(' ').toLowerCase();
+          if (hay.indexOf(q) === -1) return false;
+        }
+        return true;
+      }).sort(function (a, b2) {
+        var ca = (a._category && num(a._category.Display_Order)) || 99;
+        var cb = (b2._category && num(b2._category.Display_Order)) || 99;
+        if (ca !== cb) return ca - cb;
+        if (a._code !== b2._code) return a._code.localeCompare(b2._code);
+        return num(a.Display_Order) - num(b2.Display_Order);
+      });
+    },
+
+    benefitTypes: function (d) {
+      return active(d.benefits).map(function (b) { return b.Benefit_Type; })
+        .filter(function (v, i, a) { return v && a.indexOf(v) === i; }).sort();
+    },
+
     /**
      * Public post list. Only live posts (Published, or Scheduled and due).
      * opts: { type, categoryId, when: 'upcoming'|'past'|'all', q, includeArchived, limit }
@@ -568,6 +641,7 @@
         documents: Q.allDocuments(d).length,
         notices: Q.notices(d).length,
         posts: Q.posts(d).length,
+        benefits: active(d.benefits).length,
         upcoming: Q.posts(d, { when: 'upcoming' }).length
       };
     }

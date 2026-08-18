@@ -366,6 +366,50 @@
       '</div></article>';
   }
 
+  /**
+   * One citizen benefit. Written for a resident, not an official: what you get,
+   * whether you qualify, where to go, what to carry, who to call.
+   */
+  function benefitCard(b, opts) {
+    var o = opts || {};
+    /* The (VERIFY …) marker is an instruction to the district office, not
+       something a citizen should read. Strip it here; it is surfaced instead
+       as an admin validation warning. */
+    var amt = String(b.Amount || '').replace(/\s*\(VERIFY[^)]*\)/ig, '').trim();
+    var free = /^free/i.test(amt);
+    /* Don't prepend ₹ when the text already carries a currency word or symbol. */
+    var hasCur = /(^|\s)(rs\.?|inr|₹)/i.test(amt);
+    var title = t(b.Benefit_Title, b.Benefit_Title_HI);
+    var desc = t(b.Benefit_Description, b.Benefit_Description_HI);
+
+    var rows = '';
+    if (b.Who_Is_Eligible)     rows += '<dt>Who can get it</dt><dd>' + esc(b.Who_Is_Eligible) + '</dd>';
+    if (b.Where_To_Avail)      rows += '<dt>Where to go</dt><dd>' + esc(b.Where_To_Avail) + '</dd>';
+    if (b.Documents_Required)  rows += '<dt>What to carry</dt><dd>' + esc(b.Documents_Required) + '</dd>';
+
+    var help = String(b.Helpline || '').trim();
+    var helpHtml = help
+      ? '<div class="b-help">Helpline: ' + help.split('/').map(function (n) {
+          var x = n.trim();
+          return '<a href="tel:' + esc(x.replace(/[^0-9]/g, '')) + '">' + esc(x) + '</a>';
+        }).join(' &nbsp;·&nbsp; ') + '</div>'
+      : '';
+
+    return '<div class="benefit">' +
+      '<div class="post-chips">' +
+        '<span class="chip b-type' + (free ? ' b-free' : '') + '">' + esc(b.Benefit_Type || '') + '</span>' +
+        (o.showProgram && b._program
+          ? '<a class="chip chip--code" href="program.html?fy=' + esc(o.fy || '') +
+            '&fmr=' + encodeURIComponent(b.FMR_Code) + '">' + esc(b.FMR_Code) + '</a>' : '') +
+      '</div>' +
+      '<h3>' + esc(title) + '</h3>' +
+      (amt ? '<span class="b-amount">' + (free ? '✔ ' : (hasCur ? '' : '₹ ')) + esc(amt) + '</span>' : '') +
+      (desc ? '<p class="b-desc">' + esc(desc) + '</p>' : '') +
+      (rows ? '<dl>' + rows + '</dl>' : '') +
+      helpHtml +
+    '</div>';
+  }
+
   function emptyState(title, msg) {
     return '<div class="state"><div class="ico">◌</div><h3>' + esc(title) + '</h3><p>' + esc(msg) + '</p></div>';
   }
@@ -443,7 +487,7 @@
   w.UI = {
     boot: boot, renderShell: renderShell, renderFooter: renderFooter, crumbs: crumbs,
     docRow: docRow, docIcon: docIcon, emptyState: emptyState, errorState: errorState,
-    postCard: postCard, postCover: postCover, postArt: postArt,
+    postCard: postCard, postCover: postCover, postArt: postArt, benefitCard: benefitCard,
     postTiming: postTiming, postWhen: postWhen,
     skeleton: skeleton, icon: icon, t: t, lang: lang,
     param: param, pathSeg: pathSeg, route: route, money: money,

@@ -140,13 +140,19 @@ UI.boot('pip.html', function (d) {
         '</div>' +
         '<div class="pool-body"><div class="table-wrap"><table class="data">' +
           '<thead><tr><th style="width:110px">FMR Code</th><th>FMR Details</th>' +
-          '<th class="num" style="width:140px">Allocation</th><th style="width:200px">Nodal Officer</th>' +
+          '<th style="width:150px">Free for citizens</th>' +
+          '<th class="num" style="width:140px">Allocation</th><th style="width:180px">Nodal Officer</th>' +
           '<th style="width:110px"></th></tr></thead><tbody>' +
           rows.map(function (p) {
+            var nb = Q.benefitsFor(d, p.FMR_Code, year.Year_ID).length;
             return '<tr>' +
               '<td data-label="FMR Code"><span class="chip chip--code">' + esc(p.FMR_Code) + '</span></td>' +
               '<td data-label="FMR Details"><a href="program.html?fy=' + esc(year.Financial_Year) + '&fmr=' + encodeURIComponent(p.FMR_Code) + '">' +
                 esc(UI.t(p.Program_Name, p.Program_Name_HI)) + '</a></td>' +
+              '<td data-label="Free for citizens">' + (nb
+                ? '<a class="chip b-free" href="program.html?fy=' + esc(year.Financial_Year) +
+                  '&fmr=' + encodeURIComponent(p.FMR_Code) + '">' + nb + ' free service' + (nb === 1 ? '' : 's') + '</a>'
+                : '<span style="color:var(--text-muted);font-size:.82rem">—</span>') + '</td>' +
               '<td class="num" data-label="Allocation">' + money(p.Budget_Allocation_Lakh) + '</td>' +
               '<td data-label="Nodal Officer">' + esc(p.Nodal_Officer || '—') + '</td>' +
               '<td data-label=""><a class="btn btn-outline btn-sm" href="program.html?fy=' + esc(year.Financial_Year) +

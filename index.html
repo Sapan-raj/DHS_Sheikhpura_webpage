@@ -55,6 +55,26 @@ UI.boot('index.html', function (d) {
     '</div></div>');
   }
 
+  /* ---- Free services for citizens — the single most useful block on the page
+          for a resident, so it sits directly under the hero. ---- */
+  var benSec = Q.home(d, 'sec_benefits');
+  var topBen = Q.allBenefits(d).slice(0, 6);
+  if (topBen.length) {
+    H.push('<section class="section benefit-band" id="freeservices"><div class="container">' +
+      '<div class="section-head"><div class="head-row"><div>' +
+        '<h2>' + esc(benSec ? UI.t(benSec.Title_EN, benSec.Title_HI) : 'Free Health Services for You') + '</h2>' +
+        (benSec && benSec.Body_Text ? '<p>' + esc(benSec.Body_Text) + '</p>' : '') +
+      '</div><div class="spacer"></div>' +
+      '<a class="btn btn-outline btn-sm" href="benefits.html">' +
+        esc((benSec && benSec.Link_Label) || 'See all free services') + ' →</a></div></div>' +
+      '<div class="grid grid-3">' +
+        topBen.map(function (b) { return UI.benefitCard(b, { showProgram: true, fy: cy ? cy.Financial_Year : '' }); }).join('') +
+      '</div>' +
+      '<div style="text-align:center;margin-top:28px">' +
+        '<a class="btn btn-primary" href="benefits.html">See everything you are entitled to →</a></div>' +
+    '</div></section>');
+  }
+
   /* ---- What's New / Events — sits high on the page, straight after the hero ---- */
   var wnSec = Q.home(d, 'sec_whatsnew');
   var wnAll = Q.posts(d, { limit: 6 });

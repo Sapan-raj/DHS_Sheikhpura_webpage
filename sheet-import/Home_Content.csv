@@ -1,0 +1,16 @@
+﻿Section_Key,Section_Type,Title_EN,Title_HI,Subtitle,Body_Text,Icon,Link_URL,Link_Label,Display_Order,Status
+hero_title,hero,"District Health Society, Sheikhpura","जिला स्वास्थ्य समिति, शेखपुरा",Project Implementation Plan Portal,,,,,1,Active
+hero_subtitle,hero,,,,"Budget allocations, Records of Proceedings, FMR-wise programme guidelines and every published document of the National Health Mission in Sheikhpura — in one place.",,pip.html,View Current PIP,2,Active
+hero_cta2,hero,,,,,,documents.html,Browse Documents,3,Active
+notice_banner,banner,Announcement,घोषणा,,PIP 2026-27 budget allocation has been published. Block-level nodal officers are requested to review their FMR-wise allocations.,,notices.html,Read all notices,4,Active
+stat_blocks,stat,Blocks,प्रखंड,,6,grid,,,5,Active
+stat_programs,stat,FMR Programme Heads,एफएमआर कार्यक्रम,,,list,pip.html,,6,Active
+stat_categories,stat,Flexi Pools,फ्लेक्सी पूल,,,layers,pip.html,,7,Active
+stat_documents,stat,Published Documents,प्रकाशित दस्तावेज़,,,download,documents.html,,8,Active
+sec_benefits,section,Free Health Services for You,आपके लिए नि:शुल्क स्वास्थ्य सेवाएं,Know what you are entitled to,Every one of these services is free at government health facilities in Sheikhpura. Nobody may charge you for them.,,benefits.html,See all free services,3,Active
+sec_whatsnew,section,What's New,नया क्या है,"Events, campaigns and announcements","Health campaigns, camps, training programmes, meetings and achievements from across Sheikhpura district.",,events.html,View all,4,Active
+sec_programs,section,Programme Categories,कार्यक्रम श्रेणियाँ,Flexi pools under the National Health Mission,"Every budget head published in the district PIP, grouped by flexible pool.",,pip.html,View all programmes,9,Active
+sec_documents,section,Latest Documents,नवीनतम दस्तावेज़,Recently published,"PIP, RoP, allocations, guidelines and formats as they are released.",,documents.html,All documents,10,Active
+sec_notices,section,Notices & Announcements,सूचनाएँ एवं घोषणाएँ,From the District Health Society,,,notices.html,All notices,11,Active
+sec_quicklinks,section,Quick Links,त्वरित लिंक,Frequently used portals,,,,,12,Active
+about_text,richtext,About the District PIP,जिला पीआईपी के बारे में,,"The Project Implementation Plan is the annual work plan and budget of the National Health Mission. The District Health Society, Sheikhpura prepares its PIP each financial year, which is consolidated by the State Health Society, Bihar and approved by the Ministry of Health and Family Welfare through the Record of Proceedings. This portal publishes the approved allocations and guidelines against each FMR budget head so that block programme managers, facility in-charges and citizens can refer to the same source of truth.",,,,13,Active

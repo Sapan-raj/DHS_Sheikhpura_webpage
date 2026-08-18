@@ -38,7 +38,8 @@ var SHEET_MAP = {
   'Footer':              'footer',
   'Post_Categories':     'postCategories',
   'Posts':               'posts',
-  'Post_Media':          'postMedia'
+  'Post_Media':          'postMedia',
+  'Program_Benefits':    'benefits'
 };
 
 /* ── Media storage (Google Drive) ──
@@ -78,7 +79,8 @@ var REQUIRED = {
   footer:         ['Footer_ID', 'Block_Type'],
   postCategories: ['Category_ID', 'Category_Name'],
   posts:          ['Post_ID', 'Slug', 'Title', 'Content_Type', 'Status'],
-  postMedia:      ['Media_ID', 'Post_ID', 'Media_URL']
+  postMedia:      ['Media_ID', 'Post_ID', 'Media_URL'],
+  benefits:       ['Benefit_ID', 'FMR_Code', 'Benefit_Title']
 };
 
 var PK = {
@@ -86,7 +88,8 @@ var PK = {
   categories: 'Category_ID', programs: 'Program_ID', documents: 'Document_ID',
   home: 'Section_Key', links: 'Link_ID', notices: 'Notice_ID',
   contacts: 'Contact_ID', footer: 'Footer_ID',
-  postCategories: 'Category_ID', posts: 'Post_ID', postMedia: 'Media_ID'
+  postCategories: 'Category_ID', posts: 'Post_ID', postMedia: 'Media_ID',
+  benefits: 'Benefit_ID'
 };
 
 /* Column order written back to the Posts sheet. Must match the header row. */
@@ -378,6 +381,20 @@ function crossValidate(d) {
     if (!postIds[m.Post_ID]) {
       V.warnings.push({ sheet: 'Post_Media', id: m.Media_ID,
         message: 'Post_ID "' + m.Post_ID + '" not found — gallery image dropped' });
+      return false;
+    }
+    return true;
+  });
+
+  /* Benefits attach to an FMR code, not a Program_ID, because entitlements are
+     stable across years while Program_IDs are year-scoped. */
+  var codes = {};
+  d.programs.forEach(function (p) { codes[String(p.FMR_Code).toUpperCase().trim()] = true; });
+  d.benefits = (d.benefits || []).filter(function (b) {
+    var c = String(b.FMR_Code || '').toUpperCase().trim();
+    if (!codes[c]) {
+      V.warnings.push({ sheet: 'Program_Benefits', id: b.Benefit_ID,
+        message: 'FMR_Code "' + b.FMR_Code + '" not found in Programs_FMR — benefit hidden' });
       return false;
     }
     return true;

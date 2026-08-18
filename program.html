@@ -69,6 +69,8 @@ UI.boot('pip.html', function (d) {
     return '<span class="btn btn-outline btn-sm" aria-disabled="true">⭳ ' + esc(label) + '</span>';
   }
 
+  var benefits = Q.benefitsFor(d, prog.FMR_Code, year.Year_ID);
+
   var H = '<section class="section"><div class="container">';
 
   H += '<div class="card" style="border-top:4px solid var(--accent);margin-bottom:24px">' +
@@ -82,6 +84,21 @@ UI.boot('pip.html', function (d) {
         '</div></div>' +
       '<div style="display:flex;gap:8px;flex-wrap:wrap">' + link(pv, -1) + link(nx, 1) + '</div>' +
     '</div></div>';
+
+  /* ── What citizens get — placed FIRST, above the administrative detail,
+        because this portal is read mostly by residents, not officials. ── */
+  if (benefits.length) {
+    H += '<div class="section-head" style="margin-bottom:16px"><div class="head-row"><div>' +
+        '<h2 style="border-bottom-color:var(--green)">What you get from this programme</h2>' +
+        '<p>' + benefits.length + ' service' + (benefits.length === 1 ? '' : 's') +
+        ' available free to the people of Sheikhpura under ' + esc(prog.FMR_Code) + '.</p>' +
+      '</div><div class="spacer"></div>' +
+      '<a class="btn btn-outline btn-sm" href="benefits.html">All free services →</a>' +
+      '</div></div>' +
+      '<div class="grid grid-2" style="margin-bottom:32px">' +
+        benefits.map(function (b) { return UI.benefitCard(b); }).join('') +
+      '</div>';
+  }
 
   H += '<div class="grid grid-2" style="align-items:start">';
 

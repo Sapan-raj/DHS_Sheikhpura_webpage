@@ -1,0 +1,67 @@
+﻿List_Name,Value,Meaning
+Status,Active,Row is published and visible on the website
+Status,Inactive,Row is hidden from the website but kept in the sheet
+Status,Archived,Row is shown only in archive views / older financial years
+Yes_No,Yes,
+Yes_No,No,
+Document_Type,PIP,Project Implementation Plan
+Document_Type,RoP,Record of Proceedings
+Document_Type,Supplementary PIP,
+Document_Type,Supplementary Approval,
+Document_Type,Budget Allocation Letter,
+Document_Type,Revised Budget,
+Document_Type,Category Allocation,Allocation file for one flexi pool
+Document_Type,Category Guidelines,Guidelines file for one flexi pool
+Document_Type,Programme Guideline,Guideline for a single FMR head
+Document_Type,Format,Reporting or data-entry format
+Document_Type,Report,
+Document_Type,Circular,
+Document_Type,Letter,
+Document_Type,Other,
+File_Type,PDF,
+File_Type,XLSX,
+File_Type,DOCX,
+File_Type,ZIP,
+File_Type,PPTX,
+File_Type,LINK,External page rather than a file
+Priority,High,"Shown first, red flag"
+Priority,Normal,
+Priority,Low,
+Notice_Category,PIP,
+Notice_Category,RoP,
+Notice_Category,Budget,
+Notice_Category,Circular,
+Notice_Category,Meeting,
+Notice_Category,Recruitment,
+Notice_Category,General,
+Link_Type,Internal,Page inside this website
+Link_Type,External,Opens another website
+Link_Category,National,
+Link_Category,State,
+Link_Category,District,
+Link_Category,Portal,
+Benefit_Type,Cash Benefit,Money paid to the citizen
+Benefit_Type,Free Service,A service given without charge
+Benefit_Type,Free Medicine,
+Benefit_Type,Free Test,Laboratory or diagnostic test
+Benefit_Type,Free Transport,Ambulance or travel support
+Benefit_Type,Free Equipment,"Spectacles, hearing aid, mobility aid"
+Benefit_Type,Awareness / Counselling,
+Content_Type,News,"Announcement, achievement or update — no event date"
+Content_Type,Event,Has a date and usually a venue
+Content_Type,Update,Short operational update or instruction
+Post_Status,Draft,Not visible on the website
+Post_Status,Published,Live on the website now
+Post_Status,Scheduled,Goes live automatically at Scheduled_Date
+Post_Status,Archived,"Removed from listings, kept for the record"
+Media_Type,image,Gallery photo
+Media_Type,document,Attachment shown on the post detail page
+Section_Type,hero,Top banner of the home page
+Section_Type,banner,Announcement strip
+Section_Type,stat,One number tile
+Section_Type,section,Section heading + description
+Section_Type,richtext,Paragraph block
+Footer_Block,about,
+Footer_Block,link,
+Footer_Block,contact,
+Footer_Block,legal,
