@@ -79,7 +79,10 @@ var REQUIRED = {
   footer:         ['Footer_ID', 'Block_Type'],
   postCategories: ['Category_ID', 'Category_Name'],
   posts:          ['Post_ID', 'Slug', 'Title', 'Content_Type', 'Status'],
-  postMedia:      ['Media_ID', 'Post_ID', 'Media_URL'],
+  /* Media_URL is deliberately NOT required: a gallery row can be created
+     before its image is uploaded. Such rows are dropped at render time by
+     postGallery(), and reported below as a warning rather than an error. */
+  postMedia:      ['Media_ID', 'Post_ID'],
   benefits:       ['Benefit_ID', 'FMR_Code', 'Benefit_Title']
 };
 
@@ -382,6 +385,12 @@ function crossValidate(d) {
       V.warnings.push({ sheet: 'Post_Media', id: m.Media_ID,
         message: 'Post_ID "' + m.Post_ID + '" not found — gallery image dropped' });
       return false;
+    }
+    var u = String(m.Media_URL || '').trim();
+    if (!u || u === 'NEEDS MANUAL INPUT') {
+      V.warnings.push({ sheet: 'Post_Media', id: m.Media_ID,
+        message: 'No image uploaded yet for "' + (m.Caption || m.Media_ID) +
+                 '" — the row is kept but nothing is shown' });
     }
     return true;
   });
