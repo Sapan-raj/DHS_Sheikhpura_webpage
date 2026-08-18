@@ -1,0 +1,17 @@
+﻿Footer_ID,Block_Type,Block_Title,Label,URL,Content_Text,Column_Number,Display_Order,Status,Is_External
+FT01,about,About This Portal,,,,1,1,Active,No
+FT02,link,Quick Links,Home,index.html,,2,1,Active,No
+FT03,link,Quick Links,Free Health Services,benefits.html,,2,2,Active,No
+FT16,link,Quick Links,Health Programmes,programmes.html,,2,6,Active,No
+FT04,link,Quick Links,Documents,documents.html,,2,3,Active,No
+FT05,link,Quick Links,Notices,notices.html,,2,4,Active,No
+FT06,link,Quick Links,Contact Us,contact.html,,2,5,Active,No
+FT07,link,Related Sites,"State Health Society, Bihar",https://shs.bihar.gov.in/,,3,1,Active,Yes
+FT08,link,Related Sites,National Health Mission,https://nhm.gov.in/,,3,2,Active,Yes
+FT09,link,Related Sites,Sheikhpura District Portal,https://sheikhpura.nic.in/,,3,3,Active,Yes
+FT10,link,Related Sites,BHAVYA Citizen Portal,https://mera.bhavyabiharhealth.in/,,3,4,Active,Yes
+FT11,contact,Contact,,,"Office of the Civil Surgeon, Sadar Hospital Campus, Sheikhpura, Bihar - 811105",4,1,Active,No
+FT12,legal,,Disclaimer,disclaimer.html,,5,1,Active,No
+FT13,legal,,Privacy Policy,privacy.html,,5,2,Active,No
+FT14,legal,,Accessibility Statement,accessibility.html,,5,3,Active,No
+FT15,legal,,Site Map,sitemap.html,,5,4,Active,No

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <base href="/">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Programme Details — District Health Society, Sheikhpura</title>
+<title>Health Programme — District Health Society, Sheikhpura</title>
 <link rel="icon" href="assets/img/favicon.svg">
 <link rel="stylesheet" href="assets/css/site.css">
 </head>
@@ -19,145 +19,115 @@
 <script src="assets/js/data.js"></script>
 <script src="assets/js/ui.js"></script>
 <script>
-UI.boot('pip.html', function (d) {
+/* ------------------------------------------------------------------
+   One health programme, written for a resident.
+   No budget figures, no FMR codes, no allocation documents — this
+   portal publishes what people can use, not the district's finances.
+   ------------------------------------------------------------------ */
+UI.boot('programmes.html', function (d) {
   var Q = PortalData.query, esc = PortalData.esc;
-  var fy = UI.param('fy'), code = UI.param('fmr'), pid = UI.param('id');
+  var cy = Q.currentYear(d);
 
-  /* Two ways in: ?id=PRG0001 (exact row) or ?fy=…&fmr=… (year-scoped code lookup).
-     The code path must stay year-scoped — the same FMR code means different things
-     in different years, and some codes exist in one year but not the next. */
-  var year = Q.yearBySlug(d, fy) || Q.currentYear(d);
-  var prog = pid ? Q.programById(d, pid) : (year ? Q.programByCode(d, year.Year_ID, code) : null);
-  if (prog && pid) year = Q.yearBySlug(d, prog.Year_ID) || year;
+  /* ?p=PRG0001 is canonical. ?fmr= is kept so older links still resolve. */
+  var prog = Q.programById(d, UI.param('p'));
+  if (!prog && UI.param('fmr') && cy) prog = Q.programByCode(d, cy.Year_ID, UI.param('fmr'));
 
-  if (!prog || !year) {
-    UI.crumbs([{ label: 'Project Implementation Plan', url: 'pip.html' }, { label: 'Not found' }]);
+  if (!prog) {
+    UI.crumbs([{ label: 'Health Programmes', url: 'programmes.html' }, { label: 'Not found' }]);
     document.getElementById('page').innerHTML = '<div class="container section">' +
       UI.emptyState('Programme not found',
-        'No budget head matches "' + (code || pid) + '" in ' + (fy || 'the selected year') +
-        '. FMR codes change between financial years — check the year selector on the PIP page.') +
-      '<div style="text-align:center"><a class="btn btn-primary" href="pip.html">Back to PIP</a></div></div>';
+        'This programme may have been renamed or is no longer running. Browse all programmes below.') +
+      '<div style="text-align:center"><a class="btn btn-primary" href="programmes.html">All health programmes</a></div></div>';
     return;
   }
 
   var cat = d.categories.filter(function (c) { return c.Category_ID === prog.Category_ID; })[0] || {};
+  var benefits = Q.benefitsFor(d, prog.FMR_Code, prog.Year_ID);
   var docs = Q.docsForProgram(d, prog.Program_ID);
-  var alloc = Q.categoryDoc(d, year.Year_ID, prog.Category_ID, 'Category Allocation');
-  var guide = Q.categoryDoc(d, year.Year_ID, prog.Category_ID, 'Category Guidelines');
+  var title = UI.t(prog.Program_Name, prog.Program_Name_HI);
 
-  UI.crumbs([
-    { label: 'Project Implementation Plan', url: 'pip.html' },
-    { label: year.Display_Name, url: 'pip.html?fy=' + encodeURIComponent(year.Financial_Year) },
-    { label: prog.FMR_Code + ' — ' + prog.Program_Name }
-  ]);
-  document.title = prog.FMR_Code + ' ' + prog.Program_Name + ' — ' + (d.settings.site_title || '');
+  UI.crumbs([{ label: 'Health Programmes', url: 'programmes.html' }, { label: title }]);
+  document.title = title + ' — ' + (d.settings.site_title || '');
 
-  /* siblings for prev/next within the same category + year */
-  var sibs = Q.programs(d, year.Year_ID, prog.Category_ID);
-  var si = sibs.map(function (p) { return p.Program_ID; }).indexOf(prog.Program_ID);
-  var pv = sibs[si - 1], nx = sibs[si + 1];
-
-  function link(p, dir) {
-    if (!p) return '';
-    return '<a class="btn btn-outline btn-sm" href="program.html?fy=' + esc(year.Financial_Year) +
-      '&fmr=' + encodeURIComponent(p.FMR_Code) + '">' +
-      (dir < 0 ? '← ' : '') + esc(p.FMR_Code) + (dir > 0 ? ' →' : '') + '</a>';
-  }
-
-  function docBtn(doc, label) {
-    if (doc && doc._url) return '<a class="btn btn-outline btn-sm" href="' + esc(doc._url) + '" target="_blank" rel="noopener noreferrer">⭳ ' + esc(label) + '</a>';
-    return '<span class="btn btn-outline btn-sm" aria-disabled="true">⭳ ' + esc(label) + '</span>';
-  }
-
-  var benefits = Q.benefitsFor(d, prog.FMR_Code, year.Year_ID);
+  /* other programmes in the same health area */
+  var sibs = (cy ? Q.programmes(d, cy.Year_ID) : [])
+    .filter(function (p) { return p.Category_ID === prog.Category_ID && p.Program_ID !== prog.Program_ID; });
 
   var H = '<section class="section"><div class="container">';
 
-  H += '<div class="card" style="border-top:4px solid var(--accent);margin-bottom:24px">' +
-    '<div style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap">' +
-      '<span class="chip chip--code" style="font-size:.9rem;padding:7px 14px">' + esc(prog.FMR_Code) + '</span>' +
-      '<div style="flex:1;min-width:240px">' +
-        '<h1 style="margin:0 0 6px;font-size:1.5rem">' + esc(UI.t(prog.Program_Name, prog.Program_Name_HI)) + '</h1>' +
-        '<div class="doc-meta">' +
-          '<a class="chip" href="pip.html?fy=' + esc(year.Financial_Year) + '#' + esc(cat.Category_ID) + '">' + esc(cat.Category_Name || '') + '</a>' +
-          '<span class="chip">' + esc(year.Display_Name) + '</span>' +
-        '</div></div>' +
-      '<div style="display:flex;gap:8px;flex-wrap:wrap">' + link(pv, -1) + link(nx, 1) + '</div>' +
-    '</div></div>';
+  /* ── header ── */
+  H += '<div class="card" style="border-top:4px solid var(--green);margin-bottom:24px">' +
+    '<div class="post-chips" style="margin-bottom:10px">' +
+      '<a class="chip" href="programmes.html">' + esc(cat.Category_Name || 'Health Programme') + '</a>' +
+      (benefits.length ? '<span class="chip b-free">' + benefits.length + ' free service' +
+        (benefits.length === 1 ? '' : 's') + '</span>' : '') +
+    '</div>' +
+    '<h1 style="margin:0 0 8px;font-size:1.6rem">' + esc(title) + '</h1>' +
+    (prog.Program_Description
+      ? '<p style="color:var(--text-muted);margin:0;max-width:80ch">' + esc(prog.Program_Description) + '</p>' : '') +
+  '</div>';
 
-  /* ── What citizens get — placed FIRST, above the administrative detail,
-        because this portal is read mostly by residents, not officials. ── */
+  /* ── what you get — the whole point of the page ── */
   if (benefits.length) {
-    H += '<div class="section-head" style="margin-bottom:16px"><div class="head-row"><div>' +
-        '<h2 style="border-bottom-color:var(--green)">What you get from this programme</h2>' +
-        '<p>' + benefits.length + ' service' + (benefits.length === 1 ? '' : 's') +
-        ' available free to the people of Sheikhpura under ' + esc(prog.FMR_Code) + '.</p>' +
-      '</div><div class="spacer"></div>' +
-      '<a class="btn btn-outline btn-sm" href="benefits.html">All free services →</a>' +
-      '</div></div>' +
+    H += '<div class="section-head" style="margin-bottom:16px">' +
+        '<h2 style="border-bottom-color:var(--green)">What you get</h2>' +
+        '<p>Free of cost at government health facilities in Sheikhpura. ' +
+        'If anyone asks you to pay, call <a href="tel:104">104</a>.</p>' +
+      '</div>' +
       '<div class="grid grid-2" style="margin-bottom:32px">' +
         benefits.map(function (b) { return UI.benefitCard(b); }).join('') +
       '</div>';
+  } else {
+    H += '<div class="card" style="margin-bottom:32px">' +
+      UI.emptyState('No individual services listed yet',
+        'This programme supports health services in the district. Specific entitlements will be listed here as they are published.') +
+      '</div>';
   }
 
+  /* ── supporting information ── */
   H += '<div class="grid grid-2" style="align-items:start">';
 
-  /* left column */
-  H += '<div>';
-  if (prog.Program_Description) {
-    H += '<div class="card" style="margin-bottom:16px"><h3>About this budget head</h3>' +
-         '<p style="color:var(--text-muted);margin:0">' + esc(prog.Program_Description) + '</p></div>';
+  H += '<div class="card"><h3>Where to go</h3>' +
+    '<p style="color:var(--text-muted);margin:0 0 14px">These services are available at government health ' +
+    'facilities across the district. Your nearest Ayushman Arogya Mandir or ASHA can direct you.</p>' +
+    '<div style="display:flex;gap:8px;flex-wrap:wrap">' +
+      '<a class="btn btn-outline btn-sm" href="contact.html">District contacts</a>' +
+      '<a class="btn btn-outline btn-sm" href="tel:104">☎ Call 104</a>' +
+      '<a class="btn btn-outline btn-sm" href="tel:102">⛑ Ambulance 102</a>' +
+    '</div></div>';
+
+  if (docs.length) {
+    H += '<div class="card"><h3>Related documents</h3>' +
+      docs.map(function (x) {
+        return UI.docRow({ title: x.Document_Title, type: x.Document_Type, desc: x.Description,
+                           url: x._url, fileType: x.File_Type, size: x.File_Size_MB, date: x.Upload_Date });
+      }).join('') + '</div>';
+  } else {
+    H += '<div class="card"><h3>More help</h3>' +
+      '<p style="color:var(--text-muted);margin:0 0 14px">Browse everything the district provides free of cost, ' +
+      'or see what is happening this month.</p>' +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap">' +
+        '<a class="btn btn-outline btn-sm" href="benefits.html">All free services</a>' +
+        '<a class="btn btn-outline btn-sm" href="events.html">Events &amp; news</a>' +
+      '</div></div>';
   }
-  if (prog.Budget_Guidelines) {
-    H += '<div class="card" style="margin-bottom:16px"><h3>What this head funds</h3>' +
-         '<p style="color:var(--text-muted);margin:0">' + esc(prog.Budget_Guidelines) + '</p></div>';
-  }
+  H += '</div>';
 
-  H += '<div class="card"><h3>Related documents</h3>' +
-    '<div class="doc-meta" style="margin-bottom:14px">' + docBtn(alloc, 'Category Allocation') + docBtn(guide, 'Category Guidelines') + '</div>' +
-    (docs.length
-      ? docs.map(function (x) {
-          return UI.docRow({ title: x.Document_Title, type: x.Document_Type, desc: x.Description,
-                             url: x._url, fileType: x.File_Type, size: x.File_Size_MB, date: x.Upload_Date });
-        }).join('')
-      : '<p style="color:var(--text-muted);margin:0;font-size:.87rem">No document is attached to this specific budget head. ' +
-        'The category-level allocation and guidelines above apply.</p>') +
-  '</div></div>';
-
-  /* right column */
-  H += '<div><div class="card"><h3>At a glance</h3><dl class="kv">' +
-    '<dt>FMR Code</dt><dd><strong>' + esc(prog.FMR_Code) + '</strong></dd>' +
-    '<dt>Financial Year</dt><dd>' + esc(year.Display_Name) + '</dd>' +
-    '<dt>Category</dt><dd>' + esc(cat.Category_Name || '—') + '</dd>' +
-    '<dt>Budget Allocation</dt><dd><strong>' + UI.money(prog.Budget_Allocation_Lakh) + '</strong></dd>' +
-    '<dt>Nodal Officer</dt><dd>' + esc(prog.Nodal_Officer || '—') + '</dd>' +
-    '<dt>Status</dt><dd><span class="chip chip--ok">' + esc(prog.Status || 'Active') + '</span></dd>' +
-  '</dl></div>';
-
-  /* the same code across other years — makes year-variance visible */
-  var others = d.programs.filter(function (p) {
-    return String(p.FMR_Code).toUpperCase() === String(prog.FMR_Code).toUpperCase() && p.Year_ID !== year.Year_ID;
-  });
-  if (others.length) {
-    H += '<div class="card" style="margin-top:16px"><h3>' + esc(prog.FMR_Code) + ' in other years</h3><ul style="list-style:none;margin:0;padding:0">' +
-      others.map(function (p) {
-        var y = d.financialYears.filter(function (yy) { return yy.Year_ID === p.Year_ID; })[0];
-        if (!y) return '';
-        return '<li style="padding:7px 0;border-bottom:1px solid var(--border)">' +
-          '<a href="program.html?fy=' + esc(y.Financial_Year) + '&fmr=' + encodeURIComponent(p.FMR_Code) + '">' +
-          esc(y.Display_Name) + '</a> — ' + esc(p.Program_Name) +
-          '<span style="float:right;color:var(--text-muted)">' + UI.money(p.Budget_Allocation_Lakh) + '</span></li>';
-      }).join('') + '</ul></div>';
+  /* ── siblings ── */
+  if (sibs.length) {
+    H += '<div class="section-head" style="margin-top:32px"><h2>Other ' +
+      esc(cat.Category_Name || 'health') + ' programmes</h2></div>' +
+      '<div class="grid grid-3">' +
+      sibs.map(function (p) {
+        var n = Q.benefitsFor(d, p.FMR_Code, p.Year_ID).length;
+        return '<a class="card card--link cat-card" href="program.html?p=' + encodeURIComponent(p.Program_ID) + '">' +
+          '<div class="cat-top"><span class="cat-icon">' + esc(cat.Short_Name || '•') + '</span>' +
+          '<div><h3 style="margin:0">' + esc(UI.t(p.Program_Name, p.Program_Name_HI)) + '</h3>' +
+          '<span class="count">' + n + ' free service' + (n === 1 ? '' : 's') + '</span></div></div></a>';
+      }).join('') + '</div>';
   }
 
-  H += '<div class="card" style="margin-top:16px"><h3>Other heads in ' + esc(cat.Short_Name || 'this category') + '</h3>' +
-    '<ul style="list-style:none;margin:0;padding:0;display:grid;gap:6px;font-size:.86rem">' +
-    sibs.filter(function (p) { return p.Program_ID !== prog.Program_ID; }).map(function (p) {
-      return '<li><a href="program.html?fy=' + esc(year.Financial_Year) + '&fmr=' + encodeURIComponent(p.FMR_Code) + '">' +
-        '<span class="chip chip--code" style="font-size:.68rem">' + esc(p.FMR_Code) + '</span> ' + esc(p.Program_Name) + '</a></li>';
-    }).join('') + '</ul></div></div>';
-
-  H += '</div></div></section>';
+  H += '</div></section>';
   document.getElementById('page').innerHTML = H;
 });
 </script>

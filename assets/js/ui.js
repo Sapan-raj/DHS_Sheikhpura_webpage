@@ -399,8 +399,8 @@
       '<div class="post-chips">' +
         '<span class="chip b-type' + (free ? ' b-free' : '') + '">' + esc(b.Benefit_Type || '') + '</span>' +
         (o.showProgram && b._program
-          ? '<a class="chip chip--code" href="program.html?fy=' + esc(o.fy || '') +
-            '&fmr=' + encodeURIComponent(b.FMR_Code) + '">' + esc(b.FMR_Code) + '</a>' : '') +
+          ? '<a class="chip" href="program.html?p=' + encodeURIComponent(b._program.Program_ID) + '">' +
+            esc(b._program.Program_Name) + '</a>' : '') +
       '</div>' +
       '<h3>' + esc(title) + '</h3>' +
       (amt ? '<span class="b-amount">' + (free ? '✔ ' : (hasCur ? '' : '₹ ')) + esc(amt) + '</span>' : '') +

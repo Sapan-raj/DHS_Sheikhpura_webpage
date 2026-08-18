@@ -1,0 +1,6 @@
+﻿Document_ID,Year_ID,Category_ID,Program_ID,Document_Title,Document_Type,Description,File_URL,File_Type,File_Size_MB,Upload_Date,Display_Order,Status,Is_Featured
+DOC0001,FY2627,CAT01,PRG0001,Maternal Health Operational Guideline 2026-27,Programme Guideline,Operational guideline for maternal health services including JSY and PMSMA.,NEEDS MANUAL INPUT,PDF,,,1,Active,Yes
+DOC0002,FY2627,CAT02,,NIKSHAY Reporting Format,Format,Monthly reporting format for TB notification and Ni-kshay Poshan Yojana.,NEEDS MANUAL INPUT,XLSX,,,2,Active,No
+DOC0003,FY2627,CAT05,,Ayushman Arogya Mandir Monthly Report Format,Format,Standard monthly reporting format for AAM/HWC service delivery.,NEEDS MANUAL INPUT,XLSX,,,3,Active,Yes
+DOC0004,FY2627,,,District Health Society Meeting Circular,Circular,Circular convening the quarterly District Health Society governing body meeting.,NEEDS MANUAL INPUT,PDF,,,4,Active,No
+DOC0005,FY2526,CAT03,,NCD Screening Progress Report 2025-26,Report,Block-wise population based screening progress for F.Y. 2025-26.,NEEDS MANUAL INPUT,PDF,,,5,Active,No

@@ -71,8 +71,8 @@ SETTINGS = [
     ("state_name",           "State",                      "Bihar", "Identity", ""),
     ("site_title",           "Website Title",              "District Health Society, Sheikhpura", "Identity", "Browser tab + header line 1"),
     ("site_title_hi",        "Website Title (Hindi)",      "जिला स्वास्थ्य समिति, शेखपुरा", "Identity", ""),
-    ("site_subtitle",        "Subtitle",                   "Project Implementation Plan (PIP) Portal", "Identity", "Header line 2"),
-    ("site_subtitle_hi",     "Subtitle (Hindi)",           "परियोजना कार्यान्वयन योजना (पीआईपी) पोर्टल", "Identity", ""),
+    ("site_subtitle",        "Subtitle",                   "Health Services for the People of Sheikhpura", "Identity", "Header line 2"),
+    ("site_subtitle_hi",     "Subtitle (Hindi)",           "शेखपुरा की जनता के लिए स्वास्थ्य सेवाएं", "Identity", ""),
     ("parent_body",          "Parent Body",                "State Health Society, Bihar  |  National Health Mission", "Identity", ""),
     ("logo_url",             "Logo URL",                   "assets/img/emblem.svg", "Branding", "Leave as-is to use the built-in emblem"),
     ("favicon_url",          "Favicon URL",                "assets/img/favicon.svg", "Branding", ""),
@@ -88,7 +88,7 @@ SETTINGS = [
     ("office_address",       "Office Address",             "Office of the Civil Surgeon, Sadar Hospital Campus, Sheikhpura, Bihar - 811105", "Contact", "Verify PIN before go-live"),
     ("footer_copyright",     "Copyright Line",             "© 2026 District Health Society, Sheikhpura, Government of Bihar. All rights reserved.", "Footer", ""),
     ("footer_credit",        "Developed By Line",          "Designed & Developed by District IT Cell, Sheikhpura", "Footer", ""),
-    ("footer_about",         "Footer About Text",          "The District Health Society, Sheikhpura implements the National Health Mission at district level and publishes its Project Implementation Plan, Record of Proceedings, budget allocations and programme guidelines for public reference.", "Footer", ""),
+    ("footer_about",         "Footer About Text",          "The District Health Society, Sheikhpura implements the National Health Mission across the district. This portal publishes the health services available free to every resident, along with the events, notices and contacts you may need.", "Footer", ""),
     ("social_facebook",      "Facebook URL",               "", "Social", "Blank hides the icon"),
     ("social_twitter",       "Twitter / X URL",            "", "Social", "Blank hides the icon"),
     ("social_youtube",       "YouTube URL",                "", "Social", "Blank hides the icon"),
@@ -101,16 +101,14 @@ SETTINGS = [
 
 # ───────────────────────── 2. NAVIGATION ─────────────────────────
 NAV = [
-    ("NAV01", "Home",              "होम",                    "index.html",     "", 1,  "Yes", "Internal", "home",     "_self"),
-    ("NAV02", "PIP",               "पीआईपी",                  "pip.html",       "", 2,  "Yes", "Internal", "file",     "_self"),
-    ("NAV03", "Programmes",        "कार्यक्रम",                "pip.html#fmr",   "", 3,  "Yes", "Internal", "grid",     "_self"),
-    ("NAV04", "Free Services",     "नि:शुल्क सेवाएं",           "benefits.html",  "", 4,  "Yes", "Internal", "heart",    "_self"),
-    ("NAV05", "Events",            "कार्यक्रम एवं समाचार",      "events.html",    "", 5,  "Yes", "Internal", "bell",     "_self"),
-    ("NAV06", "Documents",         "दस्तावेज़",                "documents.html", "", 6,  "Yes", "Internal", "download", "_self"),
-    ("NAV07", "Notices",           "सूचनाएँ",                  "notices.html",   "", 7,  "Yes", "Internal", "bell",     "_self"),
-    ("NAV08", "Contact Us",        "संपर्क करें",              "contact.html",   "", 8,  "Yes", "Internal", "phone",    "_self"),
-    ("NAV09", "SHS Bihar",         "एसएचएस बिहार",            "https://shs.bihar.gov.in/", "", 9, "Yes", "External", "external", "_blank"),
-    ("NAV10", "NHM India",         "एनएचएम भारत",             "https://nhm.gov.in/", "", 10, "No",  "External", "external", "_blank"),
+    ("NAV01", "Home",              "होम",                    "index.html",      "", 1, "Yes", "Internal", "home",     "_self"),
+    ("NAV02", "Free Services",     "नि:शुल्क सेवाएं",           "benefits.html",   "", 2, "Yes", "Internal", "heart",    "_self"),
+    ("NAV03", "Health Programmes", "स्वास्थ्य कार्यक्रम",        "programmes.html", "", 3, "Yes", "Internal", "hospital", "_self"),
+    ("NAV04", "Events & News",     "कार्यक्रम एवं समाचार",      "events.html",     "", 4, "Yes", "Internal", "bell",     "_self"),
+    ("NAV05", "Notices",           "सूचनाएँ",                  "notices.html",    "", 5, "Yes", "Internal", "bell",     "_self"),
+    ("NAV06", "Documents",         "दस्तावेज़",                "documents.html",  "", 6, "Yes", "Internal", "download", "_self"),
+    ("NAV07", "Contact Us",        "संपर्क करें",              "contact.html",    "", 7, "Yes", "Internal", "phone",    "_self"),
+    ("NAV08", "BHAVYA Portal",     "भव्य पोर्टल",              "https://mera.bhavyabiharhealth.in/", "", 8, "Yes", "External", "external", "_blank"),
 ]
 
 # ───────────────────────── 3. FINANCIAL YEARS ─────────────────────────
@@ -208,87 +206,6 @@ def fmr_sort_key(row):
     return (CAT_ORDER[cat], num)
 
 
-# Illustrative district allocations (₹ lakh). Marked provisional — real figures come from the RoP.
-ALLOC = {
-    "RCH.1": 186.40, "RCH.2": 4.25, "RCH.3": 92.10, "RCH.4": 74.60, "RCH.5": 21.35,
-    "RCH.6": 38.90, "RCH.7": 15.20, "RCH.8": 2.80,
-    "NDCP.1": 18.55, "NDCP.2": 27.40, "NDCP.3": 9.15, "NDCP.4": 64.80, "NDCP.5": 11.20,
-    "NDCP.6": 3.60, "NDCP.8": 6.50, "NDCP.7": 5.40, "NDCP.9": 6.50,
-    "NCD.1": 22.70, "NCD.2": 12.45, "NCD.3": 14.30, "NCD.4": 7.85, "NCD.5": 58.90,
-    "NCD.6": 41.20, "NCD.7": 5.60, "NCD.8": 4.10, "NCD.9": 6.20, "NCD.10": 2.40,
-    "NCD.11": 3.75, "NCD.12": 3.30, "NCD.13": 9.00,
-    "HSS(U).1": 46.30, "HSS(U).2": 8.20, "HSS(U).3": 19.75, "HSS(U).4": 6.40,
-    "HSS(U).5": 52.10, "HSS(U).6": 4.90, "HSS(U).7": 7.30, "HSS(U).8": 3.50, "HSS(U).9": 5.00,
-    "HSS.1": 128.60, "HSS.2": 16.40, "HSS.3": 88.20, "HSS.4": 74.50, "HSS.5": 63.80,
-    "HSS.6": 12.90, "HSS.7": 18.30, "HSS.8": 9.60, "HSS.9": 214.70, "HSS.10": 34.20,
-    "HSS.11": 7.40, "HSS.12": 26.80, "HSS.13": 5.90, "HSS.14": 42.60,
-    "HSS.15": 31.50, "HSS.16": 48.20, "HSS.17": 96.40, "HSS.18": 22.10,
-    "HSS.19": 17.60, "HSS.20": 4.80, "HSS.21": 11.30,
-}
-
-GUIDE = {
-    "RCH.1": "Janani Suraksha Yojana, Janani Shishu Suraksha Karyakram, PMSMA, MCH wing operations, delivery points, maternal death surveillance and response.",
-    "RCH.2": "PC-PNDT Act implementation — sonography centre registration, inspections, district advisory committee meetings, decoy operations and legal support.",
-    "RCH.3": "SNCU/NBSU/NRC operations, Home Based Newborn Care, Home Based Care for Young Child, diarrhoea and pneumonia control, Rashtriya Bal Swasthya Karyakram.",
-    "RCH.4": "Routine Immunisation micro-planning, cold chain maintenance, alternate vaccine delivery, Mission Indradhanush rounds and AEFI surveillance.",
-    "RCH.5": "Rashtriya Kishor Swasthya Karyakram — Adolescent Friendly Health Clinics, Peer Educator programme, Weekly Iron and Folic Acid Supplementation, menstrual hygiene.",
-    "RCH.6": "Fixed day static services, Mission Parivar Vikas, post-partum sterilisation, IUCD and injectable contraceptive services, ASHA incentives for FP counselling.",
-    "RCH.7": "Anaemia Mukt Bharat, village health and nutrition days, severe acute malnutrition management, IYCF counselling.",
-    "RCH.8": "Iodine deficiency disorder surveys, salt testing kits, IEC on iodised salt consumption.",
-    "NDCP.1": "District and block surveillance units, IDSP-IHIP reporting, outbreak investigation, laboratory strengthening and rapid response teams.",
-    "NDCP.2": "Kala-azar and malaria elimination — indoor residual spraying, active case detection, LLIN distribution, entomological surveillance and vector control.",
-    "NDCP.3": "Leprosy case detection campaigns, disability prevention and medical rehabilitation, MDT supply and contact tracing.",
-    "NDCP.4": "NIKSHAY reporting, Ni-kshay Poshan Yojana, TB Mukt Bharat activities, active case finding, DR-TB management and private sector engagement.",
-    "NDCP.5": "Hepatitis B and C screening, treatment centres, safe injection practices and blood safety linkage.",
-    "NDCP.6": "Anti-rabies vaccine and immunoglobulin supply, model ARV clinic, dog bite management protocols.",
-    "NDCP.7": "Antimicrobial resistance surveillance, antibiotic stewardship, infection prevention and control at district facilities.",
-    "NDCP.8": "District-specific innovations approved in the Record of Proceedings.",
-    "NDCP.9": "District-specific innovations approved in the Record of Proceedings.",
-    "NCD.1": "Cataract surgeries, school eye screening, spectacles distribution, vision centres and eye donation promotion.",
-    "NCD.2": "District Mental Health Programme — outpatient clinics, counselling, Tele-MANAS linkage, suicide prevention and community awareness.",
-    "NCD.3": "Geriatric OPD and ward, physiotherapy units, mobility aids and domiciliary care for the elderly.",
-    "NCD.4": "COTPA enforcement, tobacco cessation centres, school awareness and Tobacco Free Educational Institution certification.",
-    "NCD.5": "Population-based screening for hypertension, diabetes and common cancers; NCD clinics at district and CHC level; drug and diagnostic supply.",
-    "NCD.6": "Haemodialysis units at district hospital, consumables, dialysis technician deployment and patient transport support.",
-    "NCD.7": "Climate-resilient health facilities, heat and cold wave action plans, air quality and health surveillance.",
-    "NCD.8": "Dental units at district and CHC level, oral cancer screening and school oral health programmes.",
-    "NCD.9": "Palliative care outpatient services, home-based palliative visits, opioid availability and caregiver training.",
-    "NCD.10": "Fluorosis surveys, water quality testing linkage, diagnostic and management support in affected habitations.",
-    "NCD.11": "Newborn hearing screening, ENT services, hearing aid provision and community awareness on deafness.",
-    "NCD.12": "Burn unit strengthening, first-aid training and burn injury prevention awareness.",
-    "NCD.13": "District-specific NCD interventions approved in the Record of Proceedings.",
-    "HSS(U).1": "Urban Ayushman Arogya Mandir operations, urban PHC services, outreach sessions in urban slums and special outreach camps.",
-    "HSS(U).2": "Mahila Arogya Samiti formation and untied funds, urban ASHA selection, training and incentives.",
-    "HSS(U).3": "Urban PHC infrastructure upgradation to IPHS norms, equipment and furniture.",
-    "HSS(U).4": "NQAS certification of urban facilities, Kayakalp assessments and quality improvement.",
-    "HSS(U).5": "Contractual human resources for urban health facilities — medical officers, staff nurses, ANMs, pharmacists and lab technicians.",
-    "HSS(U).6": "Urban health programme management and technical support units.",
-    "HSS(U).7": "Improving access to urban primary healthcare for vulnerable populations.",
-    "HSS(U).8": "Approved urban health innovations.",
-    "HSS(U).9": "Untied grants to urban primary health centres and Mahila Arogya Samitis.",
-    "HSS.1": "Ayushman Arogya Mandir (HWC) operationalisation at HSC and APHC level, Community Health Officer deployment, teleconsultation and 12 service packages.",
-    "HSS.2": "Blood bank and blood storage unit operations, voluntary blood donation camps, thalassaemia and sickle cell services.",
-    "HSS.3": "ASHA selection, training, incentives, ASHA Diwas, Village Health Sanitation and Nutrition Committees and Jan Arogya Samitis.",
-    "HSS.4": "Facility upgradation to IPHS norms, minor civil works, equipment procurement and maintenance at DH, SDH, CHC, PHC and HSC.",
-    "HSS.5": "102 and 108 ambulance services, patient transport, drop-back services and ambulance maintenance.",
-    "HSS.6": "National Quality Assurance Standards certification, Kayakalp, Mera Aspataal and LaQshya at delivery points.",
-    "HSS.7": "Free diagnostic services, free drug service initiative and other access-improving initiatives.",
-    "HSS.8": "Drug and logistics management system, warehouse operations and inventory tracking.",
-    "HSS.9": "Contractual human resources for rural health facilities across all cadres.",
-    "HSS.10": "In-service training, skill labs, nursing and paramedical capacity building.",
-    "HSS.11": "District Programme Management Unit and Block Programme Management Unit support.",
-    "HSS.12": "HMIS, RCH portal, ABDM, BHAVYA platform rollout, hardware, connectivity and data quality initiatives.",
-    "HSS.13": "Approved district health innovations.",
-    "HSS.14": "Untied grants, annual maintenance grants and Rogi Kalyan Samiti corpus for facilities.",
-    "HSS.15": "Annual maintenance and repair of health facility buildings and campuses.",
-    "HSS.16": "District and block programme management costs, mobility support, office expenses and reviews.",
-    "HSS.17": "Recurring operational cost of Ayushman Arogya Mandirs including consumables and utilities.",
-    "HSS.18": "Biomedical equipment management and maintenance programme coverage for district facilities.",
-    "HSS.19": "Digital health initiatives — ABHA generation, teleconsultation hubs and digital registries.",
-    "HSS.20": "Health grievance redressal system, Mera Aspataal feedback and patient support desks.",
-    "HSS.21": "District-specific health system strengthening interventions approved in the Record of Proceedings.",
-}
-
 NODAL = {
     "CAT01": "District Programme Manager / DCM",
     "CAT02": "District Vector Borne Disease Control Officer",
@@ -307,9 +224,9 @@ def build_programs():
             n += 1
             rows.append((
                 f"PRG{n:04d}", yid, cat, code, name, name_hi,
-                f"{name} activities under the {code} budget head for {'F.Y. ' + yid[2:4] + '-' + yid[4:6]}, "
-                f"implemented across the six blocks of Sheikhpura district.",
-                ALLOC.get(code, ""), GUIDE.get(code, ""), NODAL[cat], order, "Active",
+                f"{name} services provided across the six blocks of Sheikhpura district "
+                f"through government health facilities.",
+                NODAL[cat], order, "Active",
             ))
     return rows
 
@@ -317,40 +234,15 @@ def build_programs():
 PROGRAMS = build_programs()
 
 # ───────────────── 4. PIP_DOCUMENTS — year-level headline strip ─────────────────
-PIPDOCS = [
-    ("PD001", "FY2627", "District PIP 2026-27",                        "PIP",                    "Approved District Project Implementation Plan for Sheikhpura, F.Y. 2026-27.", MARK, "PDF", "", "2026-04-15", "2026-04-22", 1, "Active"),
-    ("PD002", "FY2627", "Record of Proceedings (RoP) 2026-27",         "RoP",                    "State RoP issued by MoHFW covering Bihar for F.Y. 2026-27.",                  MARK, "PDF", "", "2026-05-25", "2026-06-02", 2, "Active"),
-    ("PD003", "FY2627", "Budget Allocation Letter F.Y. 2026-27",       "Budget Allocation Letter","District-wise budget allocation and financial guidelines communicated by SHS Bihar.", MARK, "PDF", "", "2026-04-30", "2026-05-04", 3, "Active"),
-    ("PD004", "FY2627", "District Health Action Plan 2026-27",         "Other",                  "Consolidated district health action plan prepared by the DHS, Sheikhpura.",   MARK, "PDF", "", "2026-04-10", "2026-04-18", 4, "Active"),
-    ("PD005", "FY2526", "District PIP 2025-26",                        "PIP",                    "Approved District Project Implementation Plan for Sheikhpura, F.Y. 2025-26.", MARK, "XLSX","", "2025-04-12", "2025-04-20", 1, "Active"),
-    ("PD006", "FY2526", "Record of Proceedings (RoP) 2025-26",         "RoP",                    "State RoP covering Bihar for F.Y. 2025-26.",                                 MARK, "PDF", "", "2025-05-20", "2025-05-28", 2, "Active"),
-    ("PD007", "FY2526", "Supplementary PIP 2025-26",                   "Supplementary PIP",      "Supplementary proposals submitted mid-year for F.Y. 2025-26.",               MARK, "ZIP", "", "2025-09-15", "2025-09-22", 3, "Active"),
-    ("PD008", "FY2526", "Supplementary Approval 2025-26",              "Supplementary Approval", "Approval of supplementary proposals for F.Y. 2025-26.",                      MARK, "PDF", "", "2025-11-05", "2025-11-12", 4, "Active"),
-    ("PD009", "FY2526", "Revised Budget Allocation 2025-26",           "Revised Budget",         "Revised budget allocation issued after mid-year review.",                     MARK, "PDF", "", "2025-12-10", "2025-12-18", 5, "Active"),
-    ("PD010", "FY2425", "District PIP 2024-25",                        "PIP",                    "Approved District Project Implementation Plan for Sheikhpura, F.Y. 2024-25.", MARK, "XLSX","", "2024-04-15", "2024-04-25", 1, "Active"),
-    ("PD011", "FY2425", "Record of Proceedings (RoP) 2024-25",         "RoP",                    "State RoP covering Bihar for F.Y. 2024-25.",                                 MARK, "PDF", "", "2024-05-22", "2024-06-01", 2, "Active"),
-    ("PD012", "FY2324", "District PIP 2023-24",                        "PIP",                    "Approved District Project Implementation Plan for Sheikhpura, F.Y. 2023-24.", MARK, "PDF", "", "2023-04-18", "2023-04-28", 1, "Archived"),
-]
-
 # ───────── 7. DOCUMENTS — category allocations, guidelines, programme & general files ─────────
 def build_documents():
-    rows, n = [], 0
-    for yid in ("FY2627", "FY2526", "FY2425"):
-        fy = {"FY2627": "2026-27", "FY2526": "2025-26", "FY2425": "2024-25"}[yid]
-        for cid, cname, short, *_ in CATS:
-            n += 1
-            rows.append((f"DOC{n:04d}", yid, cid, "", f"{short} Budget Allocation F.Y. {fy}",
-                         "Category Allocation",
-                         f"Line-item budget allocation for {cname} for F.Y. {fy}.",
-                         MARK, "PDF", "", "", 1, "Active", "No"))
-            n += 1
-            rows.append((f"DOC{n:04d}", yid, cid, "", f"{short} Budget Guidelines F.Y. {fy}",
-                         "Category Guidelines",
-                         f"Operational and financial guidelines for {cname} for F.Y. {fy}.",
-                         MARK, "PDF", "", "", 2, "Active", "No"))
+    """Citizen-facing documents only. Budget allocation and guideline files were
+    removed at the District Magistrate's direction — this portal publishes what
+    the public can use, not the district's financial plan."""
+    rows = []
     extra = [
         ("FY2627", "CAT01", "PRG0001", "Maternal Health Operational Guideline 2026-27", "Programme Guideline",
-         "Operational guideline for maternal health activities including JSY and PMSMA.", "PDF", "Yes"),
+         "Operational guideline for maternal health services including JSY and PMSMA.", "PDF", "Yes"),
         ("FY2627", "CAT02", "",        "NIKSHAY Reporting Format",                      "Format",
          "Monthly reporting format for TB notification and Ni-kshay Poshan Yojana.",     "XLSX", "No"),
         ("FY2627", "CAT05", "",        "Ayushman Arogya Mandir Monthly Report Format",   "Format",
@@ -360,9 +252,8 @@ def build_documents():
         ("FY2526", "CAT03", "",        "NCD Screening Progress Report 2025-26",          "Report",
          "Block-wise population based screening progress for F.Y. 2025-26.",             "PDF", "No"),
     ]
-    for yid, cid, pid, title, dtype, desc, ftype, feat in extra:
-        n += 1
-        rows.append((f"DOC{n:04d}", yid, cid, pid, title, dtype, desc, MARK, ftype, "", "", 9, "Active", feat))
+    for n, (yid, cid, pid, title, dtype, desc, ftype, feat) in enumerate(extra, start=1):
+        rows.append((f"DOC{n:04d}", yid, cid, pid, title, dtype, desc, MARK, ftype, "", "", n, "Active", feat))
     return rows
 
 
@@ -370,28 +261,25 @@ DOCUMENTS = build_documents()
 
 # ───────────────────────── 8. HOME PAGE CONTENT ─────────────────────────
 HOME = [
-    ("hero_title",     "hero",    "District Health Society, Sheikhpura", "जिला स्वास्थ्य समिति, शेखपुरा", "Project Implementation Plan Portal", "", "", "", "", 1, "Active"),
-    ("hero_subtitle",  "hero",    "", "", "", "Budget allocations, Records of Proceedings, FMR-wise programme guidelines and every published document of the National Health Mission in Sheikhpura — in one place.", "", "pip.html", "View Current PIP", 2, "Active"),
-    ("hero_cta2",      "hero",    "", "", "", "", "", "documents.html", "Browse Documents", 3, "Active"),
-    ("notice_banner",  "banner",  "Announcement", "घोषणा", "", "PIP 2026-27 budget allocation has been published. Block-level nodal officers are requested to review their FMR-wise allocations.", "", "notices.html", "Read all notices", 4, "Active"),
-    # Body_Text left blank on stat rows = the website computes the number live.
-    # Type a number here to override it (stat_blocks has no data source, so it is typed).
-    ("stat_blocks",    "stat",    "Blocks", "प्रखंड", "", "6", "grid", "", "", 5, "Active"),
-    ("stat_programs",  "stat",    "FMR Programme Heads", "एफएमआर कार्यक्रम", "", "", "list", "pip.html", "", 6, "Active"),
-    ("stat_categories","stat",    "Flexi Pools", "फ्लेक्सी पूल", "", "", "layers", "pip.html", "", 7, "Active"),
-    ("stat_documents", "stat",    "Published Documents", "प्रकाशित दस्तावेज़", "", "", "download", "documents.html", "", 8, "Active"),
-    ("sec_benefits",   "section", "Free Health Services for You", "आपके लिए नि:शुल्क स्वास्थ्य सेवाएं", "Know what you are entitled to", "Every one of these services is free at government health facilities in Sheikhpura. Nobody may charge you for them.", "", "benefits.html", "See all free services", 3, "Active"),
-    ("sec_whatsnew",   "section", "What's New", "नया क्या है", "Events, campaigns and announcements", "Health campaigns, camps, training programmes, meetings and achievements from across Sheikhpura district.", "", "events.html", "View all", 4, "Active"),
-    ("sec_programs",   "section", "Programme Categories", "कार्यक्रम श्रेणियाँ", "Flexi pools under the National Health Mission", "Every budget head published in the district PIP, grouped by flexible pool.", "", "pip.html", "View all programmes", 9, "Active"),
-    ("sec_documents",  "section", "Latest Documents", "नवीनतम दस्तावेज़", "Recently published", "PIP, RoP, allocations, guidelines and formats as they are released.", "", "documents.html", "All documents", 10, "Active"),
-    ("sec_notices",    "section", "Notices & Announcements", "सूचनाएँ एवं घोषणाएँ", "From the District Health Society", "", "", "notices.html", "All notices", 11, "Active"),
-    ("sec_quicklinks", "section", "Quick Links", "त्वरित लिंक", "Frequently used portals", "", "", "", "", 12, "Active"),
-    ("about_text",     "richtext","About the District PIP", "जिला पीआईपी के बारे में", "", "The Project Implementation Plan is the annual work plan and budget of the National Health Mission. The District Health Society, Sheikhpura prepares its PIP each financial year, which is consolidated by the State Health Society, Bihar and approved by the Ministry of Health and Family Welfare through the Record of Proceedings. This portal publishes the approved allocations and guidelines against each FMR budget head so that block programme managers, facility in-charges and citizens can refer to the same source of truth.", "", "", "", 13, "Active"),
+    ("hero_title",     "hero",    "District Health Society, Sheikhpura", "जिला स्वास्थ्य समिति, शेखपुरा", "Health services for every resident", "", "", "", "", 1, "Active"),
+    ("hero_subtitle",  "hero",    "", "", "", "Find the free health services you are entitled to, where to go for them, and what is happening in the district this month.", "", "benefits.html", "See free services", 2, "Active"),
+    ("hero_cta2",      "hero",    "", "", "", "", "", "events.html", "What's happening", 3, "Active"),
+    ("notice_banner",  "banner",  "Announcement", "घोषणा", "", "Every service listed on this portal is free at government health facilities. If anyone asks you to pay, call 104.", "", "benefits.html", "Know your rights", 4, "Active"),
+    ("sec_benefits",   "section", "Free Health Services for You", "आपके लिए नि:शुल्क स्वास्थ्य सेवाएं", "Know what you are entitled to", "Every one of these is free at government health facilities in Sheikhpura. Nobody may charge you for them.", "", "benefits.html", "See all free services", 5, "Active"),
+    ("stat_blocks",    "stat",    "Blocks", "प्रखंड", "", "6", "grid", "", "", 6, "Active"),
+    ("stat_benefits",  "stat",    "Free Services", "नि:शुल्क सेवाएं", "", "", "heart", "benefits.html", "", 7, "Active"),
+    ("stat_programmes","stat",    "Health Programmes", "स्वास्थ्य कार्यक्रम", "", "", "hospital", "programmes.html", "", 8, "Active"),
+    ("stat_helpline",  "stat",    "Health Helpline", "स्वास्थ्य हेल्पलाइन", "", "104", "phone", "contact.html", "", 9, "Active"),
+    ("sec_whatsnew",   "section", "What's New", "नया क्या है", "Events, campaigns and announcements", "Health campaigns, camps, training programmes and achievements from across Sheikhpura district.", "", "events.html", "View all", 10, "Active"),
+    ("sec_programmes", "section", "Health Programmes", "स्वास्थ्य कार्यक्रम", "What the district runs for you", "The health programmes running in Sheikhpura and the services each one provides free of cost.", "", "programmes.html", "View all programmes", 11, "Active"),
+    ("sec_notices",    "section", "Notices & Announcements", "सूचनाएँ एवं घोषणाएँ", "From the District Health Society", "", "", "notices.html", "All notices", 12, "Active"),
+    ("sec_quicklinks", "section", "Quick Links", "त्वरित लिंक", "Frequently used portals", "", "", "", "", 13, "Active"),
+    ("about_text",     "richtext","About this portal", "इस पोर्टल के बारे में", "", "The District Health Society, Sheikhpura implements the National Health Mission across the district. This portal exists so that every resident can find out what health services they are entitled to, where to go for them, what to carry, and who to call — without having to ask anyone. Every service listed here is provided free of cost at government health facilities.", "", "", "", 14, "Active"),
 ]
 
 # ───────────────────────── 9. IMPORTANT LINKS ─────────────────────────
 LINKS = [
-    ("LNK01", "State Health Society, Bihar",        "https://shs.bihar.gov.in/",              "Parent body — state PIP, RoP and circulars",  "external", "State",    1,  "Active", "Yes", "Yes", "Yes"),
+    ("LNK01", "State Health Society, Bihar",        "https://shs.bihar.gov.in/",              "State Health Society — parent body for district health services",  "external", "State",    1,  "Active", "Yes", "Yes", "Yes"),
     ("LNK02", "National Health Mission, GoI",       "https://nhm.gov.in/",                    "National Health Mission portal",              "external", "National", 2,  "Active", "Yes", "Yes", "Yes"),
     ("LNK03", "MoHFW, Government of India",         "https://mohfw.gov.in/",                  "Ministry of Health and Family Welfare",       "external", "National", 3,  "Active", "Yes", "Yes", "No"),
     ("LNK04", "Government of Bihar",                "https://state.bihar.gov.in/",            "State government portal",                     "external", "State",    4,  "Active", "Yes", "Yes", "No"),
@@ -409,24 +297,29 @@ LINKS = [
 
 # ───────────────────────── 10. NOTICES ─────────────────────────
 NOTICES = [
-    ("NOT01", "PIP 2026-27 budget allocation published",
-     "FMR-wise budget allocation for F.Y. 2026-27 has been published on this portal. Block programme managers must review allocations against their approved activities and report discrepancies to the DPMU within 15 days.",
-     "2026-06-05", "PIP", "High", "", "pip.html?fy=2026-27", "Yes", "Yes", "Active", 1, ""),
-    ("NOT02", "Record of Proceedings F.Y. 2026-27 received",
-     "The Record of Proceedings for F.Y. 2026-27 has been received from the State Health Society and is available under the PIP section.",
-     "2026-06-02", "RoP", "High", "", "pip.html?fy=2026-27", "Yes", "Yes", "Active", 2, ""),
-    ("NOT03", "Quarterly District Health Society meeting",
-     "The quarterly governing body meeting of the District Health Society, Sheikhpura will be chaired by the District Magistrate. All programme officers are required to attend with FMR-wise expenditure statements.",
-     "2026-05-28", "Meeting", "Normal", MARK, "", "No", "Yes", "Active", 3, "2026-08-31"),
-    ("NOT04", "Ayushman Arogya Mandir monthly reporting format revised",
-     "The monthly reporting format for Ayushman Arogya Mandirs has been revised with effect from this quarter. The updated format is available in the Documents section.",
-     "2026-05-20", "Circular", "Normal", "", "documents.html", "No", "No", "Active", 4, ""),
-    ("NOT05", "Supplementary PIP proposals — submission window",
-     "Block units may submit supplementary proposals for F.Y. 2026-27 through the DPMU. Proposals must be accompanied by justification and unit cost references from the approved RoP.",
-     "2026-05-12", "PIP", "Normal", "", "", "No", "No", "Active", 5, "2026-09-30"),
-    ("NOT06", "Archived: Revised budget allocation 2025-26",
-     "Revised budget allocation for F.Y. 2025-26 issued after the mid-year review. Retained for reference.",
-     "2025-12-10", "Budget", "Low", "", "pip.html?fy=2025-26", "No", "No", "Archived", 6, ""),
+    ("NOT01", "Free health services available at every government facility",
+     "Delivery, medicines, tests, ambulance, TB treatment, dialysis, cataract surgery and much more are provided free of cost at government health facilities in Sheikhpura. If anyone asks you to pay for these, call 104 and complain.",
+     "2026-08-15", "General", "High", "", "benefits.html", "Yes", "Yes", "Active", 1, ""),
+
+    ("NOT02", "Ayushman Arogya Mandir now open in every panchayat",
+     "Your nearest Health Sub-Centre now provides twelve health services free — pregnancy care, child care, immunisation, treatment of common illnesses, screening for blood pressure and diabetes, and free video consultation with a doctor.",
+     "2026-08-10", "General", "High", "", "benefits.html", "Yes", "Yes", "Active", 2, ""),
+
+    ("NOT03", "Free screening for blood pressure, diabetes and cancer",
+     "Everyone aged 30 and above can get free screening for high blood pressure, diabetes and common cancers. Your ASHA can test you at home, or visit your nearest Ayushman Arogya Mandir. Medicines are also free every month.",
+     "2026-08-05", "General", "Normal", "", "benefits.html", "No", "Yes", "Active", 3, ""),
+
+    ("NOT04", "102 and 108 ambulances are free — including the ride home",
+     "Dial 102 for pregnant women and newborns, and 108 for any medical emergency or accident. The ambulance comes to you, the service is free, and it drops you back home after discharge. Nobody may charge you for it.",
+     "2026-07-28", "General", "Normal", "", "benefits.html", "No", "No", "Active", 4, ""),
+
+    ("NOT05", "TB treatment is free, and patients receive monthly nutrition support",
+     "Testing and the complete course of TB medicines are free at every government facility, including for drug-resistant TB. Every notified patient also receives money in their bank account each month for nutrition throughout treatment.",
+     "2026-07-20", "General", "Normal", "", "benefits.html", "No", "No", "Active", 5, ""),
+
+    ("NOT06", "Quarterly District Health Society meeting",
+     "The quarterly governing body meeting of the District Health Society, Sheikhpura will be chaired by the District Magistrate.",
+     "2026-05-28", "Meeting", "Low", "", "", "No", "No", "Active", 6, "2026-09-30"),
 ]
 
 # ───────────────────────── 11. CONTACT ─────────────────────────
@@ -453,7 +346,8 @@ CONTACT = [
 FOOTER = [
     ("FT01", "about",   "About This Portal", "", "", "", 1, 1, "Active", "No"),
     ("FT02", "link",    "Quick Links", "Home",            "index.html",     "", 2, 1, "Active", "No"),
-    ("FT03", "link",    "Quick Links", "Project Implementation Plan", "pip.html", "", 2, 2, "Active", "No"),
+    ("FT03", "link",    "Quick Links", "Free Health Services", "benefits.html", "", 2, 2, "Active", "No"),
+    ("FT16", "link",    "Quick Links", "Health Programmes", "programmes.html", "", 2, 6, "Active", "No"),
     ("FT04", "link",    "Quick Links", "Documents",       "documents.html", "", 2, 3, "Active", "No"),
     ("FT05", "link",    "Quick Links", "Notices",         "notices.html",   "", 2, 4, "Active", "No"),
     ("FT06", "link",    "Quick Links", "Contact Us",      "contact.html",   "", 2, 5, "Active", "No"),
@@ -526,8 +420,8 @@ _LONG_4 = (
 )
 _LONG_5 = (
     "The monthly review meeting of the District Health Society will be chaired by the District Magistrate. "
-    "All programme officers and block health managers are required to attend with FMR-wise expenditure "
-    "statements and physical progress against approved PIP targets for the current financial year."
+    "Progress of health services across all six blocks will be reviewed, including maternal and child health, "
+    "immunisation, disease control programmes and the functioning of Ayushman Arogya Mandirs."
 )
 _LONG_6 = (
     "A special measles-rubella vaccination drive will be conducted across all blocks of Sheikhpura district "
@@ -572,7 +466,7 @@ POSTS = [
      "No", "Published", "2026-08-14", "2026-08-14"),
 
     ("POST005", "dhs-monthly-review-august-2026", "Monthly District Health Society Review Meeting",
-     "Monthly review chaired by the District Magistrate. Programme officers must attend with FMR-wise expenditure and physical progress statements.",
+     "Monthly review of health services across the district, chaired by the District Magistrate.",
      _LONG_5, "Event", "PCAT05", "", "2026-08-28", "2026-08-28", "11:00 AM",
      "Collectorate Conference Hall", "Sheikhpura", "", "", "", "2026-08-16", "", "District Programme Manager",
      "No", "Published", "2026-08-16", "2026-08-16"),
@@ -637,14 +531,6 @@ LISTS = [
     ("Status",           "Archived",                "Row is shown only in archive views / older financial years"),
     ("Yes_No",           "Yes",                     ""),
     ("Yes_No",           "No",                      ""),
-    ("Document_Type",    "PIP",                     "Project Implementation Plan"),
-    ("Document_Type",    "RoP",                     "Record of Proceedings"),
-    ("Document_Type",    "Supplementary PIP",       ""),
-    ("Document_Type",    "Supplementary Approval",  ""),
-    ("Document_Type",    "Budget Allocation Letter",""),
-    ("Document_Type",    "Revised Budget",          ""),
-    ("Document_Type",    "Category Allocation",     "Allocation file for one flexi pool"),
-    ("Document_Type",    "Category Guidelines",     "Guidelines file for one flexi pool"),
     ("Document_Type",    "Programme Guideline",     "Guideline for a single FMR head"),
     ("Document_Type",    "Format",                  "Reporting or data-entry format"),
     ("Document_Type",    "Report",                  ""),
@@ -660,9 +546,6 @@ LISTS = [
     ("Priority",         "High",                    "Shown first, red flag"),
     ("Priority",         "Normal",                  ""),
     ("Priority",         "Low",                     ""),
-    ("Notice_Category",  "PIP",                     ""),
-    ("Notice_Category",  "RoP",                     ""),
-    ("Notice_Category",  "Budget",                  ""),
     ("Notice_Category",  "Circular",                ""),
     ("Notice_Category",  "Meeting",                 ""),
     ("Notice_Category",  "Recruitment",             ""),
@@ -744,12 +627,6 @@ def main():
           ["Year_ID", "Financial_Year", "Display_Name", "Start_Year", "End_Year",
            "Is_Current", "Status", "Display_Order"], FY)
 
-    sheet(wb, "PIP_Documents",
-          ["Doc_ID", "Year_ID", "Document_Name", "Document_Type", "Description",
-           "File_URL", "File_Type", "File_Size_MB", "Issue_Date", "Upload_Date",
-           "Display_Order", "Status"], PIPDOCS,
-          {"Document_Name": 40, "Description": 62, "File_URL": 30, "Document_Type": 24})
-
     sheet(wb, "Program_Categories",
           ["Category_ID", "Category_Name", "Short_Name", "Description", "Icon",
            "Display_Order", "Status"], CATS,
@@ -757,9 +634,9 @@ def main():
 
     sheet(wb, "Programs_FMR",
           ["Program_ID", "Year_ID", "Category_ID", "FMR_Code", "Program_Name",
-           "Program_Name_HI", "Program_Description", "Budget_Allocation_Lakh",
-           "Budget_Guidelines", "Nodal_Officer", "Display_Order", "Status"], PROGRAMS,
-          {"Program_Name": 46, "Program_Description": 62, "Budget_Guidelines": 90,
+           "Program_Name_HI", "Program_Description", "Nodal_Officer",
+           "Display_Order", "Status"], PROGRAMS,
+          {"Program_Name": 46, "Program_Description": 74,
            "Nodal_Officer": 30, "Program_Name_HI": 18})
 
     sheet(wb, "Documents",
@@ -834,13 +711,10 @@ def main():
         wb[sheet_name].add_data_validation(dv)
         dv.add(f"{col_letter}2:{col_letter}{count + 1}")
 
-    add_dv("Programs_FMR",       "L", "Status",          len(PROGRAMS))
+    add_dv("Programs_FMR",       "J", "Status",          len(PROGRAMS))
     add_dv("Documents",          "M", "Status",          len(DOCUMENTS))
     add_dv("Documents",          "F", "Document_Type",   len(DOCUMENTS))
     add_dv("Documents",          "I", "File_Type",       len(DOCUMENTS))
-    add_dv("PIP_Documents",      "L", "Status",          len(PIPDOCS))
-    add_dv("PIP_Documents",      "D", "Document_Type",   len(PIPDOCS))
-    add_dv("PIP_Documents",      "G", "File_Type",       len(PIPDOCS))
     add_dv("Notices",            "K", "Status",          len(NOTICES))
     add_dv("Notices",            "F", "Priority",        len(NOTICES))
     add_dv("Notices",            "E", "Notice_Category", len(NOTICES))
@@ -878,7 +752,6 @@ def main():
     uniq("Program_Categories", [r[0] for r in CATS])
     uniq("Programs_FMR", [r[0] for r in PROGRAMS])
     uniq("Documents", [r[0] for r in DOCUMENTS])
-    uniq("PIP_Documents", [r[0] for r in PIPDOCS])
     uniq("Notices", [r[0] for r in NOTICES])
     uniq("Important_Links", [r[0] for r in LINKS])
     uniq("Post_Categories", [r[0] for r in PCATS])
@@ -930,8 +803,6 @@ def main():
         if r[1] and r[1] not in fy_ids: errs.append(f"Documents {r[0]}: bad Year_ID")
         if r[2] and r[2] not in cat_ids: errs.append(f"Documents {r[0]}: bad Category_ID")
         if r[3] and r[3] not in prog_ids: errs.append(f"Documents {r[0]}: bad Program_ID {r[3]}")
-    for r in PIPDOCS:
-        if r[1] not in fy_ids: errs.append(f"PIP_Documents {r[0]}: bad Year_ID")
 
     # one FMR code may not repeat within the same year
     seen = set()
@@ -950,7 +821,6 @@ def main():
     print(f"  Settings            {len(SETTINGS):>4}")
     print(f"  Navigation          {len(NAV):>4}")
     print(f"  Financial_Years     {len(FY):>4}")
-    print(f"  PIP_Documents       {len(PIPDOCS):>4}")
     print(f"  Program_Categories  {len(CATS):>4}")
     print(f"  Programs_FMR        {len(PROGRAMS):>4}   " +
           "  ".join(f"{k}={v}" for k, v in sorted(counts.items(), reverse=True)))

@@ -1,0 +1,5 @@
+﻿Year_ID,Financial_Year,Display_Name,Start_Year,End_Year,Is_Current,Status,Display_Order
+FY2627,2026-27,F.Y. 2026-2027,2026,2027,Yes,Active,1
+FY2526,2025-26,F.Y. 2025-2026,2025,2026,No,Active,2
+FY2425,2024-25,F.Y. 2024-2025,2024,2025,No,Active,3
+FY2324,2023-24,F.Y. 2023-2024,2023,2024,No,Archived,4

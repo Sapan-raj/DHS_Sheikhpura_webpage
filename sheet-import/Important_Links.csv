@@ -1,0 +1,15 @@
+﻿Link_ID,Link_Name,URL,Description,Icon,Category,Display_Order,Status,Is_External,Show_In_Footer,Show_On_Home
+LNK01,"State Health Society, Bihar",https://shs.bihar.gov.in/,State Health Society — parent body for district health services,external,State,1,Active,Yes,Yes,Yes
+LNK02,"National Health Mission, GoI",https://nhm.gov.in/,National Health Mission portal,external,National,2,Active,Yes,Yes,Yes
+LNK03,"MoHFW, Government of India",https://mohfw.gov.in/,Ministry of Health and Family Welfare,external,National,3,Active,Yes,Yes,No
+LNK04,Government of Bihar,https://state.bihar.gov.in/,State government portal,external,State,4,Active,Yes,Yes,No
+LNK05,"Health Department, Bihar",https://state.bihar.gov.in/health/,"Department of Health, Government of Bihar",external,State,5,Active,Yes,Yes,No
+LNK06,Sheikhpura District Portal,https://sheikhpura.nic.in/,District administration website,external,District,6,Active,Yes,Yes,Yes
+LNK07,BHAVYA Citizen Health Portal,https://mera.bhavyabiharhealth.in/,Bihar health citizen services platform,external,Portal,7,Active,Yes,Yes,Yes
+LNK08,HMIS — GoI Web Portal,https://hmis.mohfw.gov.in/,Health Management Information System,external,Portal,8,Active,Yes,Yes,Yes
+LNK09,RCH Portal,https://rch.nhm.gov.in/RCH/,Reproductive and Child Health portal,external,Portal,9,Active,Yes,Yes,No
+LNK10,Ni-kshay (TB),https://www.nikshay.in/,National TB elimination reporting system,external,Portal,10,Active,Yes,Yes,No
+LNK11,ABDM — Ayushman Bharat Digital,https://abdm.gov.in/,Digital health mission,external,Portal,11,Active,Yes,Yes,No
+LNK12,BMSICL,https://bmsicl.gov.in/,Bihar Medical Services & Infrastructure Corp.,external,State,12,Active,Yes,Yes,No
+LNK13,"e-Procurement Portal, Bihar",https://eproc2.bihar.gov.in/,State e-procurement,external,State,13,Active,Yes,Yes,No
+LNK14,IHIP — Integrated Health Info Platform,https://ihip.mohfw.gov.in/,Disease surveillance reporting,external,Portal,14,Active,Yes,Yes,No

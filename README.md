@@ -1,6 +1,8 @@
 # Sheikhpura District Health PIP Portal
 
-A data-driven Project Implementation Plan portal for the **District Health Society, Sheikhpura, Bihar**, modelled on the information architecture of the [SHS Bihar PIP portal](https://shs.bihar.gov.in/project-implementation-plan) but rebuilt so that **all content lives in Google Sheets** and a non-developer maintains the site by editing rows.
+A citizen-first health portal for the **District Health Society, Sheikhpura, Bihar**. It tells every resident what free health services they are entitled to, where to go, what to carry and who to call — with **all content in Google Sheets**, maintained by a non-developer editing rows.
+
+> **The district's financial plan is not published here.** Budget figures, PIP and RoP documents and allocation files were removed at the District Magistrate's direction — from the sheet *and* stripped server-side. See [`MASTER_REFERENCE.md` §22](MASTER_REFERENCE.md).
 
 > **One Google Sheet → One Source of Truth → Dynamic Website**
 
@@ -46,9 +48,9 @@ Open <http://localhost:8791>. Runs against the same live Google Sheet as product
 ```
 Sheikhpura_PIP_Portal/
 ├── index.html              Home
-├── pip.html                PIP — year selector, documents, FMR tables
-├── program.html            One FMR budget head
-├── benefits.html           Free health services for citizens — what you get, where to go
+├── benefits.html           Free health services — what you get, where to go, what to carry
+├── programmes.html         The 24 health programmes residents can use
+├── program.html            One programme: what it does and what you get
 ├── documents.html          Searchable repository, filtered + paginated
 ├── notices.html            Notices and announcements
 ├── events.html             Events & What's New listing

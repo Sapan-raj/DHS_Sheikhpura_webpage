@@ -23,7 +23,6 @@ SHEET_MAP = {
     "Settings":            "settings",
     "Navigation":          "navigation",
     "Financial_Years":     "financialYears",
-    "PIP_Documents":       "pipDocuments",
     "Program_Categories":  "categories",
     "Programs_FMR":        "programs",
     "Documents":           "documents",

@@ -1,134 +1,101 @@
-# What to change in your Google Sheet
+# Updating your Google Sheet — remove the financial plan
 
-Sheet: `1V2FbGpfVuX1Z7OhL0yEWQMs43t4QgvwQ4DSfmHEm0vs`
+**Why:** the District Magistrate has directed that the district's financial plan must not
+be public. The portal is now built entirely around what residents can use.
 
-I cannot write to your sheet, so here is exactly what to do. **About 10 minutes.**
-
-Four tabs are affected — one is new, three changed:
-
-| Tab | Change | Rows |
-|---|---|---|
-| **`Program_Benefits`** | 🆕 **NEW TAB** — what citizens actually get | 40 |
-| `Navigation` | Added a "Free Services" menu item, renumbered the rest | 10 |
-| `Home_Content` | Added the `sec_benefits` home-page section | 15 |
-| `_Lists` | Added the 7 `Benefit_Type` dropdown values | 66 |
+**Sheet:** `1V2FbGpfVuX1Z7OhL0yEWQMs43t4QgvwQ4DSfmHEm0vs`
 
 ---
 
-## Option A — Replace the whole workbook (fastest, ~2 min)
+## ⚠️ FIRST — back up, before you change anything
 
-Use this **if you have not made any manual edits** in Google Sheets since uploading.
+**File → Make a copy** → name it `PIP Data Archive — pre-Aug-2026`.
 
-1. Open your Google Sheet
-2. **File → Import → Upload**
-3. Drop in `Sheikhpura_Health_PIP_Website_Database.xlsx` from the project folder
-4. Import location: **Replace spreadsheet**
-5. Import
-
-Everything is updated at once. **This wipes any edits you made in Sheets** — if you have made any, use Option B.
+You are about to permanently delete the budget figures, the PIP/RoP document records
+and the 30 allocation/guideline file records. **Your district may still need those
+internally** even though the public should not see them. Once they are gone from the
+live sheet they are gone.
 
 ---
 
-## Option B — Import the four tabs individually (safe, ~10 min)
+## What changes
 
-### B1. Add the new `Program_Benefits` tab
-
-1. **File → Import → Upload** → `sheet-import/Program_Benefits.csv`
-2. Import location: **Insert new sheet(s)**
-3. Separator type: **Comma**
-4. Convert text to numbers/dates: **turn this OFF** — it would mangle `RCH.1` into a number
-5. Import
-6. Rename the new tab from `Program_Benefits.csv` to exactly **`Program_Benefits`**
-
-> The tab name must match exactly, including the underscore. The code looks it up by name.
-
-### B2. Replace `Navigation`, `Home_Content` and `_Lists`
-
-For each of the three:
-
-1. Open the existing tab, select all (**Ctrl+A**), **Delete**
-2. Click cell **A1**
-3. **File → Import → Upload** → the matching CSV
-4. Import location: **Replace current sheet**
-5. Convert text to numbers/dates: **OFF**
-6. Import
-
-### B3. Format the fragile columns as text
-
-On `Program_Benefits`, select column **B (`FMR_Code`)** → **Format → Number → Plain text**.
-
-Otherwise Sheets may read `RCH.1` as the number 1 and `NCD.10` as 10, and every benefit will silently stop matching its programme.
-
-### B4. Re-apply the dropdowns (optional but recommended)
-
-On `Program_Benefits`:
-
-| Column | Rule |
+| Tab | Change |
 |---|---|
-| **H** — `Benefit_Type` | Data → Data validation → Dropdown (from a range) → `_Lists!B:B` |
-| **O** — `Status` | same |
+| **`PIP_Documents`** | 🔴 **DELETE THE WHOLE TAB** — PIP, RoP, budget letters, supplementary approvals |
+| `Programs_FMR` | 🔴 Two columns removed: `Budget_Allocation_Lakh`, `Budget_Guidelines`. 157 rows stay |
+| `Documents` | 🔴 35 rows → **5**. The 30 Category Allocation / Category Guidelines rows are gone |
+| `Navigation` | PIP and Programmes replaced by Free Services, Health Programmes, Events & News |
+| `Home_Content` | PIP stat tiles and sections replaced with citizen ones |
+| `Notices` | The 4 PIP/budget notices replaced with 5 citizen service notices |
+| `Settings` | Subtitle is now "Health Services for the People of Sheikhpura" |
+| `_Lists` | Financial document types and notice categories removed |
+| `Program_Benefits` | **Unchanged** — all 40 citizen entitlements intact |
+
+---
+
+## Easiest: replace the whole workbook (2 minutes)
+
+1. **File → Make a copy** (the backup above) — do not skip this
+2. **File → Import → Upload** → `Sheikhpura_Health_PIP_Website_Database.xlsx`
+3. Import location: **Replace spreadsheet**
+4. Import
+5. Delete the leftover `PIP_Documents` tab if the import leaves it behind — right-click the tab → Delete
+
+Then re-do the two formatting steps that never survive an import:
+
+- `Programs_FMR` column **D (`FMR_Code`)** → **Format → Number → Plain text**
+- `Program_Benefits` column **B (`FMR_Code`)** → **Format → Number → Plain text**
+
+> If `FMR_Code` is read as a number, `RCH.1` becomes `1` and every benefit silently
+> stops matching its programme.
+
+---
+
+## Or tab by tab
+
+CSVs for every tab are in this folder. For each changed tab: select all (**Ctrl+A**),
+Delete, click **A1**, then **File → Import → Upload** → the CSV → **Replace current
+sheet** → **Convert text to numbers: OFF**.
+
+Then **right-click the `PIP_Documents` tab → Delete**.
 
 ---
 
 ## Then publish
 
-Admin dashboard → **↻ Clear cache & sync now**
-or in the sheet: **PIP Portal → Clear cache**
-
-The new "Free Services" menu item and the citizen benefits appear immediately.
+Admin → **↻ Clear cache & sync now**, or in the sheet: **PIP Portal → Clear cache**.
 
 ---
 
-## Verify it worked
+## Belt and braces: the code strips it too
 
-1. Open `/benefits.html` — you should see **40 services** grouped by health area
-2. Open `/pip.html` — the FMR table should show green "N free services" chips
-3. Open `/program.html?fy=2026-27&fmr=RCH.1` — "What you get from this programme" with 4 cards
-4. Admin dashboard → Validation — should show **0 errors**
+Even if an old sheet is restored by accident, `publicView()` in `Code.gs` removes
+`Budget_Allocation_Lakh`, `Budget_Guidelines`, every `PIP_Documents` row and every
+Category Allocation / Guidelines document before anything reaches a browser.
 
-If the benefits do not appear, the usual cause is B3: `FMR_Code` was converted to a number on import. Check that column B reads `RCH.1`, not `1`.
+So the financial data is removed in **two independent places** — the sheet and the API.
+You would have to undo both for it to become public again.
 
----
+**To activate that server-side guard you must update the Apps Script:**
 
-## ⚠ Before this goes live to the public
+1. Apps Script editor → select all in `Code.gs` → paste the new version from
+   [`apps-script/Code.gs`](../apps-script/Code.gs)
+2. **Ctrl+S**
+3. **Deploy → Manage deployments → ✏️ → Version: New version → Deploy**
 
-**Verify every cash amount.** Five rows carry a `(VERIFY …)` marker in the `Amount` column:
-
-| Row | Benefit | What to confirm |
-|---|---|---|
-| BEN001 | Janani Suraksha Yojana | Current Bihar JSY rate, rural and urban |
-| BEN006 | Nutrition Rehabilitation Centre | Mother's wage compensation rate |
-| BEN014 | Sterilisation compensation | Current male and female rates |
-| BEN016 | Kala-azar | Current wage compensation rate |
-| BEN020 | Ni-kshay Poshan Yojana | Current monthly amount |
-
-The figures used are the standard national / Low-Performing-State entitlements that Bihar follows, but state rates are revised periodically and **you know the current Sheikhpura position better than any external source**.
-
-The `(VERIFY …)` text is **hidden from the public page** — citizens never see it. It appears only as a warning on your Admin dashboard, so it works as a checklist. Delete the `(VERIFY …)` part from the cell once you have confirmed each figure and the warning disappears.
-
-Everything else — service names, eligibility, where to go, what to carry, helplines — is standard NHM entitlement information and does not carry a marker. Still worth a read-through by the DPMU before launch.
+> **Manage deployments**, not *New deployment* — the latter mints a different URL.
 
 ---
 
-## Adding your own benefits later
+## What the public sees now
 
-One row in `Program_Benefits`:
+```
+Home → Free Services → Health Programmes → Events & News → Notices → Documents → Contact
+```
 
-| Column | What to put |
-|---|---|
-| `Benefit_ID` | Next free ID, e.g. `BEN041` |
-| `FMR_Code` | The programme it belongs to, e.g. `NCD.5` — must exist in `Programs_FMR` |
-| `Year_ID` | **Leave blank** so it shows in every year. Fill it only for a one-year scheme |
-| `Benefit_Title` | Plain language. "Free cataract surgery", not "NPCB+VI service delivery" |
-| `Benefit_Title_HI` | Hindi — most citizens read this first |
-| `Benefit_Description` | Two or three sentences. What it is, why it matters |
-| `Benefit_Type` | Pick from the dropdown |
-| `Amount` | `Free` or the rupee figure. Start with `Free` and it renders with a green tick |
-| `Who_Is_Eligible` | Write it as the citizen would ask: "Pregnant women", "Anyone above 30" |
-| `Where_To_Avail` | Name real places — "PHC Chewara", not "designated facility" |
-| `Documents_Required` | Or `None` |
-| `Helpline` | `104`, or `102 / 108` for multiple |
-| `Display_Order` | Order within that programme |
-| `Status` | `Active` |
-
-It appears on the Free Services page, the programme page and the PIP table chip after the next sync. No code change.
+- **40 free services** — what you get, who qualifies, where to go, what to carry, who to call
+- **24 health programmes** — only those that actually give a resident something.
+  The 35 purely administrative heads (programme management, technical assistance,
+  untied grants) no longer appear anywhere public
+- **No budget figures, no FMR codes, no PIP or RoP documents, anywhere**

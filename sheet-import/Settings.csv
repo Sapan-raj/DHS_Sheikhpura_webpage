@@ -1,0 +1,33 @@
+﻿Setting_Key,Setting_Label,Setting_Value,Group,Notes
+district_name,District Name,Sheikhpura,Identity,Appears in header and page titles
+district_name_hi,District Name (Hindi),शेखपुरा,Identity,
+district_code,District Code (LGD),225,Identity,Bihar LGD district code
+state_name,State,Bihar,Identity,
+site_title,Website Title,"District Health Society, Sheikhpura",Identity,Browser tab + header line 1
+site_title_hi,Website Title (Hindi),"जिला स्वास्थ्य समिति, शेखपुरा",Identity,
+site_subtitle,Subtitle,Health Services for the People of Sheikhpura,Identity,Header line 2
+site_subtitle_hi,Subtitle (Hindi),शेखपुरा की जनता के लिए स्वास्थ्य सेवाएं,Identity,
+parent_body,Parent Body,"State Health Society, Bihar  |  National Health Mission",Identity,
+logo_url,Logo URL,assets/img/emblem.svg,Branding,Leave as-is to use the built-in emblem
+favicon_url,Favicon URL,assets/img/favicon.svg,Branding,
+primary_color,Primary Colour,#1B3A5C,Branding,"Hex. Header, nav, footer"
+accent_color,Accent Colour,#F2994A,Branding,"Hex. Hover, highlights"
+current_financial_year,Current Financial Year,2026-27,Content,Must match a Financial_Year value in Financial_Years
+site_status,Website Status,Live,Content,Live | Maintenance. Maintenance shows a banner
+maintenance_message,Maintenance Message,The portal is undergoing scheduled maintenance. Data shown may not be current.,Content,
+contact_email,Primary Email,NEEDS MANUAL INPUT,Contact,e.g. dhs-sheikhpura-bih@gov.in — confirm official ID
+contact_phone,Office Phone,NEEDS MANUAL INPUT,Contact,STD code + number
+helpline_104,Health Helpline,104,Contact,Toll free
+helpline_102,Ambulance Helpline,102,Contact,Toll free
+office_address,Office Address,"Office of the Civil Surgeon, Sadar Hospital Campus, Sheikhpura, Bihar - 811105",Contact,Verify PIN before go-live
+footer_copyright,Copyright Line,"© 2026 District Health Society, Sheikhpura, Government of Bihar. All rights reserved.",Footer,
+footer_credit,Developed By Line,"Designed & Developed by District IT Cell, Sheikhpura",Footer,
+footer_about,Footer About Text,"The District Health Society, Sheikhpura implements the National Health Mission across the district. This portal publishes the health services available free to every resident, along with the events, notices and contacts you may need.",Footer,
+social_facebook,Facebook URL,,Social,Blank hides the icon
+social_twitter,Twitter / X URL,,Social,Blank hides the icon
+social_youtube,YouTube URL,,Social,Blank hides the icon
+google_maps_url,Google Maps URL,https://www.google.com/maps/search/Sadar+Hospital+Sheikhpura+Bihar,Contact,
+show_visitor_counter,Show Visitor Counter,Yes,Footer,Yes | No
+records_per_page,Records Per Page,25,Behaviour,Pagination size on Documents page
+cache_minutes,Browser Cache (minutes),30,Behaviour,How long the site reuses data before re-fetching
+enable_hindi,Enable Hindi Toggle,Yes,Behaviour,Yes | No

@@ -10,7 +10,14 @@
 | **Repository** | <https://github.com/Sapan-raj/DHS_Sheikhpura_webpage> |
 | **Admin** | `/admin.html` |
 
-*Last updated: 18 August 2026 · 40 files · 8 commits · live end to end*
+> ### 🔴 Financial data removed — 18 August 2026
+> At the District Magistrate's direction, the district's financial plan is no longer
+> published. Budget figures, PIP and RoP documents, and all allocation/guideline files
+> have been **deleted from the sheet** and are **also stripped server-side** by
+> `publicView()`, so an accidental restore cannot re-expose them. The portal is now
+> built entirely around what residents can use. See §22.
+
+*Last updated: 18 August 2026 · citizen-first rebuild*
 
 ---
 
@@ -37,6 +44,7 @@
 19. [Troubleshooting](#19-troubleshooting)
 20. [Glossary](#20-glossary)
 21. [What to do next](#21-what-to-do-next)
+22. [The citizen-first change](#22-the-citizen-first-change-18-august-2026)
 
 ---
 
@@ -45,7 +53,7 @@
 | | |
 |---|---|
 | **What** | Public information portal for the District Health Society, Sheikhpura, Bihar |
-| **Purpose** | Publish the district's Project Implementation Plan (PIP), Record of Proceedings (RoP), FMR-wise budget allocations, programme guidelines, documents, notices and events |
+| **Purpose** | Tell every resident of Sheikhpura what free health services they are entitled to, where to go, what to carry and who to call — plus district events, notices and contacts |
 | **Modelled on** | [shs.bihar.gov.in/project-implementation-plan](https://shs.bihar.gov.in/project-implementation-plan) — information architecture only, not the code |
 | **Core principle** | **One Google Sheet → one source of truth → dynamic website** |
 | **Stack** | Static HTML/CSS/JS · Google Apps Script API · Google Sheets database · Google Drive media |
@@ -54,7 +62,7 @@
 | **Data source** | `google-sheets` via Apps Script — **live**, not the bundled snapshot |
 | **Validation** | **0 errors**, 56 warnings (all expected — see §17) |
 | **Master sheet** | `1V2FbGpfVuX1Z7OhL0yEWQMs43t4QgvwQ4DSfmHEm0vs` |
-| **Pages** | 10 |
+| **Pages** | 10 (PIP page removed, Health Programmes added) |
 | **Sheets** | 17 data + 1 README |
 | **Sample records** | 453 |
 | **Public payload** | 151.2 KB |
@@ -1342,3 +1350,75 @@ production, because they need a real login.
 - Cloudinary migration if image traffic grows — only `mediaUpload()` changes
 - Gzip or split the cache payload if the dataset meaningfully outgrows 100 KB
 - Real Hindi translations beyond `Program_Benefits` (the toggle and `_HI` columns already exist throughout)
+
+---
+
+## 22. The citizen-first change (18 August 2026)
+
+### Why
+
+The District Magistrate directed that the district's financial plan should not be
+public. The portal was originally modelled on the SHS Bihar **PIP** portal, so budget
+allocations, RoP documents and FMR accounting codes were front and centre. They are
+now gone, and the site is organised around what a resident can actually use.
+
+### Removed
+
+| What | Where it was | Now |
+|---|---|---|
+| `Budget_Allocation_Lakh` | `Programs_FMR` column | column deleted |
+| `Budget_Guidelines` | `Programs_FMR` column | column deleted |
+| `PIP_Documents` | whole sheet, 12 rows | **sheet deleted** |
+| Category Allocation / Guidelines files | 30 of 35 `Documents` rows | deleted; 5 citizen documents remain |
+| `pip.html` | year selector, FMR tables, allocation totals | **page deleted** |
+| FMR codes in the UI | chips on PIP, programme and benefit cards | replaced by the programme name |
+| 4 PIP/budget notices | `Notices` | replaced with 5 citizen service notices |
+| "budget head" wording | 157 programme descriptions | reworded for residents |
+
+### Kept
+
+**`Programs_FMR` survives** — because `Program_Benefits` links to it by `FMR_Code`.
+Deleting it would break all 40 citizen entitlements. It is now an internal lookup:
+the code is the join key, never shown to a visitor.
+
+### Two independent guards
+
+1. **The sheet** no longer holds the data.
+2. **`publicView()`** in `Code.gs` strips `Budget_Allocation_Lakh`, `Budget_Guidelines`,
+   all `pipDocuments`, and any document typed PIP / RoP / Supplementary / Budget
+   Allocation Letter / Revised Budget / Category Allocation / Category Guidelines.
+
+Both would have to be undone for financial data to become public again.
+
+### New structure
+
+```
+Home -> Free Services -> Health Programmes -> Events & News -> Notices -> Documents -> Contact
+```
+
+| Page | Purpose |
+|---|---|
+| `benefits.html` | 40 entitlements — what you get, who qualifies, where to go, what to carry |
+| `programmes.html` | **new** — the 24 programmes that give residents something, grouped by health area |
+| `program.html` | **rewritten** — one programme: what it does and what you get. No money |
+
+The 35 purely administrative heads — programme management, technical assistance,
+untied grants — are filtered out of every public view by `Q.programmes()`, which
+returns only programmes with at least one benefit.
+
+### Verified
+
+| Check | Result |
+|---|---|
+| 15 financial terms swept across the public payload | **none found** |
+| Payload size | 221 KB -> **170 KB** |
+| `pip.html` | HTTP 404 |
+| Navigation | Home · Free Services · Health Programmes · Events & News · Notices · Documents · Contact · BHAVYA |
+| Programmes page | 24 cards |
+| Programme detail | Maternal Health -> 4 benefits, 0 accounting terms |
+| Documents | 5, all citizen-facing (Guideline, Format x2, Circular, Report) |
+| Workbook integrity | PASS, 0 errors |
+
+> `Rs 1,400` on the JSY card and "would cost lakhs privately" on the TB and hepatitis
+> cards are **deliberate** — they are citizen entitlements and the value of a free
+> service, not district accounting.

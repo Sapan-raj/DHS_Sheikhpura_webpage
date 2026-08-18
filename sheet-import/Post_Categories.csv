@@ -1,0 +1,19 @@
+﻿Category_ID,Category_Name,Slug,Colour,Icon,Display_Order,Status
+PCAT01,Health Campaign,health-campaign,#0F7B3E,campaign,1,Active
+PCAT02,Awareness Program,awareness-program,#1B7FA8,megaphone,2,Active
+PCAT03,Training,training,#6941C6,training,3,Active
+PCAT04,Workshop,workshop,#6941C6,workshop,4,Active
+PCAT05,Meeting,meeting,#475467,meeting,5,Active
+PCAT06,Health Camp,health-camp,#0F7B3E,camp,6,Active
+PCAT07,Vaccination Drive,vaccination-drive,#B54708,vaccine,7,Active
+PCAT08,Maternal Health,maternal-health,#C11574,maternal,8,Active
+PCAT09,Child Health,child-health,#C11574,child,9,Active
+PCAT10,NCD,ncd,#B42318,ncd,10,Active
+PCAT11,Public Health,public-health,#1B7FA8,public,11,Active
+PCAT12,Digital Health,digital-health,#3538CD,digital,12,Active
+PCAT13,BHAVYA,bhavya,#3538CD,bhavya,13,Active
+PCAT14,ABDM / ABHA,abdm-abha,#3538CD,abdm,14,Active
+PCAT15,District Achievement,district-achievement,#0F7B3E,award,15,Active
+PCAT16,Government Initiative,government-initiative,#1B3A5C,gov,16,Active
+PCAT17,Important Announcement,important-announcement,#B42318,alert,17,Active
+PCAT18,Other,other,#475467,dot,18,Active

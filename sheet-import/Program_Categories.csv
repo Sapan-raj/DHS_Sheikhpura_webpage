@@ -1,0 +1,6 @@
+﻿Category_ID,Category_Name,Short_Name,Description,Icon,Display_Order,Status
+CAT01,"RCH Flexible Pool (including RI, IPPI, NIDDCP)",RCH,"Reproductive, Maternal, Newborn, Child and Adolescent Health, Routine Immunisation, Pulse Polio and iodine deficiency control.",heart,1,Active
+CAT02,NDCP Flexi Pool,NDCP,"National Disease Control Programmes — surveillance, vector-borne disease, leprosy, tuberculosis, viral hepatitis and rabies.",shield,2,Active
+CAT03,NCD Flexi Pool,NCD,"Non-Communicable Disease programmes — blindness, mental health, elderly care, tobacco control, diabetes and cardiovascular disease.",pulse,3,Active
+CAT04,Health System Strengthening (HSS) - Urban,HSS(U),"Urban health system strengthening under NUHM — urban primary healthcare, community engagement, quality assurance and human resources.",city,4,Active
+CAT05,Health System Strengthening (HSS) - Rural,HSS,"Rural health system strengthening — comprehensive primary healthcare, blood services, referral transport, infrastructure, HR and IT systems.",hospital,5,Active

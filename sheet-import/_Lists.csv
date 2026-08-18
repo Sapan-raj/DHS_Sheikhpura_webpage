@@ -4,14 +4,6 @@ Status,Inactive,Row is hidden from the website but kept in the sheet
 Status,Archived,Row is shown only in archive views / older financial years
 Yes_No,Yes,
 Yes_No,No,
-Document_Type,PIP,Project Implementation Plan
-Document_Type,RoP,Record of Proceedings
-Document_Type,Supplementary PIP,
-Document_Type,Supplementary Approval,
-Document_Type,Budget Allocation Letter,
-Document_Type,Revised Budget,
-Document_Type,Category Allocation,Allocation file for one flexi pool
-Document_Type,Category Guidelines,Guidelines file for one flexi pool
 Document_Type,Programme Guideline,Guideline for a single FMR head
 Document_Type,Format,Reporting or data-entry format
 Document_Type,Report,
@@ -27,9 +19,6 @@ File_Type,LINK,External page rather than a file
 Priority,High,"Shown first, red flag"
 Priority,Normal,
 Priority,Low,
-Notice_Category,PIP,
-Notice_Category,RoP,
-Notice_Category,Budget,
 Notice_Category,Circular,
 Notice_Category,Meeting,
 Notice_Category,Recruitment,

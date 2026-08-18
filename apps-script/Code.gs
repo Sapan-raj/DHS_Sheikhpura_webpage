@@ -27,7 +27,6 @@ var SHEET_MAP = {
   'Settings':            'settings',
   'Navigation':          'navigation',
   'Financial_Years':     'financialYears',
-  'PIP_Documents':       'pipDocuments',
   'Program_Categories':  'categories',
   'Programs_FMR':        'programs',
   'Documents':           'documents',
@@ -68,7 +67,6 @@ var LOCKOUT_SECONDS = 900;    // 15 min
 var REQUIRED = {
   navigation:     ['Menu_ID', 'Menu_Label_EN', 'URL'],
   financialYears: ['Year_ID', 'Financial_Year', 'Display_Name'],
-  pipDocuments:   ['Doc_ID', 'Year_ID', 'Document_Name', 'Document_Type'],
   categories:     ['Category_ID', 'Category_Name', 'Short_Name'],
   programs:       ['Program_ID', 'Year_ID', 'Category_ID', 'FMR_Code', 'Program_Name'],
   documents:      ['Document_ID', 'Document_Title', 'Document_Type'],
@@ -87,7 +85,7 @@ var REQUIRED = {
 };
 
 var PK = {
-  navigation: 'Menu_ID', financialYears: 'Year_ID', pipDocuments: 'Doc_ID',
+  navigation: 'Menu_ID', financialYears: 'Year_ID',
   categories: 'Category_ID', programs: 'Program_ID', documents: 'Document_ID',
   home: 'Section_Key', links: 'Link_ID', notices: 'Notice_ID',
   contacts: 'Contact_ID', footer: 'Footer_ID',
@@ -442,6 +440,28 @@ function crossValidate(d) {
 function publicView(d) {
   var out = {}, k;
   for (k in d) if (d.hasOwnProperty(k)) out[k] = d[k];
+
+  /* ── Financial data is never sent to a browser. ──
+     Removed from the public portal at the District Magistrate's direction: this
+     site publishes what residents can use, not the district's financial plan.
+     Stripped here as well as in the sheet, so an old or restored sheet cannot
+     leak budget figures. */
+  out.pipDocuments = [];
+  out.programs = (d.programs || []).map(function (p) {
+    var c = {}, f;
+    for (f in p) {
+      if (!p.hasOwnProperty(f)) continue;
+      if (f === 'Budget_Allocation_Lakh' || f === 'Budget_Guidelines') continue;
+      c[f] = p[f];
+    }
+    return c;
+  });
+  var MONEY_DOCS = { 'Category Allocation': 1, 'Category Guidelines': 1, 'PIP': 1,
+                     'RoP': 1, 'Supplementary PIP': 1, 'Supplementary Approval': 1,
+                     'Budget Allocation Letter': 1, 'Revised Budget': 1 };
+  out.documents = (d.documents || []).filter(function (x) {
+    return !MONEY_DOCS[String(x.Document_Type || '').trim()];
+  });
 
   var now = new Date();
   out.posts = (d.posts || []).filter(function (p) {

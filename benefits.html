@@ -109,7 +109,7 @@ UI.boot('benefits.html', function (d) {
             '</div>' +
             '<div class="grid grid-3">' +
               g.items.map(function (b) {
-                return UI.benefitCard(b, { showProgram: true, fy: cy ? cy.Financial_Year : '' });
+                return UI.benefitCard(b, { showProgram: true });
               }).join('') +
             '</div>';
         }).join('')

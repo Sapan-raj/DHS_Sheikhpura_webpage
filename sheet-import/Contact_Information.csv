@@ -1,0 +1,6 @@
+﻿Contact_ID,Office_Name,Designation,Person_Name,Address,District,State,PIN,Phone,Alt_Phone,Email,Office_Hours,Google_Maps_URL,Display_Order,Status
+CON01,"Office of the Civil Surgeon, Sheikhpura",Civil Surgeon,NEEDS MANUAL INPUT,"Sadar Hospital Campus, Sheikhpura",Sheikhpura,Bihar,811105,NEEDS MANUAL INPUT,,NEEDS MANUAL INPUT,"10:30 AM – 5:00 PM (Mon–Sat, except public holidays)",https://www.google.com/maps/search/Sadar+Hospital+Sheikhpura+Bihar,1,Active
+CON02,District Programme Management Unit (DPMU),District Programme Manager,NEEDS MANUAL INPUT,"Sadar Hospital Campus, Sheikhpura",Sheikhpura,Bihar,811105,NEEDS MANUAL INPUT,,NEEDS MANUAL INPUT,10:30 AM – 5:00 PM (Mon–Sat),,2,Active
+CON03,District Accounts Cell — NHM,District Accounts Manager,NEEDS MANUAL INPUT,"Sadar Hospital Campus, Sheikhpura",Sheikhpura,Bihar,811105,NEEDS MANUAL INPUT,,NEEDS MANUAL INPUT,10:30 AM – 5:00 PM (Mon–Sat),,3,Active
+CON04,District Monitoring & Evaluation Cell,District M&E Officer,NEEDS MANUAL INPUT,"Sadar Hospital Campus, Sheikhpura",Sheikhpura,Bihar,811105,NEEDS MANUAL INPUT,,NEEDS MANUAL INPUT,10:30 AM – 5:00 PM (Mon–Sat),,4,Active
+CON05,Health Helpline,24x7 Toll Free,—,Statewide,Sheikhpura,Bihar,811105,104,102 (Ambulance),,24 hours,,5,Active

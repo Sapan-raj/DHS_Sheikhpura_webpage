@@ -166,7 +166,6 @@
       settings: raw.settings || {},
       navigation: raw.navigation || [],
       financialYears: raw.financialYears || [],
-      pipDocuments: raw.pipDocuments || [],
       categories: raw.categories || [],
       programs: raw.programs || [],
       documents: raw.documents || [],
@@ -192,7 +191,6 @@
      ['categories', 'Category_ID', 'Program_Categories'],
      ['programs', 'Program_ID', 'Programs_FMR'],
      ['documents', 'Document_ID', 'Documents'],
-     ['pipDocuments', 'Doc_ID', 'PIP_Documents'],
      ['notices', 'Notice_ID', 'Notices'],
      ['links', 'Link_ID', 'Important_Links'],
      ['postCategories', 'Category_ID', 'Post_Categories'],
@@ -235,7 +233,7 @@
     });
 
     /* usable URL resolved once, up front */
-    d.documents.concat(d.pipDocuments).forEach(function (doc) {
+    d.documents.forEach(function (doc) {
       doc._url = validUrl(doc.File_URL);
       if (!doc._url) {
         warn(doc.Doc_ID ? 'PIP_Documents' : 'Documents',
@@ -248,7 +246,7 @@
        "7 of 8 dropdown options lead nowhere" failure structurally impossible. */
     var hasProg = {}, hasDoc = {};
     d.programs.forEach(function (p) { hasProg[p.Year_ID] = true; });
-    d.pipDocuments.concat(d.documents).forEach(function (x) { if (x.Year_ID) hasDoc[x.Year_ID] = true; });
+    d.documents.forEach(function (x) { if (x.Year_ID) hasDoc[x.Year_ID] = true; });
     d.financialYears.forEach(function (y) {
       y._hasPrograms = !!hasProg[y.Year_ID];
       y._hasData = y._hasPrograms || !!hasDoc[y.Year_ID];
@@ -394,6 +392,25 @@
       }).sort(byOrder);
     },
 
+    /**
+     * Programmes a resident can actually use — those with at least one benefit.
+     * Purely administrative heads (programme management, technical assistance,
+     * untied grants) are internal and never surface publicly.
+     */
+    programmes: function (d, yearId) {
+      var withBenefit = {};
+      active(d.benefits).forEach(function (b) { withBenefit[b._code] = true; });
+      return active(d.programs).filter(function (p) {
+        return p.Year_ID === yearId &&
+               withBenefit[String(p.FMR_Code).toUpperCase().trim()];
+      }).sort(function (a, b) {
+        var ca = num((d.categories.filter(function (c) { return c.Category_ID === a.Category_ID; })[0] || {}).Display_Order);
+        var cb = num((d.categories.filter(function (c) { return c.Category_ID === b.Category_ID; })[0] || {}).Display_Order);
+        if (ca !== cb) return ca - cb;
+        return num(a.Display_Order) - num(b.Display_Order);
+      });
+    },
+
     programById: function (d, id) {
       var m = d.programs.filter(function (p) { return p.Program_ID === id; });
       return m.length ? m[0] : null;
@@ -407,20 +424,7 @@
       return m.length ? m[0] : null;
     },
 
-    /** The per-category Budget Allocation / Budget Guidelines file for a year. */
-    categoryDoc: function (d, yearId, catId, type) {
-      var m = active(d.documents).filter(function (x) {
-        return x.Year_ID === yearId && x.Category_ID === catId && x.Document_Type === type;
-      }).sort(byOrder);
-      return m.length ? m[0] : null;
-    },
 
-    pipDocs: function (d, yearId) {
-      return (d.pipDocuments || []).filter(function (x) {
-        var s = String(x.Status || '').toLowerCase();
-        return x.Year_ID === yearId && (s === 'active' || s === 'archived' || s === '');
-      }).sort(byOrder);
-    },
 
     docsForProgram: function (d, programId) {
       return active(d.documents).filter(function (x) { return x.Program_ID === programId; }).sort(byOrder);
@@ -429,14 +433,6 @@
     /** Every downloadable item, both sheets unioned into one shape. */
     allDocuments: function (d) {
       var out = [];
-      active(d.pipDocuments).forEach(function (x) {
-        out.push({
-          id: x.Doc_ID, title: x.Document_Name, type: x.Document_Type, desc: x.Description,
-          url: x._url, fileType: x.File_Type, size: x.File_Size_MB,
-          date: x.Upload_Date || x.Issue_Date, yearId: x.Year_ID, catId: '', programId: '',
-          featured: false, source: 'PIP_Documents'
-        });
-      });
       active(d.documents).forEach(function (x) {
         out.push({
           id: x.Document_ID, title: x.Document_Title, type: x.Document_Type, desc: x.Description,

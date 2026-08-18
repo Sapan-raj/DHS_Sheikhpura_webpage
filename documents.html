@@ -5,7 +5,7 @@
 <base href="/">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Documents — District Health Society, Sheikhpura</title>
-<meta name="description" content="Searchable repository of PIP, RoP, budget allocations, guidelines, formats and circulars.">
+<meta name="description" content="Guidelines, reporting formats, circulars and reports published by the District Health Society, Sheikhpura.">
 <link rel="icon" href="assets/img/favicon.svg">
 <link rel="stylesheet" href="assets/css/site.css">
 </head>
@@ -36,16 +36,12 @@ UI.boot('documents.html', function (d) {
 
   document.getElementById('page').innerHTML =
     '<section class="section"><div class="container">' +
-      '<div class="section-head"><h2>Document Repository</h2>' +
-      '<p>Every published document — PIP, RoP, budget allocations, guidelines, formats and circulars.</p></div>' +
-      '<div class="filters">' +
+      '<div class="section-head"><h2>Documents</h2>' +
+      '<p>Guidelines, reporting formats, circulars and reports published by the District Health Society.</p></div>' +
+      '<div class="filters filters--2">' +
         '<div class="field search-field"><label for="q">Search</label>' +
           '<input id="q" type="search" placeholder="Title, description, type…" value="' + esc(UI.param('q')) + '" autocomplete="off"></div>' +
-        '<div class="field"><label for="fy">Financial Year</label><select id="fy"><option value="">All years</option>' +
-          years.map(function (y) { return '<option value="' + esc(y.Year_ID) + '">' + esc(y.Display_Name) + '</option>'; }).join('') + '</select></div>' +
-        '<div class="field"><label for="cat">Category</label><select id="cat"><option value="">All categories</option>' +
-          cats.map(function (c) { return '<option value="' + esc(c.Category_ID) + '">' + esc(c.Short_Name) + '</option>'; }).join('') + '</select></div>' +
-        '<div class="field"><label for="ty">Document Type</label><select id="ty"><option value="">All types</option>' +
+        '<div class="field"><label for="ty">Document type</label><select id="ty"><option value="">All types</option>' +
           types.map(function (t) { return '<option value="' + esc(t) + '">' + esc(t) + '</option>'; }).join('') + '</select></div>' +
         '<div class="field"><label>&nbsp;</label><button class="btn btn-outline" id="reset" type="button">Reset</button></div>' +
       '</div>' +
@@ -56,13 +52,9 @@ UI.boot('documents.html', function (d) {
 
   function filtered() {
     var q = document.getElementById('q').value.toLowerCase().trim();
-    var fy = document.getElementById('fy').value;
-    var cat = document.getElementById('cat').value;
     var ty = document.getElementById('ty').value;
 
     return all.filter(function (x) {
-      if (fy && x.yearId !== fy) return false;
-      if (cat && x.catId !== cat) return false;
       if (ty && x.type !== ty) return false;
       if (q && [x.title, x.desc, x.type, x.fileType, yearName[x.yearId], catName[x.catId]]
                 .join(' ').toLowerCase().indexOf(q) === -1) return false;
@@ -115,12 +107,12 @@ UI.boot('documents.html', function (d) {
     });
   }
 
-  ['q', 'fy', 'cat', 'ty'].forEach(function (id) {
+  ['q', 'ty'].forEach(function (id) {
     var el = document.getElementById(id);
     el.addEventListener(id === 'q' ? 'input' : 'change', function () { page = 1; draw(); });
   });
   document.getElementById('reset').addEventListener('click', function () {
-    ['q', 'fy', 'cat', 'ty'].forEach(function (id) { document.getElementById(id).value = ''; });
+    ['q', 'ty'].forEach(function (id) { document.getElementById(id).value = ''; });
     page = 1; draw();
   });
 

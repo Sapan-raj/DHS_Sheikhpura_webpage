@@ -1,0 +1,9 @@
+﻿Media_ID,Post_ID,Media_URL,Media_Type,Caption,File_Name,File_Size_KB,Display_Order,Status
+PM001,POST001,,image,Mothers' meeting at Ayushman Arogya Mandir,,,1,Active
+PM002,POST001,,image,ASHA workers' awareness rally,,,2,Active
+PM003,POST001,,image,IYCF counselling session,,,3,Active
+PM004,POST002,,image,Health camp inauguration,,,1,Active
+PM005,POST002,,image,Doctor consultation,,,2,Active
+PM006,POST002,,image,Patient registration desk,,,3,Active
+PM007,POST002,,image,NCD screening counter,,,4,Active
+PM008,POST003,,image,CHO entering vitals on the BHAVYA platform,,,1,Active
