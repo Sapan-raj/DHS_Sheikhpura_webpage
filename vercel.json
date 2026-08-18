@@ -1,6 +1,5 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "//": "cleanUrls is deliberately OFF. The site's internal links use .html, so turning it on would 308-redirect every nav click and make local (python -m http.server) behave differently from production. The rewrites below give the pretty URLs where they actually matter, with no redirect hop.",
   "cleanUrls": false,
   "trailingSlash": false,
 
