@@ -7,7 +7,10 @@ A citizen-first health portal for the **District Health Society, Sheikhpura, Bih
 > **One Google Sheet → One Source of Truth → Dynamic Website**
 
 **🟢 Live:** <https://dhs-sheikhpura-webpage-is6g.vercel.app>
-Reading the live Google Sheet through Apps Script. **0 validation errors.**
+
+Code and content deploy separately. As of 19 Aug 2026 the **health facilities
+module is in the code but not yet in the sheet** — import the 20-tab workbook and
+redeploy `Code.gs` to activate it. See [`MASTER_REFERENCE.md` §13.2](MASTER_REFERENCE.md).
 
 ---
 
@@ -48,6 +51,8 @@ Open <http://localhost:8791>. Runs against the same live Google Sheet as product
 ```
 Sheikhpura_PIP_Portal/
 ├── index.html              Home
+├── facilities.html         Find a health centre — 127 centres, by block, with directions
+├── facility.html           One centre: services, hours, doctors, departments, map
 ├── benefits.html           Free health services — what you get, where to go, what to carry
 ├── programmes.html         The 24 health programmes residents can use
 ├── program.html            One programme: what it does and what you get

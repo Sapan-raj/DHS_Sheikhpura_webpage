@@ -17,7 +17,7 @@
 > `publicView()`, so an accidental restore cannot re-expose them. The portal is now
 > built entirely around what residents can use. See §22.
 
-*Last updated: 18 August 2026 · citizen-first rebuild*
+*Last updated: 19 August 2026 · citizen-first rebuild + health facilities module*
 
 ---
 
@@ -915,22 +915,58 @@ Built against the gaps found in the reference site:
 | `API_URL` | set in `assets/js/config.js` — the `/exec` endpoint |
 | Google Sheet | `Sheikhpura Website` · ID `1V2FbGpf…m0vs` |
 
-**Verified live:** `meta.source = "google-sheets"`, 0 validation errors, drafts and
-unreleased scheduled posts withheld from the public payload, admin auth rejecting
-bad credentials with *"Invalid username or password."* (not *"not configured"* —
-which confirms `setupCredentials()` ran).
-
-**Cold-start latency ~9–10 s.** Apps Script spins up and reads 17 tabs on the first
-request after a cache expiry. Every subsequent visitor is served from cache — 6 h
-server-side, 30 min browser-side. Only the first person after an expiry waits.
+**Cold-start latency ~9–10 s.** Apps Script spins up and reads every tab on the
+first request after a cache expiry. Every subsequent visitor is served from cache
+— 6 h server-side, 30 min browser-side.
 
 > ### ⚠️ Redeploying the script: use *Manage deployments*
 >
 > **Deploy → Manage deployments → ✏️ → Version: New version → Deploy.**
 >
 > *New deployment* mints a **different `/exec` URL**, which silently orphans the
-> site until `config.js` is updated and pushed. This happened once during setup and
-> cost a round trip. *Manage deployments* keeps the URL stable.
+> site until `config.js` is updated and pushed. This has happened once already.
+
+### 13.1 The three-part deployment, and how to tell what is stale
+
+The system has **three independently deployed parts**. They can drift apart, and
+the symptoms are not always obvious:
+
+| Part | Deployed by | Carries |
+|---|---|---|
+| **Code** | `git push` → Vercel (automatic) | pages, styles, query logic |
+| **Content** | importing the workbook into Google Sheets | every row the site renders |
+| **API** | pasting `Code.gs` → Manage deployments → New version | the field-stripping guards and the sheet map |
+
+**Diagnosing drift from `?action=status`:**
+
+| Symptom | What it means |
+|---|---|
+| A collection is `— NOT PRESENT —` in `counts` | the **sheet** predates that module |
+| Error *"`<Tab>` — Sheet missing from workbook"* | the **script** still expects a tab the sheet no longer has |
+| Site renders old nav but new pages exist | the **sheet** is behind the code |
+| Sign-in works but a new endpoint 404s | the **script** is behind the code |
+
+### 13.2 Verified live state — 19 August 2026
+
+Checked against the live `?action=status` and `?action=validate`:
+
+| | State |
+|---|---|
+| **Code (Vercel)** | ✅ current — commit `124e6d8` |
+| **Content (Sheet)** | ⚠️ citizen-first workbook imported; **facilities tabs not yet present** |
+| **API (Apps Script)** | ⚠️ **stale** — still expects `PIP_Documents` |
+| Live errors | **1** — *"PIP_Documents — Sheet missing from workbook"* |
+| Live warnings | 14 — 8 gallery rows awaiting images, 5 unpublished document links, 1 documents-only year |
+
+The single error is a **useful diagnostic, not a fault**: the sheet correctly no
+longer has a `PIP_Documents` tab, but the deployed script still lists it in
+`SHEET_MAP`. Pasting the current `Code.gs` and redeploying clears it.
+
+`counts` shows `benefits 40`, `documents 5`, `navigation 8` — so the citizen-first
+content is live. It shows no `facilities`, `facilityDoctors` or
+`facilityDepartments`, so the **facilities module is in the code and the repo but
+not yet in the sheet**. Until the 20-tab workbook is imported, `facilities.html`
+renders an empty finder.
 
 ---
 
@@ -1469,6 +1505,16 @@ carry the query logic; `UI.facilityCard()` and `UI.directionsButton()` render it
 The eAushadhi stock link is carried only for DH / CHC / PHC / APHC — the facilities
 where it is meaningful. Where the link is missing the page shows
 *"Medicine availability link not yet added"*, so the district can fill them in later.
+
+### Not yet live
+
+As of 19 August 2026 the facilities module is **deployed in code but absent from
+the sheet**. Two steps activate it:
+
+1. Import the 20-tab workbook (**File → Import → Replace spreadsheet**), then set
+   `Facilities` column **D** and `Program_Benefits` column **B** to **Plain text**
+2. Paste the current `apps-script/Code.gs` and **Manage deployments → New version**
+   — the doctor-name strip lives there, so this step is not optional
 
 ### Outstanding for the district
 
