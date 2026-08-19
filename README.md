@@ -27,7 +27,7 @@ Open <http://localhost:8791>. Runs against the same live Google Sheet as product
 ---
 
 > **📘 [MASTER_REFERENCE.md](MASTER_REFERENCE.md) — everything about this website in one file.**
-> Architecture, all 17 sheets field by field, every page, the full code and API reference, security, the image pipeline, deployment, the operations runbook, the complete verification record, known limits and the outstanding-items register. Start there if you want the whole picture; the numbered docs below go deeper on single topics.
+> Architecture, all 19 sheets field by field, every page, the full code and API reference, security, the image pipeline, deployment, the operations runbook, the complete verification record, known limits and the outstanding-items register. Start there if you want the whole picture; the numbered docs below go deeper on single topics.
 
 ## Deliverables
 
@@ -76,6 +76,7 @@ Sheikhpura_PIP_Portal/
 ├── build_database.py       Generates the .xlsx + runs integrity checks
 ├── export_json.py          .xlsx → portal-data.json (the API's data contract)
 ├── docs/                   All ten deliverables
+├── import_facilities.py    District facilities workbook → facilities_data.py
 └── Sheikhpura_Health_PIP_Website_Database.xlsx
 ```
 
@@ -83,21 +84,26 @@ Sheikhpura_PIP_Portal/
 
 ## Data model
 
-17 sheets, 453 sample records.
+19 data sheets, 1,155 records.
 
 ```
-Financial_Years ──┬─→ Programs_FMR (Year_ID + Category_ID) ──→ Documents
-                  ├─→ PIP_Documents
-                  └─→ Documents
-Program_Categories ─┴─→ Programs_FMR / Documents
+Facilities ──┬─→ Facility_Doctors        127 health centres, 6 blocks
+             └─→ Facility_Departments
 
-Post_Categories ──→ Posts ──→ Post_Media          What's New / Events
-Programs_FMR (FMR_Code) ──→ Program_Benefits    What citizens actually get
+Programs_FMR (FMR_Code) ──→ Program_Benefits     what residents can claim
+Program_Categories ──────→ Programs_FMR
 
-Settings · Navigation · Home_Content · Important_Links · Notices · Contact_Information · Footer
+Post_Categories ──→ Posts ──→ Post_Media         What's New / Events
+
+Settings · Navigation · Home_Content · Important_Links · Notices ·
+Contact_Information · Footer · Financial_Years · Documents
 ```
 
-**The decisive design rule:** `Programs_FMR` is keyed by **(Year_ID, Category_ID)**, never by category alone. FMR codes are re-issued annually by MoHFW — the live SHS Bihar site has **49** budget heads in FY 2025-26 and **59** in FY 2026-27, with `NDCP.8` removed and `NDCP.7`, `NDCP.9`, `NCD.9`, `NCD.12` and `HSS.15`–`HSS.21` added. The sample data reproduces this drift exactly.
+**`Programs_FMR` is kept as an internal lookup**, not a public page. `Program_Benefits` joins to it by `FMR_Code`, so deleting it would break all 40 citizen entitlements — but the code itself is never shown to a visitor, and the budget columns are gone.
+
+**A wrong map pin is worse than none.** `import_facilities.py` checks every facility coordinate against the district bounding box; 14 of 127 fell outside — five of them thousands of kilometres away. Directions are offered only where the location is verified.
+
+**Doctor names are never published.** The roster lives in the sheet so the district can maintain it, but `publicView()` and `export_json.py` both strip `Doctor_Name` and `HPR_ID`. Residents see specialisation, days and shift.
 
 **The same principle in the Events module:** `Status` records only *intent* (Draft / Published / Scheduled / Archived). Whether a post is **live**, and whether an event is **Upcoming / Ongoing / Past**, are computed from the dates at render time — so nobody has to remember to change a status when a date passes, and a scheduled post appears on its own.
 
