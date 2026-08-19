@@ -29,6 +29,15 @@ Link_Category,National,
 Link_Category,State,
 Link_Category,District,
 Link_Category,Portal,
+Facility_Type,DH,District Hospital
+Facility_Type,CHC,Community Health Centre
+Facility_Type,PHC,Primary Health Centre
+Facility_Type,APHC,Additional Primary Health Centre
+Facility_Type,HSC,Health Sub-Centre / Ayushman Arogya Mandir
+Coord_Status,ok,Location verified inside the district
+Coord_Status,outside,Coordinate falls outside Sheikhpura — directions suppressed
+Coord_Status,missing,No coordinate recorded
+Coord_Status,unparseable,Coordinate could not be read
 Benefit_Type,Cash Benefit,Money paid to the citizen
 Benefit_Type,Free Service,A service given without charge
 Benefit_Type,Free Medicine,

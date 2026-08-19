@@ -410,6 +410,59 @@
     '</div>';
   }
 
+  /* ---------- facilities ---------- */
+
+  var FAC_TYPE = {
+    DH:   'District Hospital',
+    CHC:  'Community Health Centre',
+    PHC:  'Primary Health Centre',
+    APHC: 'Additional Primary Health Centre',
+    HSC:  'Ayushman Arogya Mandir'
+  };
+  function facilityTypeName(t) { return FAC_TYPE[t] || t || 'Health Centre'; }
+
+  /**
+   * Directions are offered ONLY for a coordinate verified inside the district.
+   * A wrong pin could send someone hundreds of kilometres, so no button at all
+   * is the safer failure.
+   */
+  function directionsButton(f, cls) {
+    if (f._mapOk && f._mapUrl) {
+      return '<a class="btn ' + (cls || 'btn-outline btn-sm') + '" href="' + esc(f._mapUrl) +
+             '" target="_blank" rel="noopener noreferrer">\u25ce Get directions</a>';
+    }
+    return '<span class="btn ' + (cls || 'btn-outline btn-sm') + '" aria-disabled="true" ' +
+           'title="Location being verified">\u25ce Location being verified</span>';
+  }
+
+  function facilityCard(f) {
+    var href = 'facility.html?id=' + encodeURIComponent(f.Facility_ID);
+    var svc = (f._services || []).slice(0, 4);
+    return '<article class="card facility-card">' +
+      '<div class="fc-top">' +
+        '<span class="fc-type fc-' + esc(f.Facility_Type) + '">' + esc(f.Facility_Type) + '</span>' +
+        '<div style="min-width:0;flex:1">' +
+          '<h3><a href="' + href + '">' + esc(t(f.Facility_Name, f.Facility_Name_HI)) + '</a></h3>' +
+          '<div class="fc-meta">' + esc(facilityTypeName(f.Facility_Type)) + ' \u00b7 ' + esc(f.Block) + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="post-chips">' +
+        (f._is24x7 ? '<span class="chip chip--live">\u25cf 24\u00d77 emergency</span>'
+                   : '<span class="chip">' + esc(f.Operating_Hours) + '</span>') +
+        (f._beds ? '<span class="chip">' + f._beds + ' beds</span>' : '') +
+      '</div>' +
+      (svc.length ? '<div class="svc-list">' + svc.map(function (x) {
+          return '<span class="svc-chip">' + esc(x) + '</span>';
+        }).join('') + ((f._services || []).length > svc.length
+          ? '<span class="svc-chip svc-more">+' + ((f._services.length) - svc.length) + '</span>' : '') +
+        '</div>' : '') +
+      '<div class="fc-actions">' +
+        '<a class="btn btn-outline btn-sm" href="' + href + '">Details</a>' +
+        directionsButton(f) +
+      '</div>' +
+    '</article>';
+  }
+
   function emptyState(title, msg) {
     return '<div class="state"><div class="ico">◌</div><h3>' + esc(title) + '</h3><p>' + esc(msg) + '</p></div>';
   }
@@ -488,6 +541,8 @@
     boot: boot, renderShell: renderShell, renderFooter: renderFooter, crumbs: crumbs,
     docRow: docRow, docIcon: docIcon, emptyState: emptyState, errorState: errorState,
     postCard: postCard, postCover: postCover, postArt: postArt, benefitCard: benefitCard,
+    facilityCard: facilityCard, facilityTypeName: facilityTypeName,
+    directionsButton: directionsButton,
     postTiming: postTiming, postWhen: postWhen,
     skeleton: skeleton, icon: icon, t: t, lang: lang,
     param: param, pathSeg: pathSeg, route: route, money: money,

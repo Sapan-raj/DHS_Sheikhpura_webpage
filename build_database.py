@@ -19,6 +19,7 @@ from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.datavalidation import DataValidation
 from benefits_data import BENEFITS, BENEFIT_COLUMNS, BENEFIT_TYPES
+from facilities_data import FACILITIES, FACILITY_DOCTORS, FACILITY_DEPARTMENTS
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                    "Sheikhpura_Health_PIP_Website_Database.xlsx")
@@ -102,13 +103,14 @@ SETTINGS = [
 # ───────────────────────── 2. NAVIGATION ─────────────────────────
 NAV = [
     ("NAV01", "Home",              "होम",                    "index.html",      "", 1, "Yes", "Internal", "home",     "_self"),
-    ("NAV02", "Free Services",     "नि:शुल्क सेवाएं",           "benefits.html",   "", 2, "Yes", "Internal", "heart",    "_self"),
-    ("NAV03", "Health Programmes", "स्वास्थ्य कार्यक्रम",        "programmes.html", "", 3, "Yes", "Internal", "hospital", "_self"),
-    ("NAV04", "Events & News",     "कार्यक्रम एवं समाचार",      "events.html",     "", 4, "Yes", "Internal", "bell",     "_self"),
-    ("NAV05", "Notices",           "सूचनाएँ",                  "notices.html",    "", 5, "Yes", "Internal", "bell",     "_self"),
-    ("NAV06", "Documents",         "दस्तावेज़",                "documents.html",  "", 6, "Yes", "Internal", "download", "_self"),
-    ("NAV07", "Contact Us",        "संपर्क करें",              "contact.html",    "", 7, "Yes", "Internal", "phone",    "_self"),
-    ("NAV08", "BHAVYA Portal",     "भव्य पोर्टल",              "https://mera.bhavyabiharhealth.in/", "", 8, "Yes", "External", "external", "_blank"),
+    ("NAV02", "Find a Health Centre","स्वास्थ्य केंद्र खोजें",   "facilities.html", "", 2, "Yes", "Internal", "hospital", "_self"),
+    ("NAV03", "Free Services",     "नि:शुल्क सेवाएं",           "benefits.html",   "", 3, "Yes", "Internal", "heart",    "_self"),
+    ("NAV04", "Health Programmes", "स्वास्थ्य कार्यक्रम",        "programmes.html", "", 4, "Yes", "Internal", "hospital", "_self"),
+    ("NAV05", "Events & News",     "कार्यक्रम एवं समाचार",      "events.html",     "", 5, "Yes", "Internal", "bell",     "_self"),
+    ("NAV06", "Notices",           "सूचनाएँ",                  "notices.html",    "", 6, "Yes", "Internal", "bell",     "_self"),
+    ("NAV07", "Documents",         "दस्तावेज़",                "documents.html",  "", 7, "Yes", "Internal", "download", "_self"),
+    ("NAV08", "Contact Us",        "संपर्क करें",              "contact.html",    "", 8, "Yes", "Internal", "phone",    "_self"),
+    ("NAV09", "BHAVYA Portal",     "भव्य पोर्टल",              "https://mera.bhavyabiharhealth.in/", "", 9, "Yes", "External", "external", "_blank"),
 ]
 
 # ───────────────────────── 3. FINANCIAL YEARS ─────────────────────────
@@ -265,10 +267,11 @@ HOME = [
     ("hero_subtitle",  "hero",    "", "", "", "Find the free health services you are entitled to, where to go for them, and what is happening in the district this month.", "", "benefits.html", "See free services", 2, "Active"),
     ("hero_cta2",      "hero",    "", "", "", "", "", "events.html", "What's happening", 3, "Active"),
     ("notice_banner",  "banner",  "Announcement", "घोषणा", "", "Every service listed on this portal is free at government health facilities. If anyone asks you to pay, call 104.", "", "benefits.html", "Know your rights", 4, "Active"),
+    ("sec_facilities", "section", "Find Your Nearest Health Centre", "अपना नजदीकी स्वास्थ्य केंद्र खोजें", "127 government health centres across 6 blocks", "Opening hours, the services offered, and directions on the map — for every government health facility in the district.", "", "facilities.html", "Find a centre near you", 4, "Active"),
     ("sec_benefits",   "section", "Free Health Services for You", "आपके लिए नि:शुल्क स्वास्थ्य सेवाएं", "Know what you are entitled to", "Every one of these is free at government health facilities in Sheikhpura. Nobody may charge you for them.", "", "benefits.html", "See all free services", 5, "Active"),
     ("stat_blocks",    "stat",    "Blocks", "प्रखंड", "", "6", "grid", "", "", 6, "Active"),
-    ("stat_benefits",  "stat",    "Free Services", "नि:शुल्क सेवाएं", "", "", "heart", "benefits.html", "", 7, "Active"),
-    ("stat_programmes","stat",    "Health Programmes", "स्वास्थ्य कार्यक्रम", "", "", "hospital", "programmes.html", "", 8, "Active"),
+    ("stat_facilities","stat",    "Health Centres", "स्वास्थ्य केंद्र", "", "", "hospital", "facilities.html", "", 7, "Active"),
+    ("stat_benefits",  "stat",    "Free Services", "नि:शुल्क सेवाएं", "", "", "heart", "benefits.html", "", 8, "Active"),
     ("stat_helpline",  "stat",    "Health Helpline", "स्वास्थ्य हेल्पलाइन", "", "104", "phone", "contact.html", "", 9, "Active"),
     ("sec_whatsnew",   "section", "What's New", "नया क्या है", "Events, campaigns and announcements", "Health campaigns, camps, training programmes and achievements from across Sheikhpura district.", "", "events.html", "View all", 10, "Active"),
     ("sec_programmes", "section", "Health Programmes", "स्वास्थ्य कार्यक्रम", "What the district runs for you", "The health programmes running in Sheikhpura and the services each one provides free of cost.", "", "programmes.html", "View all programmes", 11, "Active"),
@@ -347,6 +350,7 @@ FOOTER = [
     ("FT01", "about",   "About This Portal", "", "", "", 1, 1, "Active", "No"),
     ("FT02", "link",    "Quick Links", "Home",            "index.html",     "", 2, 1, "Active", "No"),
     ("FT03", "link",    "Quick Links", "Free Health Services", "benefits.html", "", 2, 2, "Active", "No"),
+    ("FT17", "link",    "Quick Links", "Find a Health Centre", "facilities.html", "", 2, 7, "Active", "No"),
     ("FT16", "link",    "Quick Links", "Health Programmes", "programmes.html", "", 2, 6, "Active", "No"),
     ("FT04", "link",    "Quick Links", "Documents",       "documents.html", "", 2, 3, "Active", "No"),
     ("FT05", "link",    "Quick Links", "Notices",         "notices.html",   "", 2, 4, "Active", "No"),
@@ -556,6 +560,15 @@ LISTS = [
     ("Link_Category",    "State",                   ""),
     ("Link_Category",    "District",                ""),
     ("Link_Category",    "Portal",                  ""),
+    ("Facility_Type",    "DH",                      "District Hospital"),
+    ("Facility_Type",    "CHC",                     "Community Health Centre"),
+    ("Facility_Type",    "PHC",                     "Primary Health Centre"),
+    ("Facility_Type",    "APHC",                    "Additional Primary Health Centre"),
+    ("Facility_Type",    "HSC",                     "Health Sub-Centre / Ayushman Arogya Mandir"),
+    ("Coord_Status",     "ok",                      "Location verified inside the district"),
+    ("Coord_Status",     "outside",                 "Coordinate falls outside Sheikhpura — directions suppressed"),
+    ("Coord_Status",     "missing",                 "No coordinate recorded"),
+    ("Coord_Status",     "unparseable",             "Coordinate could not be read"),
     ("Benefit_Type",     "Cash Benefit",            "Money paid to the citizen"),
     ("Benefit_Type",     "Free Service",            "A service given without charge"),
     ("Benefit_Type",     "Free Medicine",           ""),
@@ -697,6 +710,26 @@ def main():
            "Benefit_Description_HI": 96, "Who_Is_Eligible": 56, "Where_To_Avail": 56,
            "Documents_Required": 44, "Amount": 42, "Benefit_Type": 22})
 
+    sheet(wb, "Facilities",
+          ["Facility_ID", "Facility_Name", "Facility_Name_HI", "Facility_Type", "Block",
+           "Category", "HFR_ID", "Latitude", "Longitude", "Coord_Status", "Google_Maps_URL",
+           "Emergency_24x7", "Operating_Hours", "Bed_Count", "Incharge_Designation",
+           "Incharge_Name", "Contact_Phone", "Key_Services", "Address_Details",
+           "Drug_Stock_URL", "Status", "Display_Order"], FACILITIES,
+          {"Facility_Name": 44, "Facility_Name_HI": 30, "Key_Services": 82,
+           "Google_Maps_URL": 34, "Address_Details": 28, "Incharge_Designation": 34,
+           "Drug_Stock_URL": 30, "Operating_Hours": 26})
+
+    sheet(wb, "Facility_Doctors",
+          ["Roster_ID", "Facility_ID", "HFR_ID", "Doctor_Name", "Specialization",
+           "Shift_Timing", "Weekday", "Status"], FACILITY_DOCTORS,
+          {"Doctor_Name": 30, "Specialization": 34, "Shift_Timing": 20})
+
+    sheet(wb, "Facility_Departments",
+          ["Dept_ID", "Facility_ID", "HFR_ID", "Department_Name", "Room_No",
+           "Floor", "Status"], FACILITY_DEPARTMENTS,
+          {"Department_Name": 32, "Floor": 18})
+
     ws = sheet(wb, "_Lists", ["List_Name", "Value", "Meaning"], LISTS,
                {"List_Name": 20, "Value": 30, "Meaning": 60})
     ws.sheet_properties.tabColor = "98A2B3"
@@ -734,6 +767,12 @@ def main():
     add_dv("Post_Media",         "I", "Status",          len(POST_MEDIA))
     add_dv("Program_Benefits",   "H", "Benefit_Type",    len(BENEFITS))
     add_dv("Program_Benefits",   "O", "Status",          len(BENEFITS))
+    add_dv("Facilities",         "D", "Facility_Type",   len(FACILITIES))
+    add_dv("Facilities",         "J", "Coord_Status",    len(FACILITIES))
+    add_dv("Facilities",         "L", "Yes_No",          len(FACILITIES))
+    add_dv("Facilities",         "U", "Status",          len(FACILITIES))
+    add_dv("Facility_Doctors",   "H", "Status",          len(FACILITY_DOCTORS))
+    add_dv("Facility_Departments","G", "Status",         len(FACILITY_DEPARTMENTS))
 
     wb.save(OUT)
 
@@ -792,6 +831,22 @@ def main():
         if not str(r[3]).strip() or not str(r[5]).strip():
             errs.append(f"Program_Benefits {r[0]}: missing title or description")
 
+    uniq("Facilities", [r[0] for r in FACILITIES])
+    uniq("Facility_Doctors", [r[0] for r in FACILITY_DOCTORS])
+    uniq("Facility_Departments", [r[0] for r in FACILITY_DEPARTMENTS])
+    fac_ids = {r[0] for r in FACILITIES}
+    for r in FACILITY_DOCTORS:
+        if r[1] not in fac_ids:
+            errs.append(f"Facility_Doctors {r[0]}: Facility_ID {r[1]} not in Facilities")
+    for r in FACILITY_DEPARTMENTS:
+        if r[1] not in fac_ids:
+            errs.append(f"Facility_Departments {r[0]}: Facility_ID {r[1]} not in Facilities")
+    for r in FACILITIES:
+        if r[9] not in ("ok", "outside", "missing", "unparseable"):
+            errs.append(f"Facilities {r[0]}: bad Coord_Status {r[9]}")
+        if not str(r[1]).strip():
+            errs.append(f"Facilities {r[0]}: missing Facility_Name")
+
     for r in POST_MEDIA:
         if r[1] not in post_ids:
             errs.append(f"Post_Media {r[0]}: bad Post_ID {r[1]}")
@@ -837,6 +892,16 @@ def main():
     print(f"  Posts               {len(POSTS):>4}   " +
           "  ".join(f"{k}={v}" for k, v in sorted(pstat.items())))
     print(f"  Post_Media          {len(POST_MEDIA):>4}")
+    ctypes = {}
+    for r in FACILITIES:
+        ctypes[r[3]] = ctypes.get(r[3], 0) + 1
+    bad_coord = sum(1 for r in FACILITIES if r[9] != "ok")
+    print(f"  Facilities          {len(FACILITIES):>4}   " +
+          "  ".join(f"{k}={v}" for k, v in sorted(ctypes.items(), key=lambda x: -x[1])))
+    print(f"  Facility_Doctors    {len(FACILITY_DOCTORS):>4}")
+    print(f"  Facility_Departments{len(FACILITY_DEPARTMENTS):>4}")
+    if bad_coord:
+        print(f"       -> {bad_coord} facilities have no usable coordinate; directions suppressed")
     bcodes = len({r[1] for r in BENEFITS})
     print(f"  Program_Benefits    {len(BENEFITS):>4}   across {bcodes} FMR codes")
     print(f"  _Lists              {len(LISTS):>4}")

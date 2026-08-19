@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<base href="/">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Find a Health Centre — District Health Society, Sheikhpura</title>
+<meta name="description" content="Find your nearest government health centre in Sheikhpura — opening hours, services, 24x7 emergency, and directions on the map.">
+<link rel="icon" href="assets/img/favicon.svg">
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+<a class="skip-link" href="#page">Skip to main content</a>
+<div id="shell-top"></div>
+<div id="crumbs"></div>
+<main id="page"><div class="container section"><div class="skel" style="height:90px;margin-bottom:20px"></div><div class="skel" style="height:340px"></div></div></main>
+<div id="shell-footer"></div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/ui.js"></script>
+<script>
+UI.boot('facilities.html', function (d) {
+  var Q = PortalData.query, esc = PortalData.esc;
+  UI.crumbs([{ label: 'Find a Health Centre' }]);
+
+  var blocks = Q.blocks(d);
+  var types = Q.facilityTypes(d);
+  var services = Q.facilityServices(d).slice(0, 12);
+  var st = Q.facilityStats(d);
+  var perPage = 24, page = 1;
+
+  document.getElementById('page').innerHTML =
+    '<section class="section facility-band"><div class="container">' +
+      '<div class="section-head"><h2>Find your nearest health centre</h2>' +
+      '<p style="max-width:80ch">Every government health facility in Sheikhpura district — what it offers, ' +
+      'when it is open, and how to get there. All services listed are free.</p></div>' +
+      '<div class="grid grid-4" id="fStats"></div>' +
+    '</div></section>' +
+
+    '<section class="section"><div class="container">' +
+      '<h3 style="margin-bottom:14px">Browse by your block</h3>' +
+      '<div class="block-grid" id="blockGrid"></div>' +
+    '</div></section>' +
+
+    '<section class="section section--alt"><div class="container">' +
+      '<div class="filters filters--4">' +
+        '<div class="field search-field"><label for="q">Search</label>' +
+          '<input id="q" type="search" placeholder="Village or centre name…" value="' + esc(UI.param('q')) + '" autocomplete="off"></div>' +
+        '<div class="field"><label for="blk">Block</label><select id="blk"><option value="">All blocks</option>' +
+          blocks.map(function (b) { return '<option value="' + esc(b.name) + '">' + esc(b.name) + ' (' + b.count + ')</option>'; }).join('') +
+        '</select></div>' +
+        '<div class="field"><label for="ty">Type of centre</label><select id="ty"><option value="">All types</option>' +
+          types.map(function (t) { return '<option value="' + esc(t.type) + '">' + esc(UI.facilityTypeName(t.type)) + ' (' + t.count + ')</option>'; }).join('') +
+        '</select></div>' +
+        '<div class="field"><label for="svc">Service</label><select id="svc"><option value="">Any service</option>' +
+          services.map(function (s) { return '<option value="' + esc(s.name) + '">' + esc(s.name) + ' (' + s.count + ')</option>'; }).join('') +
+        '</select></div>' +
+        '<div class="field"><label for="e24">&nbsp;</label>' +
+          '<label style="display:flex;gap:7px;align-items:center;font-size:.85rem;text-transform:none;letter-spacing:0;font-weight:600;padding:9px 0;white-space:nowrap">' +
+          '<input type="checkbox" id="e24" style="width:auto"> 24×7 only</label></div>' +
+      '</div>' +
+      '<div class="result-line" id="rl"></div>' +
+      '<div class="grid grid-3" id="list"></div>' +
+      '<div class="pager" id="pager"></div>' +
+    '</div></section>';
+
+  document.getElementById('fStats').innerHTML = [
+    [st.total, 'Health centres'], [st.emergency, '24×7 emergency'],
+    [st.blocks, 'Blocks covered'], [st.mapped, 'With directions']
+  ].map(function (t) {
+    return '<div class="card stat" style="border-left-color:var(--navy)">' +
+      '<div class="num">' + t[0] + '</div><div class="lbl">' + t[1] + '</div></div>';
+  }).join('');
+
+  document.getElementById('blockGrid').innerHTML = blocks.map(function (b) {
+    return '<button class="block-card" type="button" data-block="' + esc(b.name) + '">' +
+      '<span class="bc-name">' + esc(b.name) + '</span>' +
+      '<span class="bc-count">' + b.count + ' centres</span>' +
+      (b.has24x7 ? '<span class="chip chip--live">' + b.has24x7 + ' × 24×7</span>' : '') +
+    '</button>';
+  }).join('');
+
+  if (UI.param('block')) document.getElementById('blk').value = UI.param('block');
+  if (UI.param('service')) document.getElementById('svc').value = UI.param('service');
+
+  function draw() {
+    var rows = Q.facilities(d, {
+      q: document.getElementById('q').value,
+      block: document.getElementById('blk').value,
+      type: document.getElementById('ty').value,
+      service: document.getElementById('svc').value,
+      only24x7: document.getElementById('e24').checked
+    });
+
+    var pages = Math.max(1, Math.ceil(rows.length / perPage));
+    if (page > pages) page = pages;
+    var slice = rows.slice((page - 1) * perPage, page * perPage);
+
+    document.getElementById('list').innerHTML = slice.length
+      ? slice.map(function (f) { return UI.facilityCard(f); }).join('')
+      : '<div style="grid-column:1/-1">' + UI.emptyState('No centre matches',
+          'Try clearing a filter, or pick your block above.') + '</div>';
+
+    document.getElementById('rl').innerHTML = rows.length
+      ? 'Showing <strong>' + ((page - 1) * perPage + 1) + '–' + Math.min(page * perPage, rows.length) +
+        '</strong> of <strong>' + rows.length + '</strong> centres'
+      : 'No centres found';
+
+    var pg = '';
+    if (pages > 1) {
+      pg += '<button type="button" data-p="' + (page - 1) + '"' + (page === 1 ? ' disabled' : '') + '>‹ Prev</button>';
+      for (var i = 1; i <= pages; i++) {
+        pg += '<button type="button" data-p="' + i + '"' + (i === page ? ' aria-current="true"' : '') + '>' + i + '</button>';
+      }
+      pg += '<button type="button" data-p="' + (page + 1) + '"' + (page === pages ? ' disabled' : '') + '>Next ›</button>';
+    }
+    document.getElementById('pager').innerHTML = pg;
+    Array.prototype.forEach.call(document.querySelectorAll('#pager button[data-p]'), function (b) {
+      b.addEventListener('click', function () {
+        page = PortalData.num(this.dataset.p); draw();
+        document.getElementById('list').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll('.block-card'), function (b) {
+    b.addEventListener('click', function () {
+      document.getElementById('blk').value = this.dataset.block;
+      page = 1; draw();
+      document.getElementById('list').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+  ['q', 'blk', 'ty', 'svc', 'e24'].forEach(function (id) {
+    document.getElementById(id).addEventListener(id === 'q' ? 'input' : 'change', function () { page = 1; draw(); });
+  });
+
+  draw();
+});
+</script>
+</body>
+</html>

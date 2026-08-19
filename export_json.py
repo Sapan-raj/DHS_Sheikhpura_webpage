@@ -35,6 +35,9 @@ SHEET_MAP = {
     "Posts":               "posts",
     "Post_Media":          "postMedia",
     "Program_Benefits":    "benefits",
+    "Facilities":          "facilities",
+    "Facility_Doctors":    "facilityDoctors",
+    "Facility_Departments":"facilityDepartments",
 }
 
 
@@ -96,6 +99,13 @@ def main():
             w = _when(p.get("Scheduled_Date"))
             return bool(w and w <= now)
         return False
+
+    # Doctor names are personal data. The roster is maintained in the sheet with
+    # names so the district can keep it current, but the public sees only the
+    # specialisation, day and shift. Same rule as publicView() in Code.gs.
+    for r in out["facilityDoctors"]:
+        r.pop("Doctor_Name", None)
+        r.pop("HPR_ID", None)
 
     held = [p for p in out["posts"] if not _visible(p)]
     out["posts"] = [p for p in out["posts"] if _visible(p)]

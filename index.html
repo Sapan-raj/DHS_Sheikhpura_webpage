@@ -55,6 +55,32 @@ UI.boot('index.html', function (d) {
     '</div></div>');
   }
 
+  /* ---- Find a health centre — a resident's first question is "where do I go",
+          so the block picker sits directly under the announcement strip. ---- */
+  var facSec = Q.home(d, 'sec_facilities');
+  var blocks = Q.blocks(d);
+  if (blocks.length) {
+    var fst = Q.facilityStats(d);
+    H.push('<section class="section facility-band" id="findcentre"><div class="container">' +
+      '<div class="section-head"><div class="head-row"><div>' +
+        '<h2>' + esc(facSec ? UI.t(facSec.Title_EN, facSec.Title_HI) : 'Find Your Nearest Health Centre') + '</h2>' +
+        (facSec && facSec.Body_Text ? '<p>' + esc(facSec.Body_Text) + '</p>' : '') +
+      '</div><div class="spacer"></div>' +
+      '<a class="btn btn-outline btn-sm" href="facilities.html">' +
+        esc((facSec && facSec.Link_Label) || 'Find a centre near you') + ' &rarr;</a></div></div>' +
+      '<div class="block-grid">' + blocks.map(function (b) {
+        return '<a class="block-card" href="facilities.html?block=' + encodeURIComponent(b.name) + '">' +
+          '<span class="bc-name">' + esc(b.name) + '</span>' +
+          '<span class="bc-count">' + b.count + ' health centres</span>' +
+          (b.has24x7 ? '<span class="chip chip--live">' + b.has24x7 + ' open 24&times;7</span>' : '') +
+        '</a>';
+      }).join('') + '</div>' +
+      '<p style="margin:20px 0 0;font-size:.86rem;color:var(--text-muted);text-align:center">' +
+        fst.total + ' government health centres &middot; ' + fst.emergency +
+        ' open 24&times;7 &middot; ' + fst.mapped + ' with directions on the map</p>' +
+    '</div></section>');
+  }
+
   /* ---- Free services for citizens — the single most useful block on the page
           for a resident, so it sits directly under the hero. ---- */
   var benSec = Q.home(d, 'sec_benefits');
@@ -99,6 +125,7 @@ UI.boot('index.html', function (d) {
   /* ---- stat tiles: sheet value, or computed live when the cell is blank ---- */
   var st = Q.stats(d);
   var computed = {
+    stat_facilities: st.facilities,
     stat_benefits:   st.benefits,
     stat_programmes: cy ? Q.programmes(d, cy.Year_ID).length : 0,
     stat_documents:  st.documents,

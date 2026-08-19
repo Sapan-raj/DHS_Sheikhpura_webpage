@@ -3,10 +3,11 @@ hero_title,hero,"District Health Society, Sheikhpura","जिला स्वा
 hero_subtitle,hero,,,,"Find the free health services you are entitled to, where to go for them, and what is happening in the district this month.",,benefits.html,See free services,2,Active
 hero_cta2,hero,,,,,,events.html,What's happening,3,Active
 notice_banner,banner,Announcement,घोषणा,,"Every service listed on this portal is free at government health facilities. If anyone asks you to pay, call 104.",,benefits.html,Know your rights,4,Active
+sec_facilities,section,Find Your Nearest Health Centre,अपना नजदीकी स्वास्थ्य केंद्र खोजें,127 government health centres across 6 blocks,"Opening hours, the services offered, and directions on the map — for every government health facility in the district.",,facilities.html,Find a centre near you,4,Active
 sec_benefits,section,Free Health Services for You,आपके लिए नि:शुल्क स्वास्थ्य सेवाएं,Know what you are entitled to,Every one of these is free at government health facilities in Sheikhpura. Nobody may charge you for them.,,benefits.html,See all free services,5,Active
 stat_blocks,stat,Blocks,प्रखंड,,6,grid,,,6,Active
-stat_benefits,stat,Free Services,नि:शुल्क सेवाएं,,,heart,benefits.html,,7,Active
-stat_programmes,stat,Health Programmes,स्वास्थ्य कार्यक्रम,,,hospital,programmes.html,,8,Active
+stat_facilities,stat,Health Centres,स्वास्थ्य केंद्र,,,hospital,facilities.html,,7,Active
+stat_benefits,stat,Free Services,नि:शुल्क सेवाएं,,,heart,benefits.html,,8,Active
 stat_helpline,stat,Health Helpline,स्वास्थ्य हेल्पलाइन,,104,phone,contact.html,,9,Active
 sec_whatsnew,section,What's New,नया क्या है,"Events, campaigns and announcements","Health campaigns, camps, training programmes and achievements from across Sheikhpura district.",,events.html,View all,10,Active
 sec_programmes,section,Health Programmes,स्वास्थ्य कार्यक्रम,What the district runs for you,The health programmes running in Sheikhpura and the services each one provides free of cost.,,programmes.html,View all programmes,11,Active

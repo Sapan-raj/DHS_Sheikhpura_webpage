@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<base href="/">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Health Centre — District Health Society, Sheikhpura</title>
+<link rel="icon" href="assets/img/favicon.svg">
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+<a class="skip-link" href="#page">Skip to main content</a>
+<div id="shell-top"></div>
+<div id="crumbs"></div>
+<main id="page"><div class="container section"><div class="skel" style="height:320px"></div></div></main>
+<div id="shell-footer"></div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/ui.js"></script>
+<script>
+UI.boot('facilities.html', function (d) {
+  var Q = PortalData.query, esc = PortalData.esc;
+  var f = Q.facilityById(d, UI.param('id'));
+
+  if (!f) {
+    UI.crumbs([{ label: 'Find a Health Centre', url: 'facilities.html' }, { label: 'Not found' }]);
+    document.getElementById('page').innerHTML = '<div class="container section">' +
+      UI.emptyState('Health centre not found', 'Browse all centres in the district below.') +
+      '<div style="text-align:center"><a class="btn btn-primary" href="facilities.html">Find a health centre</a></div></div>';
+    return;
+  }
+
+  var typeName = UI.facilityTypeName(f.Facility_Type);
+  UI.crumbs([{ label: 'Find a Health Centre', url: 'facilities.html' },
+             { label: f.Block, url: 'facilities.html?block=' + encodeURIComponent(f.Block) },
+             { label: f.Facility_Name }]);
+  document.title = f.Facility_Name + ' — ' + (d.settings.site_title || '');
+
+  var docs = Q.facilityDoctors(d, f.Facility_ID);
+  var deps = Q.facilityDepartments(d, f.Facility_ID);
+  var nearby = Q.facilities(d, { block: f.Block })
+    .filter(function (x) { return x.Facility_ID !== f.Facility_ID; }).slice(0, 6);
+
+  var H = '<section class="section"><div class="container">';
+
+  /* ── header ── */
+  H += '<div class="card" style="border-top:4px solid ' + (f._is24x7 ? 'var(--green)' : 'var(--navy)') + ';margin-bottom:24px">' +
+    '<div class="post-chips" style="margin-bottom:10px">' +
+      '<span class="chip chip--code">' + esc(typeName) + '</span>' +
+      '<a class="chip" href="facilities.html?block=' + encodeURIComponent(f.Block) + '">' + esc(f.Block) + ' block</a>' +
+      (f._is24x7 ? '<span class="chip chip--live">● Open 24×7</span>'
+                 : '<span class="chip">' + esc(f.Operating_Hours) + '</span>') +
+      (f._beds ? '<span class="chip">' + f._beds + ' beds</span>' : '') +
+    '</div>' +
+    '<h1 style="margin:0 0 6px;font-size:1.55rem">' + esc(UI.t(f.Facility_Name, f.Facility_Name_HI)) + '</h1>' +
+    (f.Address_Details ? '<p style="color:var(--text-muted);margin:0 0 16px">📍 ' + esc(f.Address_Details) + '</p>' : '') +
+    '<div style="display:flex;gap:8px;flex-wrap:wrap">' +
+      UI.directionsButton(f, 'btn-primary') +
+      (f._phone ? '<a class="btn btn-outline" href="tel:' + esc(f._phone.replace(/\s/g, '')) + '">✆ ' + esc(f._phone) + '</a>' : '') +
+      '<a class="btn btn-outline" href="tel:102">⛑ Ambulance 102</a>' +
+      '<a class="btn btn-outline" href="tel:104">☎ Health helpline 104</a>' +
+    '</div>' +
+    (f._mapOk ? '' :
+      '<div class="alert alert-warn" style="margin:16px 0 0">📍 The exact location of this centre is being verified, so ' +
+      'directions are not shown. Ask your ASHA or call 104 for the way there.</div>') +
+  '</div>';
+
+  H += '<div class="grid grid-2" style="align-items:start">';
+
+  /* ── left: services ── */
+  H += '<div><div class="card"><h3>Services available here</h3>' +
+    (f._services.length
+      ? '<div class="svc-list">' + f._services.map(function (s) {
+          return '<span class="svc-chip">✔ ' + esc(s) + '</span>';
+        }).join('') + '</div>' +
+        '<p style="font-size:.84rem;color:var(--text-muted);margin:14px 0 0">' +
+        'All of these are free of cost. <a href="benefits.html">See everything you are entitled to →</a></p>'
+      : '<p style="color:var(--text-muted);margin:0">Service details for this centre are being updated.</p>') +
+  '</div>';
+
+  if (deps.length) {
+    H += '<div class="card" style="margin-top:16px"><h3>Departments</h3>' +
+      '<div class="table-wrap"><table class="data"><thead><tr>' +
+      '<th>Department</th><th style="width:90px">Room</th><th style="width:130px">Floor</th>' +
+      '</tr></thead><tbody>' +
+      deps.map(function (x) {
+        return '<tr><td data-label="Department">' + esc(x.Department_Name) + '</td>' +
+          '<td data-label="Room">' + esc(x.Room_No || '—') + '</td>' +
+          '<td data-label="Floor">' + esc(x.Floor || '—') + '</td></tr>';
+      }).join('') + '</tbody></table></div></div>';
+  }
+
+  if (docs.length) {
+    H += '<div class="card" style="margin-top:16px"><h3>Doctors available</h3>' +
+      '<p style="font-size:.85rem;color:var(--text-muted);margin:0 0 14px">' +
+      'Which specialists sit here and when. Timings can change — call 104 to confirm before travelling.</p>' +
+      '<div class="table-wrap"><table class="data"><thead><tr>' +
+      '<th>Specialisation</th><th style="width:190px">Days</th><th style="width:160px">Timing</th>' +
+      '</tr></thead><tbody>' +
+      docs.map(function (x) {
+        return '<tr><td data-label="Specialisation"><strong>' + esc(x.specialization) + '</strong></td>' +
+          '<td data-label="Days">' + (x.allWeek ? '<span class="chip chip--live">All week</span>'
+              : x.days.map(function (dd) { return '<span class="day-chip">' + esc(dd) + '</span>'; }).join('')) + '</td>' +
+          '<td data-label="Timing">' + x.shifts.map(esc).join('<br>') + '</td></tr>';
+      }).join('') + '</tbody></table></div></div>';
+  }
+  H += '</div>';
+
+  /* ── right: at a glance ── */
+  H += '<div><div class="card"><h3>At a glance</h3><dl class="kv">' +
+    '<dt>Type</dt><dd>' + esc(typeName) + '</dd>' +
+    '<dt>Block</dt><dd>' + esc(f.Block) + '</dd>' +
+    (f.Category && f.Category !== 'NA' ? '<dt>Category</dt><dd>' + esc(f.Category) + '</dd>' : '') +
+    '<dt>Open</dt><dd>' + esc(f.Operating_Hours || '—') + '</dd>' +
+    '<dt>Emergency 24×7</dt><dd>' + (f._is24x7
+        ? '<span class="chip chip--live">Yes</span>' : '<span class="chip">No</span>') + '</dd>' +
+    (f._beds ? '<dt>Beds</dt><dd>' + f._beds + '</dd>' : '') +
+    (f.Incharge_Designation ? '<dt>In-charge</dt><dd>' + esc(f.Incharge_Designation) +
+        (String(f.Incharge_Name || '').trim() ? '<br>' + esc(f.Incharge_Name) : '') + '</dd>' : '') +
+    (f.HFR_ID ? '<dt>Facility ID</dt><dd style="font-size:.8rem">' + esc(f.HFR_ID) + '</dd>' : '') +
+  '</dl>';
+
+  if (f._drugUrl) {
+    H += '<div style="margin-top:16px;padding-top:16px;border-top:1px dashed var(--border)">' +
+      '<a class="btn btn-outline btn-sm" href="' + esc(f._drugUrl) + '" target="_blank" rel="noopener noreferrer">' +
+      '💊 Check medicine availability</a>' +
+      '<p style="font-size:.78rem;color:var(--text-muted);margin:8px 0 0">' +
+      'Live stock from the state drug system.</p></div>';
+  } else if (['DH', 'CHC', 'PHC', 'APHC'].indexOf(f.Facility_Type) > -1) {
+    H += '<div style="margin-top:16px;padding-top:16px;border-top:1px dashed var(--border)">' +
+      '<span class="unavailable">💊 Medicine availability link not yet added</span></div>';
+  }
+  H += '</div>';
+
+  if (nearby.length) {
+    H += '<div class="card" style="margin-top:16px"><h3>Other centres in ' + esc(f.Block) + '</h3>' +
+      '<ul style="list-style:none;margin:0;padding:0;display:grid;gap:10px">' +
+      nearby.map(function (x) {
+        return '<li><a href="facility.html?id=' + encodeURIComponent(x.Facility_ID) + '" style="font-weight:600;font-size:.88rem">' +
+          esc(x.Facility_Name) + '</a>' +
+          '<div style="font-size:.78rem;color:var(--text-muted)">' + esc(UI.facilityTypeName(x.Facility_Type)) +
+          (x._is24x7 ? ' · 24×7' : '') + '</div></li>';
+      }).join('') + '</ul>' +
+      '<a class="btn btn-outline btn-sm" style="margin-top:14px" href="facilities.html?block=' +
+      encodeURIComponent(f.Block) + '">All centres in ' + esc(f.Block) + ' →</a></div>';
+  }
+  H += '</div></div></div></section>';
+
+  document.getElementById('page').innerHTML = H;
+});
+</script>
+</body>
+</html>

@@ -178,6 +178,9 @@
       posts: raw.posts || [],
       postMedia: raw.postMedia || [],
       benefits: raw.benefits || [],
+      facilities: raw.facilities || [],
+      facilityDoctors: raw.facilityDoctors || [],
+      facilityDepartments: raw.facilityDepartments || [],
       validation: raw.validation || { errors: [], warnings: [] },
       degraded: raw._degraded || ''
     };
@@ -196,7 +199,10 @@
      ['postCategories', 'Category_ID', 'Post_Categories'],
      ['posts', 'Post_ID', 'Posts'],
      ['postMedia', 'Media_ID', 'Post_Media'],
-     ['benefits', 'Benefit_ID', 'Program_Benefits']
+     ['benefits', 'Benefit_ID', 'Program_Benefits'],
+     ['facilities', 'Facility_ID', 'Facilities'],
+     ['facilityDoctors', 'Roster_ID', 'Facility_Doctors'],
+     ['facilityDepartments', 'Dept_ID', 'Facility_Departments']
     ].forEach(function (t) {
       var seen = {};
       d[t[0]] = d[t[0]].filter(function (r) {
@@ -337,6 +343,39 @@
              '" against the current Bihar rate. The marker is hidden from the public page.');
       }
       return true;
+    });
+
+    /* ---- facilities ---- */
+    var facById = {};
+    d.facilities.forEach(function (f) {
+      facById[f.Facility_ID] = f;
+      f._services = String(f.Key_Services || '').split(',')
+        .map(function (x) { return x.trim(); }).filter(Boolean);
+      f._is24x7 = yes(f.Emergency_24x7);
+      f._beds = num(f.Bed_Count);
+      /* A wrong pin is worse than no pin — a resident could drive to another
+         state. Directions are offered only for a verified coordinate. */
+      f._mapOk = String(f.Coord_Status || '') === 'ok';
+      f._mapUrl = f._mapOk ? validUrl(f.Google_Maps_URL) : '';
+      if (!f._mapOk) {
+        warn('Facilities', f.Facility_ID,
+             '"' + f.Facility_Name + '" location is ' + (f.Coord_Status || 'unknown') +
+             ' — directions hidden until the district corrects it');
+      }
+      f._drugUrl = validUrl(f.Drug_Stock_URL);
+      f._phone = String(f.Contact_Phone || '').trim();
+    });
+
+    ['facilityDoctors', 'facilityDepartments'].forEach(function (k) {
+      d[k] = d[k].filter(function (r) {
+        if (!facById[r.Facility_ID]) {
+          warn(k === 'facilityDoctors' ? 'Facility_Doctors' : 'Facility_Departments',
+               r.Roster_ID || r.Dept_ID,
+               'Facility_ID "' + r.Facility_ID + '" not found — row hidden');
+          return false;
+        }
+        return true;
+      });
     });
 
     /* expired notices drop out silently */
@@ -511,6 +550,98 @@
 
     postCategories: function (d) { return active(d.postCategories).sort(byOrder); },
 
+    /* ── Facilities ──
+       A resident's first question is "where do I go" — so these queries are
+       organised by block and by what a facility can actually do for them. */
+
+    facilities: function (d, opts) {
+      var o = opts || {};
+      var q = String(o.q || '').toLowerCase().trim();
+      return active(d.facilities).filter(function (f) {
+        if (o.block && f.Block !== o.block) return false;
+        if (o.type && f.Facility_Type !== o.type) return false;
+        if (o.only24x7 && !f._is24x7) return false;
+        if (o.service && f._services.join(' ').toLowerCase().indexOf(String(o.service).toLowerCase()) === -1) return false;
+        if (q) {
+          var hay = [f.Facility_Name, f.Facility_Name_HI, f.Block, f.Facility_Type,
+                     f.Address_Details, f.Key_Services, f.Category].join(' ').toLowerCase();
+          if (hay.indexOf(q) === -1) return false;
+        }
+        return true;
+      }).sort(byOrder);
+    },
+
+    facilityById: function (d, id) {
+      var m = d.facilities.filter(function (f) { return f.Facility_ID === id; });
+      return m.length ? m[0] : null;
+    },
+
+    blocks: function (d) {
+      var seen = {}, out = [];
+      active(d.facilities).forEach(function (f) {
+        if (!f.Block) return;
+        if (!seen[f.Block]) { seen[f.Block] = { name: f.Block, count: 0, has24x7: 0 }; out.push(seen[f.Block]); }
+        seen[f.Block].count++;
+        if (f._is24x7) seen[f.Block].has24x7++;
+      });
+      return out.sort(function (a, b) { return a.name.localeCompare(b.name); });
+    },
+
+    facilityTypes: function (d) {
+      var order = ['DH', 'CHC', 'PHC', 'APHC', 'HSC'];
+      var seen = {};
+      active(d.facilities).forEach(function (f) { seen[f.Facility_Type] = (seen[f.Facility_Type] || 0) + 1; });
+      return order.filter(function (t) { return seen[t]; })
+        .map(function (t) { return { type: t, count: seen[t] }; });
+    },
+
+    facilityServices: function (d) {
+      var c = {};
+      active(d.facilities).forEach(function (f) {
+        f._services.forEach(function (s) { c[s] = (c[s] || 0) + 1; });
+      });
+      return Object.keys(c).sort(function (a, b) { return c[b] - c[a]; })
+        .map(function (s) { return { name: s, count: c[s] }; });
+    },
+
+    /** Specialist availability, grouped by specialisation. Names are never sent. */
+    facilityDoctors: function (d, facilityId) {
+      var rows = active(d.facilityDoctors).filter(function (r) { return r.Facility_ID === facilityId; });
+      var DAYS = ['Mon', 'Tues', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      var by = {};
+      rows.forEach(function (r) {
+        var k = r.Specialization || 'General Medicine (Physicians)';
+        if (!by[k]) by[k] = { specialization: k, shifts: {}, days: {} };
+        if (r.Shift_Timing) by[k].shifts[r.Shift_Timing] = true;
+        if (r.Weekday) by[k].days[r.Weekday] = true;
+      });
+      return Object.keys(by).map(function (k) {
+        var g = by[k];
+        return {
+          specialization: k,
+          shifts: Object.keys(g.shifts).sort(),
+          days: DAYS.filter(function (dd) { return g.days[dd]; }),
+          allWeek: DAYS.every(function (dd) { return g.days[dd]; })
+        };
+      }).sort(function (a, b) { return a.specialization.localeCompare(b.specialization); });
+    },
+
+    facilityDepartments: function (d, facilityId) {
+      return active(d.facilityDepartments)
+        .filter(function (r) { return r.Facility_ID === facilityId; })
+        .sort(function (a, b) { return String(a.Department_Name).localeCompare(String(b.Department_Name)); });
+    },
+
+    facilityStats: function (d) {
+      var f = active(d.facilities);
+      return {
+        total: f.length,
+        emergency: f.filter(function (x) { return x._is24x7; }).length,
+        blocks: Q.blocks(d).length,
+        mapped: f.filter(function (x) { return x._mapOk && x._mapUrl; }).length
+      };
+    },
+
     /* ── Citizen benefits ──
        Keyed on FMR_Code so an entitlement written once shows for every year.
        A row with a Year_ID set applies only to that year. */
@@ -637,6 +768,7 @@
         documents: Q.allDocuments(d).length,
         notices: Q.notices(d).length,
         posts: Q.posts(d).length,
+        facilities: active(d.facilities).length,
         benefits: active(d.benefits).length,
         upcoming: Q.posts(d, { when: 'upcoming' }).length
       };

@@ -1,0 +1,151 @@
+﻿Dept_ID,Facility_ID,HFR_ID,Department_Name,Room_No,Floor,Status
+DEP001,FAC001,IN1010000318,A & E,4,Ground Floor,Active
+DEP002,FAC001,IN1010000318,Ayush OPD,11,Ground Floor,Active
+DEP003,FAC001,IN1010000318,Cardiology OPD,10,Ground Floor,Active
+DEP004,FAC001,IN1010000318,CT Scan,34,Ground Floor,Active
+DEP005,FAC001,IN1010000318,Dental OPD,14,Ground Floor,Active
+DEP006,FAC001,IN1010000318,Dialysis,239,Second Floor,Active
+DEP007,FAC001,IN1010000318,Electrocardiogram,5,Ground Floor,Active
+DEP008,FAC001,IN1010000318,ENT OPD,18,Ground Floor,Active
+DEP009,FAC001,IN1010000318,Eye OPD,13,Ground Floor,Active
+DEP010,FAC001,IN1010000318,General OPD,11,Ground Floor,Active
+DEP011,FAC001,IN1010000318,General Surgery,102,First Floor,Active
+DEP012,FAC001,IN1010000318,IPD,118,First Floor,Active
+DEP013,FAC001,IN1010000318,Leprosy OPD,37,Ground Floor,Active
+DEP014,FAC001,IN1010000318,MCH,26,Ground Floor,Active
+DEP015,FAC001,IN1010000318,Medical Certificate,11,Ground Floor,Active
+DEP016,FAC001,IN1010000318,NCD OPD,10,Ground Floor,Active
+DEP017,FAC001,IN1010000318,Orthopaedic OPD,11,Ground Floor,Active
+DEP018,FAC001,IN1010000318,Paediatric OPD,18,Ground Floor,Active
+DEP019,FAC001,IN1010000318,Pathology,22,Ground Floor,Active
+DEP020,FAC001,IN1010000318,Physiotherapy,43,Ground Floor,Active
+DEP021,FAC001,IN1010000318,Plaster,27,Ground Floor,Active
+DEP022,FAC001,IN1010000318,RBSK OPD,23,Ground Floor,Active
+DEP023,FAC001,IN1010000318,TB Consultation,22,Ground Floor,Active
+DEP024,FAC001,IN1010000318,Ultrasound,17,Ground Floor,Active
+DEP025,FAC001,IN1010000318,X-Ray,25,Ground Floor,Active
+DEP026,FAC001,IN1010000318,Ambulance Room,1,Ground Floor,Active
+DEP027,FAC001,IN1010000318,Staff Room,2,Ground Floor,Active
+DEP028,FAC001,IN1010000318,Emergency Doctors Room,3,Ground Floor,Active
+DEP029,FAC001,IN1010000318,Hospital Manager Room,8,Ground Floor,Active
+DEP030,FAC001,IN1010000318,Resistration Counter,9,Ground Floor,Active
+DEP031,FAC001,IN1010000318,Female OPD,12,Ground Floor,Active
+DEP032,FAC001,IN1010000318,Eye OPD,13,Ground Floor,Active
+DEP033,FAC001,IN1010000318,ANC Ward,19,Ground Floor,Active
+DEP034,FAC001,IN1010000318,Cancer Clinic,20,Ground Floor,Active
+DEP035,FAC001,IN1010000318,S.T.D,21,Ground Floor,Active
+DEP036,FAC001,IN1010000318,Pharmacy,24,Ground Floor,Active
+DEP037,FAC001,IN1010000318,S.T.D Starile,101,First Floor,Active
+DEP038,FAC001,IN1010000318,Pre Anithicia Checkup,103,First Floor,Active
+DEP039,FAC001,IN1010000318,Nursing Station Room,104,First Floor,Active
+DEP040,FAC001,IN1010000318,Changing Room,105,First Floor,Active
+DEP041,FAC001,IN1010000318,General OT Pharmecy,106,First Floor,Active
+DEP042,FAC001,IN1010000318,OT Pharmecy,107,First Floor,Active
+DEP043,FAC001,IN1010000318,Patient Changing Room,108,First Floor,Active
+DEP044,FAC001,IN1010000318,Doctors Room,109,First Floor,Active
+DEP045,FAC007,IN1010000304,A & E,,Ground Floor,Active
+DEP046,FAC007,IN1010000304,Ayush OPD,,Ground Floor,Active
+DEP047,FAC007,IN1010000304,Cardiology OPD,,Ground Floor,Active
+DEP048,FAC007,IN1010000304,CT Scan,,Ground Floor,Active
+DEP049,FAC007,IN1010000304,Dental OPD,1,Ground Floor,Active
+DEP050,FAC007,IN1010000304,Dermatology,,Ground Floor,Active
+DEP051,FAC007,IN1010000304,Dialysis,,Ground Floor,Active
+DEP052,FAC007,IN1010000304,Electrocardiogram,,Ground Floor,Active
+DEP053,FAC007,IN1010000304,Endocrinology,,Ground Floor,Active
+DEP054,FAC007,IN1010000304,ENT OPD,,Ground Floor,Active
+DEP055,FAC007,IN1010000304,Eye OPD,,Ground Floor,Active
+DEP056,FAC007,IN1010000304,General OPD,2,Ground Floor,Active
+DEP057,FAC007,IN1010000304,General Surgery,,Ground Floor,Active
+DEP058,FAC007,IN1010000304,Hemotology OPD,,Ground Floor,Active
+DEP059,FAC007,IN1010000304,IPD,13,Ground Floor,Active
+DEP060,FAC007,IN1010000304,Leprosy OPD,,Ground Floor,Active
+DEP061,FAC007,IN1010000304,MCH,8,Ground Floor,Active
+DEP062,FAC007,IN1010000304,Medical Certificate,2,Ground Floor,Active
+DEP063,FAC007,IN1010000304,NCD OPD,,Ground Floor,Active
+DEP064,FAC007,IN1010000304,Nephrology OPD,,Ground Floor,Active
+DEP065,FAC007,IN1010000304,Neuro OPD,,Ground Floor,Active
+DEP066,FAC007,IN1010000304,Orthopaedic OPD,,Ground Floor,Active
+DEP067,FAC007,IN1010000304,Paediatric OPD,,Ground Floor,Active
+DEP068,FAC007,IN1010000304,Pathology,7,Ground Floor,Active
+DEP069,FAC007,IN1010000304,Physiotherapy,,Ground Floor,Active
+DEP070,FAC007,IN1010000304,Plaster,,Ground Floor,Active
+DEP071,FAC007,IN1010000304,Psychiatric OPD,,Ground Floor,Active
+DEP072,FAC007,IN1010000304,RBSK OPD,,Ground Floor,Active
+DEP073,FAC007,IN1010000304,TB Consultation,7,Ground Floor,Active
+DEP074,FAC007,IN1010000304,Ultrasound,,Ground Floor,Active
+DEP075,FAC007,IN1010000304,X-Ray,,Ground Floor,Active
+DEP076,FAC007,IN1010000304,Yoga OPD,,Ground Floor,Active
+DEP077,FAC007,IN1010000304,Ambulance Room,,Ground Floor,Active
+DEP078,FAC007,IN1010000304,Staff Room,,Ground Floor,Active
+DEP079,FAC007,IN1010000304,Emergency Doctors Room,,Ground Floor,Active
+DEP080,FAC007,IN1010000304,Hospital Manager Room,,Ground Floor,Active
+DEP081,FAC007,IN1010000304,Resistration Counter,5,Ground Floor,Active
+DEP082,FAC007,IN1010000304,Female OPD,,Ground Floor,Active
+DEP083,FAC007,IN1010000304,Eye OPD,,Ground Floor,Active
+DEP084,FAC007,IN1010000304,ANC Ward,11,Ground Floor,Active
+DEP085,FAC007,IN1010000304,Cancer Clinic,,Ground Floor,Active
+DEP086,FAC007,IN1010000304,S.T.D,,Ground Floor,Active
+DEP087,FAC007,IN1010000304,Pharmacy,5,Ground Floor,Active
+DEP088,FAC007,IN1010000304,S.T.D Starile,,Ground Floor,Active
+DEP089,FAC007,IN1010000304,Pre Anithicia Checkup,,Ground Floor,Active
+DEP090,FAC007,IN1010000304,Nursing Station Room,16,Ground Floor,Active
+DEP091,FAC007,IN1010000304,Changing Room,,Ground Floor,Active
+DEP092,FAC007,IN1010000304,General OT Pharmecy,,Ground Floor,Active
+DEP093,FAC007,IN1010000304,OT Pharmecy,,Ground Floor,Active
+DEP094,FAC007,IN1010000304,Patient Changing Room,,Ground Floor,Active
+DEP095,FAC007,IN1010000304,Doctors Room,13,Ground Floor,Active
+DEP096,FAC007,IN1010000304,DS/Moic Chamber,2,Ground Floor,Active
+DEP097,FAC007,IN1010000304,HM/BHM Room,6,Ground Floor,Active
+DEP098,FAC002,IN1010000337,A & E,22,Ground Floor,Active
+DEP099,FAC002,IN1010000337,Ayush OPD,16,Ground Floor,Active
+DEP100,FAC002,IN1010000337,Cardiology OPD,,Ground Floor,Active
+DEP101,FAC002,IN1010000337,CT Scan,,Ground Floor,Active
+DEP102,FAC002,IN1010000337,Dental OPD,,Ground Floor,Active
+DEP103,FAC002,IN1010000337,Dermatology,,Ground Floor,Active
+DEP104,FAC002,IN1010000337,Dialysis,,Ground Floor,Active
+DEP105,FAC002,IN1010000337,Electrocardiogram,,Ground Floor,Active
+DEP106,FAC002,IN1010000337,Endocrinology,,Ground Floor,Active
+DEP107,FAC002,IN1010000337,ENT OPD,,Ground Floor,Active
+DEP108,FAC002,IN1010000337,Eye OPD,,Ground Floor,Active
+DEP109,FAC002,IN1010000337,General OPD,16,Ground Floor,Active
+DEP110,FAC002,IN1010000337,General Surgery,,Ground Floor,Active
+DEP111,FAC002,IN1010000337,Hemotology OPD,,Ground Floor,Active
+DEP112,FAC002,IN1010000337,IPD,23,Ground Floor,Active
+DEP113,FAC002,IN1010000337,Leprosy OPD,,Ground Floor,Active
+DEP114,FAC002,IN1010000337,MCH,16,Ground Floor,Active
+DEP115,FAC002,IN1010000337,Medical Certificate,,Ground Floor,Active
+DEP116,FAC002,IN1010000337,NCD OPD,Waiting Hall,Ground Floor,Active
+DEP117,FAC002,IN1010000337,Nephrology OPD,,Ground Floor,Active
+DEP118,FAC002,IN1010000337,Neuro OPD,,Ground Floor,Active
+DEP119,FAC002,IN1010000337,Orthopaedic OPD,,Ground Floor,Active
+DEP120,FAC002,IN1010000337,Paediatric OPD,,Ground Floor,Active
+DEP121,FAC002,IN1010000337,Pathology,19,Ground Floor,Active
+DEP122,FAC002,IN1010000337,Physiotherapy,,Ground Floor,Active
+DEP123,FAC002,IN1010000337,Plaster,,Ground Floor,Active
+DEP124,FAC002,IN1010000337,Psychiatric OPD,,Ground Floor,Active
+DEP125,FAC002,IN1010000337,RBSK OPD,18,Ground Floor,Active
+DEP126,FAC002,IN1010000337,TB Consultation,19,Ground Floor,Active
+DEP127,FAC002,IN1010000337,Ultrasound,,Ground Floor,Active
+DEP128,FAC002,IN1010000337,X-Ray,17,Ground Floor,Active
+DEP129,FAC002,IN1010000337,Yoga OPD,Waiting Hall,Ground Floor,Active
+DEP130,FAC002,IN1010000337,Ambulance Room,,Ground Floor,Active
+DEP131,FAC002,IN1010000337,Staff Room,,Ground Floor,Active
+DEP132,FAC002,IN1010000337,Emergency Doctors Room,15,Ground Floor,Active
+DEP133,FAC002,IN1010000337,Hospital Manager Room,,Ground Floor,Active
+DEP134,FAC002,IN1010000337,Resistration Counter,Waiting Hall,Ground Floor,Active
+DEP135,FAC002,IN1010000337,Female OPD,,Ground Floor,Active
+DEP136,FAC002,IN1010000337,Eye OPD,,Ground Floor,Active
+DEP137,FAC002,IN1010000337,ANC Ward,12,Ground Floor,Active
+DEP138,FAC002,IN1010000337,Cancer Clinic,,Ground Floor,Active
+DEP139,FAC002,IN1010000337,S.T.D,,Ground Floor,Active
+DEP140,FAC002,IN1010000337,Pharmacy,21,Ground Floor,Active
+DEP141,FAC002,IN1010000337,S.T.D Starile,,Ground Floor,Active
+DEP142,FAC002,IN1010000337,Pre Anithicia Checkup,8,Ground Floor,Active
+DEP143,FAC002,IN1010000337,Nursing Station Room,13,Ground Floor,Active
+DEP144,FAC002,IN1010000337,Changing Room,,Ground Floor,Active
+DEP145,FAC002,IN1010000337,General OT Pharmecy,8,Ground Floor,Active
+DEP146,FAC002,IN1010000337,OT Pharmecy,8,Ground Floor,Active
+DEP147,FAC002,IN1010000337,Patient Changing Room,,Ground Floor,Active
+DEP148,FAC002,IN1010000337,Doctors Room,15,Ground Floor,Active
+DEP149,FAC002,IN1010000337,DS/Moic Chamber,1,Ground Floor,Active
+DEP150,FAC002,IN1010000337,HM/BHM Room,18,Ground Floor,Active

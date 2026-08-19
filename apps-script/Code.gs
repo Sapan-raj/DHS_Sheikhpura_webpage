@@ -38,7 +38,10 @@ var SHEET_MAP = {
   'Post_Categories':     'postCategories',
   'Posts':               'posts',
   'Post_Media':          'postMedia',
-  'Program_Benefits':    'benefits'
+  'Program_Benefits':    'benefits',
+  'Facilities':          'facilities',
+  'Facility_Doctors':    'facilityDoctors',
+  'Facility_Departments':'facilityDepartments'
 };
 
 /* ── Media storage (Google Drive) ──
@@ -81,7 +84,10 @@ var REQUIRED = {
      before its image is uploaded. Such rows are dropped at render time by
      postGallery(), and reported below as a warning rather than an error. */
   postMedia:      ['Media_ID', 'Post_ID'],
-  benefits:       ['Benefit_ID', 'FMR_Code', 'Benefit_Title']
+  benefits:       ['Benefit_ID', 'FMR_Code', 'Benefit_Title'],
+  facilities:     ['Facility_ID', 'Facility_Name', 'Facility_Type', 'Block'],
+  facilityDoctors:['Roster_ID', 'Facility_ID'],
+  facilityDepartments: ['Dept_ID', 'Facility_ID', 'Department_Name']
 };
 
 var PK = {
@@ -90,7 +96,8 @@ var PK = {
   home: 'Section_Key', links: 'Link_ID', notices: 'Notice_ID',
   contacts: 'Contact_ID', footer: 'Footer_ID',
   postCategories: 'Category_ID', posts: 'Post_ID', postMedia: 'Media_ID',
-  benefits: 'Benefit_ID'
+  benefits: 'Benefit_ID', facilities: 'Facility_ID',
+  facilityDoctors: 'Roster_ID', facilityDepartments: 'Dept_ID'
 };
 
 /* Column order written back to the Posts sheet. Must match the header row. */
@@ -404,6 +411,27 @@ function crossValidate(d) {
     return true;
   });
 
+  /* Facilities: FK integrity, and never offer directions to a bad coordinate. */
+  var facIds = {};
+  (d.facilities || []).forEach(function (f) { facIds[f.Facility_ID] = true; });
+  (d.facilities || []).forEach(function (f) {
+    if (String(f.Coord_Status || '') !== 'ok') {
+      V.warnings.push({ sheet: 'Facilities', id: f.Facility_ID,
+        message: '"' + f.Facility_Name + '" has no usable location (' +
+                 (f.Coord_Status || 'unknown') + ') — directions are hidden for it' });
+    }
+  });
+  ['facilityDoctors', 'facilityDepartments'].forEach(function (k) {
+    d[k] = (d[k] || []).filter(function (r) {
+      if (!facIds[r.Facility_ID]) {
+        V.warnings.push({ sheet: k, id: r.Roster_ID || r.Dept_ID,
+          message: 'Facility_ID "' + r.Facility_ID + '" not found — row hidden' });
+        return false;
+      }
+      return true;
+    });
+  });
+
   var current = d.financialYears.filter(function (y) {
     return String(y.Is_Current).toLowerCase() === 'yes';
   });
@@ -453,6 +481,18 @@ function publicView(d) {
     }
     return c;
   });
+  /* ── Doctor names are personal data. ──
+     The roster is kept in the sheet WITH names so the district can maintain it,
+     but a browser only ever receives the specialisation, day and shift. A
+     resident needs to know "is there a gynaecologist on Tuesday", not who. */
+  out.facilityDoctors = (d.facilityDoctors || []).map(function (r) {
+    return {
+      Roster_ID: r.Roster_ID, Facility_ID: r.Facility_ID,
+      Specialization: r.Specialization, Shift_Timing: r.Shift_Timing,
+      Weekday: r.Weekday, Status: r.Status
+    };
+  });
+
   var MONEY_DOCS = { 'Category Allocation': 1, 'Category Guidelines': 1, 'PIP': 1,
                      'RoP': 1, 'Supplementary PIP': 1, 'Supplementary Approval': 1,
                      'Budget Allocation Letter': 1, 'Revised Budget': 1 };

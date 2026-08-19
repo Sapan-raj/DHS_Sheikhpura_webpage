@@ -1,0 +1,194 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Reads the district's Sheikhpura_Health_Facilities_Database.xlsx and emits
+facilities_data.py for build_database.py to consume.
+
+Run this again whenever the district issues an updated facilities workbook:
+    python import_facilities.py
+
+What it does beyond a straight copy:
+  - collapses the double spaces in facility names ("Mandir  Afani")
+  - derives Coord_Status by checking each coordinate against the district
+    bounding box, so a geocoding error can never send a resident to France
+  - normalises Yes/No and blank cells
+"""
+import os, re, sys, io
+from openpyxl import load_workbook
+import warnings; warnings.filterwarnings('ignore')
+
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+
+SRC = r"C:\Users\sapan\OneDrive\Desktop\District Work\Sheikhpura_Health_Facilities_Database.xlsx"
+OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "facilities_data.py")
+
+# Sheikhpura district bounding box, generous margin. Anything outside is a
+# geocoding error, not a facility — the district is roughly 40 km across.
+LAT_MIN, LAT_MAX = 24.95, 25.40
+LON_MIN, LON_MAX = 85.55, 86.15
+
+
+def rows(wb, name):
+    ws = wb[name]
+    data = list(ws.iter_rows(values_only=True))
+    hdr = [str(h).strip() for h in data[0] if h is not None]
+    out = []
+    for r in data[1:]:
+        if not r or not any(c is not None and str(c).strip() for c in r):
+            continue
+        out.append({h: ('' if r[i] is None else r[i]) for i, h in enumerate(hdr)})
+    return out
+
+
+def clean(v):
+    """Collapse runs of whitespace; return '' for empties."""
+    s = '' if v is None else str(v)
+    s = re.sub(r'\s+', ' ', s).strip()
+    return '' if s.lower() in ('none', 'nan', 'na', '#n/a') else s
+
+
+def coord_status(c):
+    """'ok' | 'outside' | 'unparseable' | 'missing'"""
+    s = clean(c)
+    if not s:
+        return 'missing', '', ''
+    m = re.match(r'^(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)$', s)
+    if not m:
+        return 'unparseable', '', ''
+    la, lo = float(m.group(1)), float(m.group(2))
+    inside = LAT_MIN <= la <= LAT_MAX and LON_MIN <= lo <= LON_MAX
+    return ('ok' if inside else 'outside'), f'{la:.6f}', f'{lo:.6f}'
+
+
+def main():
+    wb = load_workbook(SRC, read_only=True, data_only=True)
+    F = rows(wb, 'Facilities_Master')
+    R = rows(wb, 'Facility_Doctors_Roster')
+    D = rows(wb, 'Hospital_Departments')
+
+    # ── facilities ──
+    fac, stats = [], {'ok': 0, 'outside': 0, 'unparseable': 0, 'missing': 0}
+    for x in F:
+        st, la, lo = coord_status(x.get('Coordinates'))
+        stats[st] += 1
+        ftype = clean(x.get('Facility_Type'))
+        # eAushadhi drug-stock link: only meaningful at the bigger facilities
+        drug_url = clean(x.get('DVDMS_URL')) if ftype in ('DH', 'CHC', 'PHC', 'APHC') else ''
+        fac.append((
+            clean(x.get('Facility_ID')),
+            clean(x.get('Facility_Name')),
+            clean(x.get('Facility_Name_HI')),
+            ftype,
+            clean(x.get('Block')),
+            clean(x.get('Category')),
+            clean(x.get('HFR_ID')),
+            la, lo, st,
+            clean(x.get('Google_Maps_URL')),
+            'Yes' if clean(x.get('Emergency_24x7')).lower().startswith('y') else 'No',
+            clean(x.get('Operating_Hours')),
+            clean(x.get('Bed_Count')) or '',
+            clean(x.get('Incharge_Designation')),
+            clean(x.get('Incharge_Name')),
+            clean(x.get('Contact_Phone')),
+            clean(x.get('Key_Services')),
+            clean(x.get('Address_Details')),
+            drug_url,
+            clean(x.get('Status')) or 'Active',
+            int(clean(x.get('Display_Order')) or 0),
+        ))
+
+    # ── doctors: names stay in the sheet, publicView() strips them ──
+    by_hfr = {clean(f[6]): f[0] for f in fac if clean(f[6])}
+    doc, orphan_docs = [], 0
+    for x in R:
+        hfr = clean(x.get('HFR_ID'))
+        fid = by_hfr.get(hfr, '')
+        if not fid:
+            orphan_docs += 1
+            continue
+        doc.append((
+            clean(x.get('Roster_ID')), fid, hfr,
+            clean(x.get('Doctor_Name')),
+            clean(x.get('Specialization')) or 'General Medicine (Physicians)',
+            clean(x.get('Shift_Timing')),
+            clean(x.get('Weekday')).rstrip('.'),
+            clean(x.get('Status')) or 'Active',
+        ))
+
+    # ── departments ──
+    dep, orphan_deps = [], 0
+    for x in D:
+        hfr = clean(x.get('HFR_ID'))
+        fid = by_hfr.get(hfr, '')
+        if not fid:
+            orphan_deps += 1
+            continue
+        dep.append((
+            clean(x.get('Dept_ID')), fid, hfr,
+            clean(x.get('Department_Name')),
+            clean(x.get('Room_No')),
+            clean(x.get('Floor')),
+            clean(x.get('Status')) or 'Active',
+        ))
+
+    header = '''#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+GENERATED by import_facilities.py from the district's
+Sheikhpura_Health_Facilities_Database.xlsx — do not hand-edit.
+
+Coord_Status is derived, not supplied: every coordinate is checked against the
+Sheikhpura bounding box. Anything outside is marked 'outside' and the website
+refuses to offer directions for it, because sending a resident to the wrong
+place is worse than offering no map at all.
+
+Doctor names ARE stored here so the district can maintain the roster in the
+sheet. publicView() in Code.gs strips Doctor_Name and never sends it to a
+browser — the public sees specialisation, day and shift only.
+"""
+
+# Facility_ID, Name, Name_HI, Type, Block, Category, HFR_ID, Latitude, Longitude,
+# Coord_Status, Google_Maps_URL, Emergency_24x7, Operating_Hours, Bed_Count,
+# Incharge_Designation, Incharge_Name, Contact_Phone, Key_Services,
+# Address_Details, Drug_Stock_URL, Status, Display_Order
+FACILITIES = [
+'''
+    body = ''.join('    ' + repr(t) + ',\n' for t in fac)
+    body += ''']
+
+# Roster_ID, Facility_ID, HFR_ID, Doctor_Name, Specialization, Shift_Timing, Weekday, Status
+FACILITY_DOCTORS = [
+'''
+    body += ''.join('    ' + repr(t) + ',\n' for t in doc)
+    body += ''']
+
+# Dept_ID, Facility_ID, HFR_ID, Department_Name, Room_No, Floor, Status
+FACILITY_DEPARTMENTS = [
+'''
+    body += ''.join('    ' + repr(t) + ',\n' for t in dep)
+    body += ']\n'
+
+    with open(OUT, 'w', encoding='utf-8') as f:
+        f.write(header + body)
+
+    print(f"Wrote {OUT}\n")
+    print(f"  facilities   {len(fac):>4}")
+    print(f"  doctors      {len(doc):>4}   ({orphan_docs} orphan rows dropped)")
+    print(f"  departments  {len(dep):>4}   ({orphan_deps} orphan rows dropped)")
+    print(f"\n  coordinates: ok={stats['ok']}  outside={stats['outside']}  "
+          f"unparseable={stats['unparseable']}  missing={stats['missing']}")
+    if stats['outside']:
+        print(f"\n  ⚠ {stats['outside']} facilities have coordinates outside the district.")
+        print("    Directions are suppressed for these until the district corrects them:")
+        for t in fac:
+            if t[9] == 'outside':
+                print(f"      {t[0]}  {t[1][:44]:46} {t[7]}, {t[8]}")
+    if stats['missing']:
+        print(f"\n  {stats['missing']} facilities have no coordinates:")
+        for t in fac:
+            if t[9] == 'missing':
+                print(f"      {t[0]}  {t[1][:44]:46} ({t[4]})")
+
+
+if __name__ == '__main__':
+    main()

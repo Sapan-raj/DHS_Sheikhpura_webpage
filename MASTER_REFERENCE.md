@@ -45,6 +45,7 @@
 20. [Glossary](#20-glossary)
 21. [What to do next](#21-what-to-do-next)
 22. [The citizen-first change](#22-the-citizen-first-change-18-august-2026)
+23. [Health facilities module](#23-health-facilities-module)
 
 ---
 
@@ -62,8 +63,8 @@
 | **Data source** | `google-sheets` via Apps Script — **live**, not the bundled snapshot |
 | **Validation** | **0 errors**, 56 warnings (all expected — see §17) |
 | **Master sheet** | `1V2FbGpfVuX1Z7OhL0yEWQMs43t4QgvwQ4DSfmHEm0vs` |
-| **Pages** | 10 (PIP page removed, Health Programmes added) |
-| **Sheets** | 17 data + 1 README |
+| **Pages** | 12 — PIP removed; Health Programmes, Find a Health Centre and facility detail added |
+| **Sheets** | 19 data + 1 README |
 | **Sample records** | 453 |
 | **Public payload** | 151.2 KB |
 | **CSS** | 34 KB, one file |
@@ -1422,3 +1423,60 @@ returns only programmes with at least one benefit.
 > `Rs 1,400` on the JSY card and "would cost lakhs privately" on the TB and hepatitis
 > cards are **deliberate** — they are citizen entitlements and the value of a free
 > service, not district accounting.
+
+---
+
+## 23. Health facilities module
+
+127 government health facilities, sourced from the district's
+`Sheikhpura_Health_Facilities_Database.xlsx` via `import_facilities.py`.
+
+| Sheet | Rows | Contents |
+|---|---|---|
+| `Facilities` | 127 | 1 DH · 4 CHC · 2 PHC · 15 APHC · 105 HSC, across 6 blocks |
+| `Facility_Doctors` | 402 | Specialist roster for 7 facilities |
+| `Facility_Departments` | 150 | Department, room and floor for 3 facilities |
+
+### Two safety rules built into the module
+
+**1. A wrong pin is worse than no pin.** `import_facilities.py` checks every
+coordinate against the Sheikhpura bounding box and records `Coord_Status`. Of the
+127 supplied, **14 fell outside the district** — five of them thousands of
+kilometres away (France, Switzerland, Nagpur, Sikkim, Varanasi), evidently
+geocoding errors. Directions are offered **only** where `Coord_Status = 'ok'`;
+elsewhere the page says the location is being verified. A resident is never sent
+to the wrong place.
+
+**2. Doctor names are never published.** The roster is stored in the sheet *with*
+names so the district can maintain it, but `publicView()` in `Code.gs` and
+`export_json.py` both strip `Doctor_Name` and `HPR_ID`. The public sees
+specialisation, days and shift — which is what a patient actually needs
+("is there a gynaecologist on Tuesday"), without publishing 71 employees'
+whereabouts by day.
+
+### Pages
+
+| Page | Purpose |
+|---|---|
+| `facilities.html` | Block picker, then search by name, block, type, service, or 24×7 only |
+| `facility.html` | One centre: services, hours, beds, departments, specialist availability, directions, medicine-stock link |
+
+`Q.facilities()`, `Q.blocks()`, `Q.facilityDoctors()` and `Q.facilityDepartments()`
+carry the query logic; `UI.facilityCard()` and `UI.directionsButton()` render it.
+
+### Medicine availability
+
+The eAushadhi stock link is carried only for DH / CHC / PHC / APHC — the facilities
+where it is meaningful. Where the link is missing the page shows
+*"Medicine availability link not yet added"*, so the district can fill them in later.
+
+### Outstanding for the district
+
+| Item | Count | Impact |
+|---|---|---|
+| Coordinates outside the district | 14 | No directions until corrected |
+| Coordinates missing entirely | 6 | No directions |
+| `Contact_Phone` | **0 of 127** | No phone number shown for any centre |
+| `Incharge_Name` | 0 of 127 | Designation shown, no name |
+| `Facility_Name_HI` | 0 of 127 | Village names have no Hindi |
+| `FAC111 Government Engineering College` | 1 | Listed as an HSC — verify whether it belongs |

@@ -1,0 +1,403 @@
+﻿Roster_ID,Facility_ID,HFR_ID,Doctor_Name,Specialization,Shift_Timing,Weekday,Status
+DOC0001,FAC001,IN1010000318,Dr. Ravi Shankar,General Medicine (Physicians),8:00am - 2:00pm,Sun,Active
+DOC0002,FAC001,IN1010000318,Dr. Shailendra Kumar,General Medicine (Physicians),8:00am - 2:00pm,Sun,Active
+DOC0003,FAC001,IN1010000318,Dr.Rupam Kumari,Gynecologist,8:00am - 2:00pm,Sun,Active
+DOC0004,FAC003,IN1010000296,Dr. Soma,General Medicine (Physicians),8:00am - 2:00pm,Sun,Active
+DOC0005,FAC002,IN1010000337,Dr. Deepak Kumar,General Medicine (Physicians),8:00am - 2:00pm,Sun,Active
+DOC0006,FAC002,IN1010000337,Dr. Nusrat Zabin,General Medicine (Physicians),8:00am - 2:00pm,Sun,Active
+DOC0007,FAC002,IN1010000337,Dr. Prince Kumar,General Medicine (Physicians),8:00am - 2:00pm,Sun,Active
+DOC0008,FAC002,IN1010000337,Dr. Sachin Gupta,General Medicine (Physicians),8:00am - 2:00pm,Sun,Active
+DOC0009,FAC002,IN1010000337,Dr. Upma Kumari,General Medicine (Physicians),8:00am - 2:00pm,Sun,Active
+DOC0010,FAC004,IN1010000310,Dr. Radha Krishna Narayan,General Medicine (Physicians),8:00am - 2:00pm,Sun,Active
+DOC0011,FAC007,IN1010000304,Dr. Bipin Kumar,General Medicine (Physicians),8:00am - 2:00pm,Sun,Active
+DOC0012,FAC007,IN1010000304,Dr. Saket Kumar Bharti,General Medicine (Physicians),8:00am - 2:00pm,Sun,Active
+DOC0013,FAC007,IN1010000304,Dr. Uma Shankar Gupta,General Medicine (Physicians),8:00am - 2:00pm,Sun,Active
+DOC0014,FAC007,IN1010000304,Dr. Vijay kumar,General Medicine (Physicians),8:00am - 2:00pm,Sun,Active
+DOC0015,FAC005,IN1010000345,Dr. Anmol Kumar,General Medicine (Physicians),8:00am - 2:00pm,Sun,Active
+DOC0016,FAC005,IN1010000345,Dr. Asha (MOIC),General Medicine (Physicians),8:00am - 2:00pm,Sun,Active
+DOC0017,FAC005,IN1010000345,Dr. Khushboo Kumari,General Medicine (Physicians),8:00am - 2:00pm,Sun,Active
+DOC0018,FAC001,IN1010000318,Dr. Dhananjay Kumar,General Medicine (Physicians),2:00pm - 8:00pm,Sun,Active
+DOC0019,FAC001,IN1010000318,Dr. Krishna Murari,General Medicine (Physicians),2:00pm - 8:00pm,Sun,Active
+DOC0020,FAC001,IN1010000318,Dr.Rupam Kumari,Gynecologist,2:00pm - 8:00pm,Sun,Active
+DOC0021,FAC003,IN1010000296,Dr. Ritu Kumari,General Medicine (Physicians),2:00pm - 8:00pm,Sun,Active
+DOC0022,FAC002,IN1010000337,Dr. Sachin Gupta,General Medicine (Physicians),2:00pm - 8:00pm,Sun,Active
+DOC0023,FAC004,IN1010000310,Dr. Ashish Ranjan,General Medicine (Physicians),2:00pm - 8:00pm,Sun,Active
+DOC0024,FAC007,IN1010000304,Dr. Saket Kumar Bharti,General Medicine (Physicians),2:00pm - 8:00pm,Sun,Active
+DOC0025,FAC007,IN1010000304,Dr. Uma Shankar Gupta,General Medicine (Physicians),2:00pm - 8:00pm,Sun,Active
+DOC0026,FAC005,IN1010000345,Dr. Anmol Kumar,General Medicine (Physicians),2:00pm - 8:00pm,Sun,Active
+DOC0027,FAC005,IN1010000345,Dr. Asha (MOIC),General Medicine (Physicians),2:00pm - 8:00pm,Sun,Active
+DOC0028,FAC005,IN1010000345,Dr. Niwas Kumar,General Medicine (Physicians),2:00pm - 8:00pm,Sun,Active
+DOC0029,FAC001,IN1010000318,Dr. Dhananjay Kumar,General Medicine (Physicians),8:00pm - 8:00am,Sun,Active
+DOC0030,FAC001,IN1010000318,Dr. Krishna Murari,General Medicine (Physicians),8:00pm - 8:00am,Sun,Active
+DOC0031,FAC003,IN1010000296,Dr. Nitesh Kumar,General Medicine (Physicians),8:00pm - 8:00am,Sun,Active
+DOC0032,FAC002,IN1010000337,Dr. Deepak Kumar,General Medicine (Physicians),8:00pm - 8:00am,Sun,Active
+DOC0033,FAC002,IN1010000337,Dr. Nusrat Zabin,General Medicine (Physicians),8:00pm - 8:00am,Sun,Active
+DOC0034,FAC002,IN1010000337,Dr. Prince Kumar,General Medicine (Physicians),8:00pm - 8:00am,Sun,Active
+DOC0035,FAC002,IN1010000337,Dr. Sachin Gupta,General Medicine (Physicians),8:00pm - 8:00am,Sun,Active
+DOC0036,FAC002,IN1010000337,Dr. Upma Kumari,General Medicine (Physicians),8:00pm - 8:00am,Sun,Active
+DOC0037,FAC005,IN1010000345,Dr. Anmol Kumar,General Medicine (Physicians),8:00pm - 8:00am,Sun,Active
+DOC0038,FAC005,IN1010000345,Dr. Asha (MOIC),General Medicine (Physicians),8:00pm - 8:00am,Sun,Active
+DOC0039,FAC001,IN1010000318,Dr. Arti Prasad,General Medicine (Physicians),8:00am - 2:00pm,Mon,Active
+DOC0040,FAC001,IN1010000318,Dr. Ashish Ranjan Kumar,General Medicine (Physicians),8:00am - 2:00pm,Mon,Active
+DOC0041,FAC001,IN1010000318,Dr. Gajendra Kumar,Pediatrician,8:00am - 2:00pm,Mon,Active
+DOC0042,FAC001,IN1010000318,Dr. Jaya Sharma,Gynecologist,8:00am - 2:00pm,Mon,Active
+DOC0043,FAC001,IN1010000318,Dr. Md. Naushad Alam (NCDO/DS),General Medicine (Physicians),8:00am - 2:00pm,Mon,Active
+DOC0044,FAC001,IN1010000318,Dr. Pawan Kumar,General Medicine (Physicians),8:00am - 2:00pm,Mon,Active
+DOC0045,FAC001,IN1010000318,Dr. Rakesh Kumar,ENT,8:00am - 2:00pm,Mon,Active
+DOC0046,FAC001,IN1010000318,Dr. Raviranjan Prasad,General Medicine (Physicians),8:00am - 2:00pm,Mon,Active
+DOC0047,FAC001,IN1010000318,Dr. Sangeeta Kumari,Dentist,8:00am - 2:00pm,Mon,Active
+DOC0048,FAC001,IN1010000318,Dr. Sonu Kumar,General Medicine (Physicians),8:00am - 2:00pm,Mon,Active
+DOC0049,FAC001,IN1010000318,Dr. Sunila Kumari,Ophthalmology,8:00am - 2:00pm,Mon,Active
+DOC0050,FAC001,IN1010000318,Dr. Uday Kumar,General Medicine (Physicians),8:00am - 2:00pm,Mon,Active
+DOC0051,FAC001,IN1010000318,Dr.Ravi ranjan Kumar,Orthopedics,8:00am - 2:00pm,Mon,Active
+DOC0052,FAC001,IN1010000318,Dr.Ravishankar Sharma,General Medicine (Physicians),8:00am - 2:00pm,Mon,Active
+DOC0053,FAC001,IN1010000318,Kalyani Kiran (Physiotherapist),General Medicine (Physicians),8:00am - 2:00pm,Mon,Active
+DOC0054,FAC001,IN1010000318,Kaushal Kumar (Physiotherapist),General Medicine (Physicians),8:00am - 2:00pm,Mon,Active
+DOC0055,FAC001,IN1010000318,Manmendra Kumar (Physiotherapist),General Medicine (Physicians),8:00am - 2:00pm,Mon,Active
+DOC0056,FAC001,IN1010000318,Mithlesh Kumar (Physiotherapist),General Medicine (Physicians),8:00am - 2:00pm,Mon,Active
+DOC0057,FAC001,IN1010000318,Pintu Kumar (Occupational Therapist),General Medicine (Physicians),8:00am - 2:00pm,Mon,Active
+DOC0058,FAC001,IN1010000318,Raju Kumar (Ophthalmic Assistant),General Medicine (Physicians),8:00am - 2:00pm,Mon,Active
+DOC0059,FAC003,IN1010000296,Dr. Faisal Arshad (MOIC),General Medicine (Physicians),8:00am - 2:00pm,Mon,Active
+DOC0060,FAC003,IN1010000296,Dr. Nitesh Kumar,General Medicine (Physicians),8:00am - 2:00pm,Mon,Active
+DOC0061,FAC003,IN1010000296,Dr. Noor Fatima,General Medicine (Physicians),8:00am - 2:00pm,Mon,Active
+DOC0062,FAC002,IN1010000337,Dr. Sachin Gupta,General Medicine (Physicians),8:00am - 2:00pm,Mon,Active
+DOC0063,FAC004,IN1010000310,Dr. Ashish Ranjan,General Medicine (Physicians),8:00am - 2:00pm,Mon,Active
+DOC0064,FAC006,IN1010000280,Dr. Amit Kumar,General Medicine (Physicians),8:00am - 2:00pm,Mon,Active
+DOC0065,FAC006,IN1010000280,Dr. Shambhu Sharan Pandey,General Medicine (Physicians),8:00am - 2:00pm,Mon,Active
+DOC0066,FAC007,IN1010000304,Dr. Bipin Kumar,General Medicine (Physicians),8:00am - 2:00pm,Mon,Active
+DOC0067,FAC007,IN1010000304,Dr. Saket Kumar Bharti,General Medicine (Physicians),8:00am - 2:00pm,Mon,Active
+DOC0068,FAC007,IN1010000304,Dr. Shivam Sonali,General Medicine (Physicians),8:00am - 2:00pm,Mon,Active
+DOC0069,FAC007,IN1010000304,Dr. Uma Shankar Gupta,General Medicine (Physicians),8:00am - 2:00pm,Mon,Active
+DOC0070,FAC007,IN1010000304,Dr. Vijay kumar,General Medicine (Physicians),8:00am - 2:00pm,Mon,Active
+DOC0071,FAC005,IN1010000345,Dr. Anmol Kumar,General Medicine (Physicians),8:00am - 2:00pm,Mon,Active
+DOC0072,FAC005,IN1010000345,Dr. Asha (MOIC),General Medicine (Physicians),8:00am - 2:00pm,Mon,Active
+DOC0073,FAC005,IN1010000345,Dr. Narendra Mohan Sinha,General Medicine (Physicians),8:00am - 2:00pm,Mon,Active
+DOC0074,FAC001,IN1010000318,Dr. Amiya Agrawal,General Medicine (Physicians),2:00pm - 8:00pm,Mon,Active
+DOC0075,FAC001,IN1010000318,Dr. Divya Thakur,Ophthalmology,2:00pm - 8:00pm,Mon,Active
+DOC0076,FAC001,IN1010000318,Dr. Jaya Sharma,Gynecologist,2:00pm - 8:00pm,Mon,Active
+DOC0077,FAC001,IN1010000318,Dr. Nikhat Imam,General Medicine (Physicians),2:00pm - 8:00pm,Mon,Active
+DOC0078,FAC001,IN1010000318,Dr. Sonu Kumar,General Medicine (Physicians),2:00pm - 8:00pm,Mon,Active
+DOC0079,FAC001,IN1010000318,Dr.Ravi ranjan Kumar,Orthopedics,2:00pm - 8:00pm,Mon,Active
+DOC0080,FAC001,IN1010000318,Dr.Ravishankar Sharma,General Medicine (Physicians),2:00pm - 8:00pm,Mon,Active
+DOC0081,FAC001,IN1010000318,Raju Kumar (Ophthalmic Assistant),General Medicine (Physicians),2:00pm - 8:00pm,Mon,Active
+DOC0082,FAC003,IN1010000296,Dr. Akhilesh Kumar,General Medicine (Physicians),2:00pm - 8:00pm,Mon,Active
+DOC0083,FAC003,IN1010000296,Dr. Anand Kumar,General Medicine (Physicians),2:00pm - 8:00pm,Mon,Active
+DOC0084,FAC002,IN1010000337,Dr. Upma Kumari,General Medicine (Physicians),2:00pm - 8:00pm,Mon,Active
+DOC0085,FAC004,IN1010000310,Dr. Radha Krishna Narayan,General Medicine (Physicians),2:00pm - 8:00pm,Mon,Active
+DOC0086,FAC007,IN1010000304,Dr. Uma Shankar Gupta,General Medicine (Physicians),2:00pm - 8:00pm,Mon,Active
+DOC0087,FAC005,IN1010000345,Dr. Anmol Kumar,General Medicine (Physicians),2:00pm - 8:00pm,Mon,Active
+DOC0088,FAC005,IN1010000345,Dr. Asha (MOIC),General Medicine (Physicians),2:00pm - 8:00pm,Mon,Active
+DOC0089,FAC001,IN1010000318,Dr. Amiya Agrawal,General Medicine (Physicians),8:00pm - 8:00am,Mon,Active
+DOC0090,FAC001,IN1010000318,Dr. Jaya Sharma,Gynecologist,8:00pm - 8:00am,Mon,Active
+DOC0091,FAC001,IN1010000318,Dr. Jitendra Kumar,General Medicine (Physicians),8:00pm - 8:00am,Mon,Active
+DOC0092,FAC001,IN1010000318,Dr. Satish Chandra Bose,Pediatrician,8:00pm - 8:00am,Mon,Active
+DOC0093,FAC003,IN1010000296,Dr. Anand Kumar,General Medicine (Physicians),8:00pm - 8:00am,Mon,Active
+DOC0094,FAC002,IN1010000337,Dr. Deepak Kumar,General Medicine (Physicians),8:00pm - 8:00am,Mon,Active
+DOC0095,FAC007,IN1010000304,Dr. Bipin Kumar,General Medicine (Physicians),8:00pm - 8:00am,Mon,Active
+DOC0096,FAC005,IN1010000345,Dr. Ankit Kumar,General Medicine (Physicians),8:00pm - 8:00am,Mon,Active
+DOC0097,FAC005,IN1010000345,Dr. Anmol Kumar,General Medicine (Physicians),8:00pm - 8:00am,Mon,Active
+DOC0098,FAC005,IN1010000345,Dr. Asha (MOIC),General Medicine (Physicians),8:00pm - 8:00am,Mon,Active
+DOC0099,FAC005,IN1010000345,Dr. Khushboo Kumari,General Medicine (Physicians),8:00pm - 8:00am,Mon,Active
+DOC0100,FAC001,IN1010000318,Dr. Dhananjay Kumar,General Medicine (Physicians),8:00am - 2:00pm,Tues,Active
+DOC0101,FAC001,IN1010000318,Dr. Divya Thakur,Ophthalmology,8:00am - 2:00pm,Tues,Active
+DOC0102,FAC001,IN1010000318,Dr. Jaya Sharma,Gynecologist,8:00am - 2:00pm,Tues,Active
+DOC0103,FAC001,IN1010000318,Dr. Jitendra Kumar,General Medicine (Physicians),8:00am - 2:00pm,Tues,Active
+DOC0104,FAC001,IN1010000318,Dr. Krishna Murari,General Medicine (Physicians),8:00am - 2:00pm,Tues,Active
+DOC0105,FAC001,IN1010000318,Dr. Md. Naushad Alam (NCDO/DS),General Medicine (Physicians),8:00am - 2:00pm,Tues,Active
+DOC0106,FAC001,IN1010000318,Dr. Nikhat Imam,General Medicine (Physicians),8:00am - 2:00pm,Tues,Active
+DOC0107,FAC001,IN1010000318,Dr. Pawan Kumar,General Medicine (Physicians),8:00am - 2:00pm,Tues,Active
+DOC0108,FAC001,IN1010000318,Dr. Priye Ranjan,Orthopedics,8:00am - 2:00pm,Tues,Active
+DOC0109,FAC001,IN1010000318,Dr. Rakesh Kumar,ENT,8:00am - 2:00pm,Tues,Active
+DOC0110,FAC001,IN1010000318,Dr. Sangeeta Kumari,Dentist,8:00am - 2:00pm,Tues,Active
+DOC0111,FAC001,IN1010000318,Dr. Sonu Kumar,General Medicine (Physicians),8:00am - 2:00pm,Tues,Active
+DOC0112,FAC001,IN1010000318,Dr. Vipin Kumar Chaudhary,Pediatrician,8:00am - 2:00pm,Tues,Active
+DOC0113,FAC001,IN1010000318,Kalyani Kiran (Physiotherapist),General Medicine (Physicians),8:00am - 2:00pm,Tues,Active
+DOC0114,FAC001,IN1010000318,Kaushal Kumar (Physiotherapist),General Medicine (Physicians),8:00am - 2:00pm,Tues,Active
+DOC0115,FAC001,IN1010000318,Manmendra Kumar (Physiotherapist),General Medicine (Physicians),8:00am - 2:00pm,Tues,Active
+DOC0116,FAC001,IN1010000318,Mithlesh Kumar (Physiotherapist),General Medicine (Physicians),8:00am - 2:00pm,Tues,Active
+DOC0117,FAC001,IN1010000318,Pintu Kumar (Occupational Therapist),General Medicine (Physicians),8:00am - 2:00pm,Tues,Active
+DOC0118,FAC001,IN1010000318,Raju Kumar (Ophthalmic Assistant),General Medicine (Physicians),8:00am - 2:00pm,Tues,Active
+DOC0119,FAC003,IN1010000296,Dr. Akhilesh Kumar,General Medicine (Physicians),8:00am - 2:00pm,Tues,Active
+DOC0120,FAC003,IN1010000296,Dr. Rachita Shanti,General Medicine (Physicians),8:00am - 2:00pm,Tues,Active
+DOC0121,FAC003,IN1010000296,Dr. Soma,General Medicine (Physicians),8:00am - 2:00pm,Tues,Active
+DOC0122,FAC002,IN1010000337,Dr. Sachin Gupta,General Medicine (Physicians),8:00am - 2:00pm,Tues,Active
+DOC0123,FAC004,IN1010000310,Dr. Birmani Bharti,General Medicine (Physicians),8:00am - 2:00pm,Tues,Active
+DOC0124,FAC006,IN1010000280,Dr. Amit Kumar,General Medicine (Physicians),8:00am - 2:00pm,Tues,Active
+DOC0125,FAC006,IN1010000280,Dr. Shambhu Sharan Pandey,General Medicine (Physicians),8:00am - 2:00pm,Tues,Active
+DOC0126,FAC007,IN1010000304,Dr. Bipin Kumar,General Medicine (Physicians),8:00am - 2:00pm,Tues,Active
+DOC0127,FAC007,IN1010000304,Dr. Saket Kumar Bharti,General Medicine (Physicians),8:00am - 2:00pm,Tues,Active
+DOC0128,FAC007,IN1010000304,Dr. Shivam Sonali,General Medicine (Physicians),8:00am - 2:00pm,Tues,Active
+DOC0129,FAC007,IN1010000304,Dr. Uma Shankar Gupta,General Medicine (Physicians),8:00am - 2:00pm,Tues,Active
+DOC0130,FAC007,IN1010000304,Dr. Vijay kumar,General Medicine (Physicians),8:00am - 2:00pm,Tues,Active
+DOC0131,FAC005,IN1010000345,Dr. Ankit Kumar,General Medicine (Physicians),8:00am - 2:00pm,Tues,Active
+DOC0132,FAC005,IN1010000345,Dr. Anmol Kumar,General Medicine (Physicians),8:00am - 2:00pm,Tues,Active
+DOC0133,FAC005,IN1010000345,Dr. Asha (MOIC),General Medicine (Physicians),8:00am - 2:00pm,Tues,Active
+DOC0134,FAC005,IN1010000345,Dr. Khushboo Kumari,General Medicine (Physicians),8:00am - 2:00pm,Tues,Active
+DOC0135,FAC001,IN1010000318,Dr. Abhishek Ranjan,General Medicine (Physicians),2:00pm - 8:00pm,Tues,Active
+DOC0136,FAC001,IN1010000318,Dr. Dhananjay Kumar,General Medicine (Physicians),2:00pm - 8:00pm,Tues,Active
+DOC0137,FAC001,IN1010000318,Dr. Gajendra Kumar,Pediatrician,2:00pm - 8:00pm,Tues,Active
+DOC0138,FAC001,IN1010000318,Dr. Jaya Sharma,Gynecologist,2:00pm - 8:00pm,Tues,Active
+DOC0139,FAC001,IN1010000318,Dr. Nikhat Imam,General Medicine (Physicians),2:00pm - 8:00pm,Tues,Active
+DOC0140,FAC001,IN1010000318,Dr. Priye Ranjan,Orthopedics,2:00pm - 8:00pm,Tues,Active
+DOC0141,FAC001,IN1010000318,Dr. Sonu Kumar,General Medicine (Physicians),2:00pm - 8:00pm,Tues,Active
+DOC0142,FAC001,IN1010000318,Dr. Sunila Kumari,Ophthalmology,2:00pm - 8:00pm,Tues,Active
+DOC0143,FAC001,IN1010000318,Raju Kumar (Ophthalmic Assistant),General Medicine (Physicians),2:00pm - 8:00pm,Tues,Active
+DOC0144,FAC003,IN1010000296,Dr. Ranjeet Kumar,General Medicine (Physicians),2:00pm - 8:00pm,Tues,Active
+DOC0145,FAC003,IN1010000296,Dr. Sunita Kumari,General Medicine (Physicians),2:00pm - 8:00pm,Tues,Active
+DOC0146,FAC002,IN1010000337,Dr. Prince Kumar,General Medicine (Physicians),2:00pm - 8:00pm,Tues,Active
+DOC0147,FAC004,IN1010000310,Dr. Amrendra Kumar,General Medicine (Physicians),2:00pm - 8:00pm,Tues,Active
+DOC0148,FAC007,IN1010000304,Dr. Saket Kumar Bharti,General Medicine (Physicians),2:00pm - 8:00pm,Tues,Active
+DOC0149,FAC005,IN1010000345,Dr. Ankit Kumar,General Medicine (Physicians),2:00pm - 8:00pm,Tues,Active
+DOC0150,FAC005,IN1010000345,Dr. Anmol Kumar,General Medicine (Physicians),2:00pm - 8:00pm,Tues,Active
+DOC0151,FAC005,IN1010000345,Dr. Asha (MOIC),General Medicine (Physicians),2:00pm - 8:00pm,Tues,Active
+DOC0152,FAC001,IN1010000318,Dr. Abhishek Ranjan,General Medicine (Physicians),8:00pm - 8:00am,Tues,Active
+DOC0153,FAC001,IN1010000318,Dr. Dhananjay Kumar,General Medicine (Physicians),8:00pm - 8:00am,Tues,Active
+DOC0154,FAC001,IN1010000318,Dr. Gajendra Kumar,Pediatrician,8:00pm - 8:00am,Tues,Active
+DOC0155,FAC001,IN1010000318,Dr. Sonu Kumar,General Medicine (Physicians),8:00pm - 8:00am,Tues,Active
+DOC0156,FAC003,IN1010000296,Dr. Ranjeet Kumar,General Medicine (Physicians),8:00pm - 8:00am,Tues,Active
+DOC0157,FAC002,IN1010000337,Dr. Upma Kumari,General Medicine (Physicians),8:00pm - 8:00am,Tues,Active
+DOC0158,FAC004,IN1010000310,Dr. Ashish Ranjan,General Medicine (Physicians),8:00pm - 8:00am,Tues,Active
+DOC0159,FAC007,IN1010000304,Dr. Shivam Sonali,General Medicine (Physicians),8:00pm - 8:00am,Tues,Active
+DOC0160,FAC005,IN1010000345,Dr. Ankit Kumar,General Medicine (Physicians),8:00pm - 8:00am,Tues,Active
+DOC0161,FAC005,IN1010000345,Dr. Anmol Kumar,General Medicine (Physicians),8:00pm - 8:00am,Tues,Active
+DOC0162,FAC005,IN1010000345,Dr. Asha (MOIC),General Medicine (Physicians),8:00pm - 8:00am,Tues,Active
+DOC0163,FAC005,IN1010000345,Dr. Narendra Mohan Sinha,General Medicine (Physicians),8:00pm - 8:00am,Tues,Active
+DOC0164,FAC001,IN1010000318,Dr. Ashish Ranjan Kumar,General Medicine (Physicians),8:00am - 2:00pm,Wed,Active
+DOC0165,FAC001,IN1010000318,Dr. Krishna Murari,General Medicine (Physicians),8:00am - 2:00pm,Wed,Active
+DOC0166,FAC001,IN1010000318,Dr. Nikhat Imam,General Medicine (Physicians),8:00am - 2:00pm,Wed,Active
+DOC0167,FAC001,IN1010000318,Dr. Rajnikant Kumar,General Medicine (Physicians),8:00am - 2:00pm,Wed,Active
+DOC0168,FAC001,IN1010000318,Dr. Rakesh Kumar,ENT,8:00am - 2:00pm,Wed,Active
+DOC0169,FAC001,IN1010000318,Dr. Sangeeta Kumari,Dentist,8:00am - 2:00pm,Wed,Active
+DOC0170,FAC001,IN1010000318,Dr. Satish Chandra Bose,Pediatrician,8:00am - 2:00pm,Wed,Active
+DOC0171,FAC001,IN1010000318,Dr. Shailendra Kumar,General Medicine (Physicians),8:00am - 2:00pm,Wed,Active
+DOC0172,FAC001,IN1010000318,Dr. Sunila Kumari,Ophthalmology,8:00am - 2:00pm,Wed,Active
+DOC0173,FAC001,IN1010000318,Dr.Ravishankar Sharma,General Medicine (Physicians),8:00am - 2:00pm,Wed,Active
+DOC0174,FAC001,IN1010000318,Kalyani Kiran (Physiotherapist),General Medicine (Physicians),8:00am - 2:00pm,Wed,Active
+DOC0175,FAC001,IN1010000318,Kaushal Kumar (Physiotherapist),General Medicine (Physicians),8:00am - 2:00pm,Wed,Active
+DOC0176,FAC001,IN1010000318,Manmendra Kumar (Physiotherapist),General Medicine (Physicians),8:00am - 2:00pm,Wed,Active
+DOC0177,FAC001,IN1010000318,Mithlesh Kumar (Physiotherapist),General Medicine (Physicians),8:00am - 2:00pm,Wed,Active
+DOC0178,FAC001,IN1010000318,Pintu Kumar (Occupational Therapist),General Medicine (Physicians),8:00am - 2:00pm,Wed,Active
+DOC0179,FAC001,IN1010000318,Raju Kumar (Ophthalmic Assistant),General Medicine (Physicians),8:00am - 2:00pm,Wed,Active
+DOC0180,FAC003,IN1010000296,Dr. Rachita Shanti,General Medicine (Physicians),8:00am - 2:00pm,Wed,Active
+DOC0181,FAC003,IN1010000296,Dr. Soma,General Medicine (Physicians),8:00am - 2:00pm,Wed,Active
+DOC0182,FAC003,IN1010000296,Dr. Sunita Kumari,General Medicine (Physicians),8:00am - 2:00pm,Wed,Active
+DOC0183,FAC002,IN1010000337,Dr. Nusrat Zabin,General Medicine (Physicians),8:00am - 2:00pm,Wed,Active
+DOC0184,FAC002,IN1010000337,Dr. Prince Kumar,General Medicine (Physicians),8:00am - 2:00pm,Wed,Active
+DOC0185,FAC004,IN1010000310,Dr. Radha Krishna Narayan,General Medicine (Physicians),8:00am - 2:00pm,Wed,Active
+DOC0186,FAC006,IN1010000280,Dr. Amit Kumar,General Medicine (Physicians),8:00am - 2:00pm,Wed,Active
+DOC0187,FAC006,IN1010000280,Dr. Shambhu Sharan Pandey,General Medicine (Physicians),8:00am - 2:00pm,Wed,Active
+DOC0188,FAC007,IN1010000304,Dr. Bipin Kumar,General Medicine (Physicians),8:00am - 2:00pm,Wed,Active
+DOC0189,FAC007,IN1010000304,Dr. Saket Kumar Bharti,General Medicine (Physicians),8:00am - 2:00pm,Wed,Active
+DOC0190,FAC007,IN1010000304,Dr. Shivam Sonali,General Medicine (Physicians),8:00am - 2:00pm,Wed,Active
+DOC0191,FAC007,IN1010000304,Dr. Uma Shankar Gupta,General Medicine (Physicians),8:00am - 2:00pm,Wed,Active
+DOC0192,FAC007,IN1010000304,Dr. Vijay kumar,General Medicine (Physicians),8:00am - 2:00pm,Wed,Active
+DOC0193,FAC005,IN1010000345,Dr. Anmol Kumar,General Medicine (Physicians),8:00am - 2:00pm,Wed,Active
+DOC0194,FAC005,IN1010000345,Dr. Asha (MOIC),General Medicine (Physicians),8:00am - 2:00pm,Wed,Active
+DOC0195,FAC005,IN1010000345,Dr. Khushboo Kumari,General Medicine (Physicians),8:00am - 2:00pm,Wed,Active
+DOC0196,FAC005,IN1010000345,Dr. Niwas Kumar,General Medicine (Physicians),8:00am - 2:00pm,Wed,Active
+DOC0197,FAC001,IN1010000318,Dr. Ashish Ranjan Kumar,General Medicine (Physicians),2:00pm - 8:00pm,Wed,Active
+DOC0198,FAC001,IN1010000318,Dr. Divya Thakur,Ophthalmology,2:00pm - 8:00pm,Wed,Active
+DOC0199,FAC001,IN1010000318,Dr. Nikhat Imam,General Medicine (Physicians),2:00pm - 8:00pm,Wed,Active
+DOC0200,FAC001,IN1010000318,Dr. Rajnikant Kumar,General Medicine (Physicians),2:00pm - 8:00pm,Wed,Active
+DOC0201,FAC001,IN1010000318,Dr. Shailendra Kumar,General Medicine (Physicians),2:00pm - 8:00pm,Wed,Active
+DOC0202,FAC001,IN1010000318,Dr.Ravishankar Sharma,General Medicine (Physicians),2:00pm - 8:00pm,Wed,Active
+DOC0203,FAC001,IN1010000318,Raju Kumar (Ophthalmic Assistant),General Medicine (Physicians),2:00pm - 8:00pm,Wed,Active
+DOC0204,FAC003,IN1010000296,Dr. Anand Kumar,General Medicine (Physicians),2:00pm - 8:00pm,Wed,Active
+DOC0205,FAC003,IN1010000296,Dr. Ritu Kumari,General Medicine (Physicians),2:00pm - 8:00pm,Wed,Active
+DOC0206,FAC002,IN1010000337,Dr. Prince Kumar,General Medicine (Physicians),2:00pm - 8:00pm,Wed,Active
+DOC0207,FAC002,IN1010000337,Dr. Sachin Gupta,General Medicine (Physicians),2:00pm - 8:00pm,Wed,Active
+DOC0208,FAC007,IN1010000304,Dr. Bipin Kumar,General Medicine (Physicians),2:00pm - 8:00pm,Wed,Active
+DOC0209,FAC005,IN1010000345,Dr. Anmol Kumar,General Medicine (Physicians),2:00pm - 8:00pm,Wed,Active
+DOC0210,FAC005,IN1010000345,Dr. Asha (MOIC),General Medicine (Physicians),2:00pm - 8:00pm,Wed,Active
+DOC0211,FAC005,IN1010000345,Dr. Niwas Kumar,General Medicine (Physicians),2:00pm - 8:00pm,Wed,Active
+DOC0212,FAC001,IN1010000318,Dr. Priye Ranjan,Orthopedics,8:00pm - 8:00am,Wed,Active
+DOC0213,FAC001,IN1010000318,Dr. Shailendra Kumar,General Medicine (Physicians),8:00pm - 8:00am,Wed,Active
+DOC0214,FAC001,IN1010000318,Dr. Vipin Kumar Chaudhary,Pediatrician,8:00pm - 8:00am,Wed,Active
+DOC0215,FAC002,IN1010000337,Dr. Deepak Kumar,General Medicine (Physicians),8:00pm - 8:00am,Wed,Active
+DOC0216,FAC004,IN1010000310,Dr. Amrendra Kumar,General Medicine (Physicians),8:00pm - 8:00am,Wed,Active
+DOC0217,FAC007,IN1010000304,Dr. Vijay kumar,General Medicine (Physicians),8:00pm - 8:00am,Wed,Active
+DOC0218,FAC005,IN1010000345,Dr. Anmol Kumar,General Medicine (Physicians),8:00pm - 8:00am,Wed,Active
+DOC0219,FAC005,IN1010000345,Dr. Asha (MOIC),General Medicine (Physicians),8:00pm - 8:00am,Wed,Active
+DOC0220,FAC005,IN1010000345,Dr. Niwas Kumar,General Medicine (Physicians),8:00pm - 8:00am,Wed,Active
+DOC0221,FAC001,IN1010000318,Dr. Amiya Agrawal,General Medicine (Physicians),8:00am - 2:00pm,Thu,Active
+DOC0222,FAC001,IN1010000318,Dr. Arti Prasad,General Medicine (Physicians),8:00am - 2:00pm,Thu,Active
+DOC0223,FAC001,IN1010000318,Dr. Gajendra Kumar,Pediatrician,8:00am - 2:00pm,Thu,Active
+DOC0224,FAC001,IN1010000318,Dr. Md. Naushad Alam (NCDO/DS),General Medicine (Physicians),8:00am - 2:00pm,Thu,Active
+DOC0225,FAC001,IN1010000318,Dr. Pawan Kumar,General Medicine (Physicians),8:00am - 2:00pm,Thu,Active
+DOC0226,FAC001,IN1010000318,Dr. Rakesh Kumar,ENT,8:00am - 2:00pm,Thu,Active
+DOC0227,FAC001,IN1010000318,Dr. Raviranjan Prasad,General Medicine (Physicians),8:00am - 2:00pm,Thu,Active
+DOC0228,FAC001,IN1010000318,Dr. Rohinee Kumari,Gynecologist,8:00am - 2:00pm,Thu,Active
+DOC0229,FAC001,IN1010000318,Dr. Sangeeta Kumari,Dentist,8:00am - 2:00pm,Thu,Active
+DOC0230,FAC001,IN1010000318,Dr. Saurabh Kumar,General Medicine (Physicians),8:00am - 2:00pm,Thu,Active
+DOC0231,FAC001,IN1010000318,Dr. Uday Kumar,General Medicine (Physicians),8:00am - 2:00pm,Thu,Active
+DOC0232,FAC001,IN1010000318,Dr.Ravi ranjan Kumar,Orthopedics,8:00am - 2:00pm,Thu,Active
+DOC0233,FAC001,IN1010000318,Kalyani Kiran (Physiotherapist),General Medicine (Physicians),8:00am - 2:00pm,Thu,Active
+DOC0234,FAC001,IN1010000318,Kaushal Kumar (Physiotherapist),General Medicine (Physicians),8:00am - 2:00pm,Thu,Active
+DOC0235,FAC001,IN1010000318,Manmendra Kumar (Physiotherapist),General Medicine (Physicians),8:00am - 2:00pm,Thu,Active
+DOC0236,FAC001,IN1010000318,Mithlesh Kumar (Physiotherapist),General Medicine (Physicians),8:00am - 2:00pm,Thu,Active
+DOC0237,FAC001,IN1010000318,Pintu Kumar (Occupational Therapist),General Medicine (Physicians),8:00am - 2:00pm,Thu,Active
+DOC0238,FAC001,IN1010000318,Raju Kumar (Ophthalmic Assistant),General Medicine (Physicians),8:00am - 2:00pm,Thu,Active
+DOC0239,FAC003,IN1010000296,Dr. Rachita Shanti,General Medicine (Physicians),8:00am - 2:00pm,Thu,Active
+DOC0240,FAC003,IN1010000296,Dr. Ranjeet Kumar,General Medicine (Physicians),8:00am - 2:00pm,Thu,Active
+DOC0241,FAC003,IN1010000296,Dr. Sunita Kumari,General Medicine (Physicians),8:00am - 2:00pm,Thu,Active
+DOC0242,FAC002,IN1010000337,Dr. Upma Kumari,General Medicine (Physicians),8:00am - 2:00pm,Thu,Active
+DOC0243,FAC006,IN1010000280,Dr. Abhay Kumar,General Medicine (Physicians),8:00am - 2:00pm,Thu,Active
+DOC0244,FAC006,IN1010000280,Dr. Shambhu Sharan Pandey,General Medicine (Physicians),8:00am - 2:00pm,Thu,Active
+DOC0245,FAC007,IN1010000304,Dr. Bipin Kumar,General Medicine (Physicians),8:00am - 2:00pm,Thu,Active
+DOC0246,FAC007,IN1010000304,Dr. Saket Kumar Bharti,General Medicine (Physicians),8:00am - 2:00pm,Thu,Active
+DOC0247,FAC007,IN1010000304,Dr. Shivam Sonali,General Medicine (Physicians),8:00am - 2:00pm,Thu,Active
+DOC0248,FAC007,IN1010000304,Dr. Uma Shankar Gupta,General Medicine (Physicians),8:00am - 2:00pm,Thu,Active
+DOC0249,FAC007,IN1010000304,Dr. Vijay kumar,General Medicine (Physicians),8:00am - 2:00pm,Thu,Active
+DOC0250,FAC005,IN1010000345,Dr. Anmol Kumar,General Medicine (Physicians),8:00am - 2:00pm,Thu,Active
+DOC0251,FAC005,IN1010000345,Dr. Asha (MOIC),General Medicine (Physicians),8:00am - 2:00pm,Thu,Active
+DOC0252,FAC005,IN1010000345,Dr. Niwas Kumar,General Medicine (Physicians),8:00am - 2:00pm,Thu,Active
+DOC0253,FAC001,IN1010000318,Dr. Amiya Agrawal,General Medicine (Physicians),2:00pm - 8:00pm,Thu,Active
+DOC0254,FAC001,IN1010000318,Dr. Arti Prasad,General Medicine (Physicians),2:00pm - 8:00pm,Thu,Active
+DOC0255,FAC001,IN1010000318,Dr. Divya Thakur,Ophthalmology,2:00pm - 8:00pm,Thu,Active
+DOC0256,FAC001,IN1010000318,Dr. Raviranjan Prasad,General Medicine (Physicians),2:00pm - 8:00pm,Thu,Active
+DOC0257,FAC001,IN1010000318,Dr. Rohinee Kumari,Gynecologist,2:00pm - 8:00pm,Thu,Active
+DOC0258,FAC001,IN1010000318,Dr. Saurabh Kumar,General Medicine (Physicians),2:00pm - 8:00pm,Thu,Active
+DOC0259,FAC001,IN1010000318,Dr. Sunila Kumari,Ophthalmology,2:00pm - 8:00pm,Thu,Active
+DOC0260,FAC001,IN1010000318,Dr. Uday Kumar,General Medicine (Physicians),2:00pm - 8:00pm,Thu,Active
+DOC0261,FAC001,IN1010000318,Dr.Ravi ranjan Kumar,Orthopedics,2:00pm - 8:00pm,Thu,Active
+DOC0262,FAC001,IN1010000318,Raju Kumar (Ophthalmic Assistant),General Medicine (Physicians),2:00pm - 8:00pm,Thu,Active
+DOC0263,FAC003,IN1010000296,Dr. Akhilesh Kumar,General Medicine (Physicians),2:00pm - 8:00pm,Thu,Active
+DOC0264,FAC003,IN1010000296,Dr. Ranjeet Kumar,General Medicine (Physicians),2:00pm - 8:00pm,Thu,Active
+DOC0265,FAC002,IN1010000337,Dr. Sachin Gupta,General Medicine (Physicians),2:00pm - 8:00pm,Thu,Active
+DOC0266,FAC004,IN1010000310,Dr. Radha Krishna Narayan,General Medicine (Physicians),2:00pm - 8:00pm,Thu,Active
+DOC0267,FAC007,IN1010000304,Dr. Bipin Kumar,General Medicine (Physicians),2:00pm - 8:00pm,Thu,Active
+DOC0268,FAC005,IN1010000345,Dr. Anmol Kumar,General Medicine (Physicians),2:00pm - 8:00pm,Thu,Active
+DOC0269,FAC005,IN1010000345,Dr. Asha (MOIC),General Medicine (Physicians),2:00pm - 8:00pm,Thu,Active
+DOC0270,FAC001,IN1010000318,Dr. Amiya Agrawal,General Medicine (Physicians),8:00pm - 8:00am,Thu,Active
+DOC0271,FAC001,IN1010000318,Dr. Rohinee Kumari,Gynecologist,8:00pm - 8:00am,Thu,Active
+DOC0272,FAC001,IN1010000318,Dr. Satish Chandra Bose,Pediatrician,8:00pm - 8:00am,Thu,Active
+DOC0273,FAC001,IN1010000318,Dr.Ravi ranjan Kumar,Orthopedics,8:00pm - 8:00am,Thu,Active
+DOC0274,FAC003,IN1010000296,Dr. Ranjeet Kumar,General Medicine (Physicians),8:00pm - 8:00am,Thu,Active
+DOC0275,FAC002,IN1010000337,Dr. Prince Kumar,General Medicine (Physicians),8:00pm - 8:00am,Thu,Active
+DOC0276,FAC004,IN1010000310,Dr. Pallavi Raut,General Medicine (Physicians),8:00pm - 8:00am,Thu,Active
+DOC0277,FAC007,IN1010000304,Dr. Shivam Sonali,General Medicine (Physicians),8:00pm - 8:00am,Thu,Active
+DOC0278,FAC005,IN1010000345,Dr. Anmol Kumar,General Medicine (Physicians),8:00pm - 8:00am,Thu,Active
+DOC0279,FAC005,IN1010000345,Dr. Asha (MOIC),General Medicine (Physicians),8:00pm - 8:00am,Thu,Active
+DOC0280,FAC001,IN1010000318,Dr. Ashish Ranjan Kumar,General Medicine (Physicians),8:00am - 2:00pm,Fri,Active
+DOC0281,FAC001,IN1010000318,Dr. Divya Thakur,Ophthalmology,8:00am - 2:00pm,Fri,Active
+DOC0282,FAC001,IN1010000318,Dr. Jitendra Kumar,General Medicine (Physicians),8:00am - 2:00pm,Fri,Active
+DOC0283,FAC001,IN1010000318,Dr. Rajnikant Kumar,General Medicine (Physicians),8:00am - 2:00pm,Fri,Active
+DOC0284,FAC001,IN1010000318,Dr. Rakesh Kumar,ENT,8:00am - 2:00pm,Fri,Active
+DOC0285,FAC001,IN1010000318,Dr. Ravi Shankar,General Medicine (Physicians),8:00am - 2:00pm,Fri,Active
+DOC0286,FAC001,IN1010000318,Dr. Raviranjan Prasad,General Medicine (Physicians),8:00am - 2:00pm,Fri,Active
+DOC0287,FAC001,IN1010000318,Dr. Rohinee Kumari,Gynecologist,8:00am - 2:00pm,Fri,Active
+DOC0288,FAC001,IN1010000318,Dr. Sangeeta Kumari,Dentist,8:00am - 2:00pm,Fri,Active
+DOC0289,FAC001,IN1010000318,Dr. Uday Kumar,General Medicine (Physicians),8:00am - 2:00pm,Fri,Active
+DOC0290,FAC001,IN1010000318,Dr. Vipin Kumar Chaudhary,Pediatrician,8:00am - 2:00pm,Fri,Active
+DOC0291,FAC001,IN1010000318,Dr.Ravishankar Sharma,General Medicine (Physicians),8:00am - 2:00pm,Fri,Active
+DOC0292,FAC001,IN1010000318,Kalyani Kiran (Physiotherapist),General Medicine (Physicians),8:00am - 2:00pm,Fri,Active
+DOC0293,FAC001,IN1010000318,Kaushal Kumar (Physiotherapist),General Medicine (Physicians),8:00am - 2:00pm,Fri,Active
+DOC0294,FAC001,IN1010000318,Manmendra Kumar (Physiotherapist),General Medicine (Physicians),8:00am - 2:00pm,Fri,Active
+DOC0295,FAC001,IN1010000318,Mithlesh Kumar (Physiotherapist),General Medicine (Physicians),8:00am - 2:00pm,Fri,Active
+DOC0296,FAC001,IN1010000318,Pintu Kumar (Occupational Therapist),General Medicine (Physicians),8:00am - 2:00pm,Fri,Active
+DOC0297,FAC001,IN1010000318,Raju Kumar (Ophthalmic Assistant),General Medicine (Physicians),8:00am - 2:00pm,Fri,Active
+DOC0298,FAC003,IN1010000296,Dr. Akhilesh Kumar,General Medicine (Physicians),8:00am - 2:00pm,Fri,Active
+DOC0299,FAC003,IN1010000296,Dr. Rachita Shanti,General Medicine (Physicians),8:00am - 2:00pm,Fri,Active
+DOC0300,FAC003,IN1010000296,Dr. Soma,General Medicine (Physicians),8:00am - 2:00pm,Fri,Active
+DOC0301,FAC003,IN1010000296,Dr. Sunita Kumari,General Medicine (Physicians),8:00am - 2:00pm,Fri,Active
+DOC0302,FAC002,IN1010000337,Dr. Upma Kumari,General Medicine (Physicians),8:00am - 2:00pm,Fri,Active
+DOC0303,FAC004,IN1010000310,Dr. Amrendra Kumar,General Medicine (Physicians),8:00am - 2:00pm,Fri,Active
+DOC0304,FAC006,IN1010000280,Dr. Rahul Kumar,General Medicine (Physicians),8:00am - 2:00pm,Fri,Active
+DOC0305,FAC006,IN1010000280,Dr. Shambhu Sharan Pandey,General Medicine (Physicians),8:00am - 2:00pm,Fri,Active
+DOC0306,FAC007,IN1010000304,Dr. Bipin Kumar,General Medicine (Physicians),8:00am - 2:00pm,Fri,Active
+DOC0307,FAC007,IN1010000304,Dr. Saket Kumar Bharti,General Medicine (Physicians),8:00am - 2:00pm,Fri,Active
+DOC0308,FAC007,IN1010000304,Dr. Shivam Sonali,General Medicine (Physicians),8:00am - 2:00pm,Fri,Active
+DOC0309,FAC007,IN1010000304,Dr. Uma Shankar Gupta,General Medicine (Physicians),8:00am - 2:00pm,Fri,Active
+DOC0310,FAC007,IN1010000304,Dr. Vijay kumar,General Medicine (Physicians),8:00am - 2:00pm,Fri,Active
+DOC0311,FAC005,IN1010000345,Dr. Anmol Kumar,General Medicine (Physicians),8:00am - 2:00pm,Fri,Active
+DOC0312,FAC005,IN1010000345,Dr. Asha (MOIC),General Medicine (Physicians),8:00am - 2:00pm,Fri,Active
+DOC0313,FAC005,IN1010000345,Dr. Khushboo Kumari,General Medicine (Physicians),8:00am - 2:00pm,Fri,Active
+DOC0314,FAC001,IN1010000318,Dr. Arti Prasad,General Medicine (Physicians),2:00pm - 8:00pm,Fri,Active
+DOC0315,FAC001,IN1010000318,Dr. Ashish Ranjan Kumar,General Medicine (Physicians),2:00pm - 8:00pm,Fri,Active
+DOC0316,FAC001,IN1010000318,Dr. Jitendra Kumar,General Medicine (Physicians),2:00pm - 8:00pm,Fri,Active
+DOC0317,FAC001,IN1010000318,Dr. Pawan Kumar,General Medicine (Physicians),2:00pm - 8:00pm,Fri,Active
+DOC0318,FAC001,IN1010000318,Dr. Rajnikant Kumar,General Medicine (Physicians),2:00pm - 8:00pm,Fri,Active
+DOC0319,FAC001,IN1010000318,Dr. Rohinee Kumari,Gynecologist,2:00pm - 8:00pm,Fri,Active
+DOC0320,FAC001,IN1010000318,Dr. Saurabh Kumar,General Medicine (Physicians),2:00pm - 8:00pm,Fri,Active
+DOC0321,FAC001,IN1010000318,Dr. Sunila Kumari,Ophthalmology,2:00pm - 8:00pm,Fri,Active
+DOC0322,FAC001,IN1010000318,Dr. Uday Kumar,General Medicine (Physicians),2:00pm - 8:00pm,Fri,Active
+DOC0323,FAC001,IN1010000318,Raju Kumar (Ophthalmic Assistant),General Medicine (Physicians),2:00pm - 8:00pm,Fri,Active
+DOC0324,FAC003,IN1010000296,Dr. Ritu Kumari,General Medicine (Physicians),2:00pm - 8:00pm,Fri,Active
+DOC0325,FAC002,IN1010000337,Dr. Deepak Kumar,General Medicine (Physicians),2:00pm - 8:00pm,Fri,Active
+DOC0326,FAC004,IN1010000310,Dr. Ashish Ranjan,General Medicine (Physicians),2:00pm - 8:00pm,Fri,Active
+DOC0327,FAC007,IN1010000304,Dr. Saket Kumar Bharti,General Medicine (Physicians),2:00pm - 8:00pm,Fri,Active
+DOC0328,FAC005,IN1010000345,Dr. Anmol Kumar,General Medicine (Physicians),2:00pm - 8:00pm,Fri,Active
+DOC0329,FAC005,IN1010000345,Dr. Asha (MOIC),General Medicine (Physicians),2:00pm - 8:00pm,Fri,Active
+DOC0330,FAC005,IN1010000345,Dr. Niwas Kumar,General Medicine (Physicians),2:00pm - 8:00pm,Fri,Active
+DOC0331,FAC001,IN1010000318,Dr. Gajendra Kumar,Pediatrician,8:00pm - 8:00am,Fri,Active
+DOC0332,FAC001,IN1010000318,Dr. Jitendra Kumar,General Medicine (Physicians),8:00pm - 8:00am,Fri,Active
+DOC0333,FAC001,IN1010000318,Dr. Rajnikant Kumar,General Medicine (Physicians),8:00pm - 8:00am,Fri,Active
+DOC0334,FAC003,IN1010000296,Dr. Anand Kumar,General Medicine (Physicians),8:00pm - 8:00am,Fri,Active
+DOC0335,FAC002,IN1010000337,Dr. Sachin Gupta,General Medicine (Physicians),8:00pm - 8:00am,Fri,Active
+DOC0336,FAC004,IN1010000310,Dr. Radha Krishna Narayan,General Medicine (Physicians),8:00pm - 8:00am,Fri,Active
+DOC0337,FAC007,IN1010000304,Dr. Uma Shankar Gupta,General Medicine (Physicians),8:00pm - 8:00am,Fri,Active
+DOC0338,FAC005,IN1010000345,Dr. Ankit Kumar,General Medicine (Physicians),8:00pm - 8:00am,Fri,Active
+DOC0339,FAC005,IN1010000345,Dr. Anmol Kumar,General Medicine (Physicians),8:00pm - 8:00am,Fri,Active
+DOC0340,FAC005,IN1010000345,Dr. Asha (MOIC),General Medicine (Physicians),8:00pm - 8:00am,Fri,Active
+DOC0341,FAC001,IN1010000318,Dr. Arti Prasad,General Medicine (Physicians),8:00am - 2:00pm,Sat,Active
+DOC0342,FAC001,IN1010000318,Dr. Md. Naushad Alam (NCDO/DS),General Medicine (Physicians),8:00am - 2:00pm,Sat,Active
+DOC0343,FAC001,IN1010000318,Dr. Priye Ranjan,Orthopedics,8:00am - 2:00pm,Sat,Active
+DOC0344,FAC001,IN1010000318,Dr. Rakesh Kumar,ENT,8:00am - 2:00pm,Sat,Active
+DOC0345,FAC001,IN1010000318,Dr. Ravi Shankar,General Medicine (Physicians),8:00am - 2:00pm,Sat,Active
+DOC0346,FAC001,IN1010000318,Dr. Raviranjan Prasad,General Medicine (Physicians),8:00am - 2:00pm,Sat,Active
+DOC0347,FAC001,IN1010000318,Dr. Sangeeta Kumari,Dentist,8:00am - 2:00pm,Sat,Active
+DOC0348,FAC001,IN1010000318,Dr. Satish Chandra Bose,Pediatrician,8:00am - 2:00pm,Sat,Active
+DOC0349,FAC001,IN1010000318,Dr. Saurabh Kumar,General Medicine (Physicians),8:00am - 2:00pm,Sat,Active
+DOC0350,FAC001,IN1010000318,Dr. Sunila Kumari,Ophthalmology,8:00am - 2:00pm,Sat,Active
+DOC0351,FAC001,IN1010000318,Dr.Rupam Kumari,Gynecologist,8:00am - 2:00pm,Sat,Active
+DOC0352,FAC001,IN1010000318,Kalyani Kiran (Physiotherapist),General Medicine (Physicians),8:00am - 2:00pm,Sat,Active
+DOC0353,FAC001,IN1010000318,Kaushal Kumar (Physiotherapist),General Medicine (Physicians),8:00am - 2:00pm,Sat,Active
+DOC0354,FAC001,IN1010000318,Manmendra Kumar (Physiotherapist),General Medicine (Physicians),8:00am - 2:00pm,Sat,Active
+DOC0355,FAC001,IN1010000318,Mithlesh Kumar (Physiotherapist),General Medicine (Physicians),8:00am - 2:00pm,Sat,Active
+DOC0356,FAC001,IN1010000318,Pintu Kumar (Occupational Therapist),General Medicine (Physicians),8:00am - 2:00pm,Sat,Active
+DOC0357,FAC001,IN1010000318,Raju Kumar (Ophthalmic Assistant),General Medicine (Physicians),8:00am - 2:00pm,Sat,Active
+DOC0358,FAC003,IN1010000296,Dr. Faisal Arshad (MOIC),General Medicine (Physicians),8:00am - 2:00pm,Sat,Active
+DOC0359,FAC003,IN1010000296,Dr. Noor Fatima,General Medicine (Physicians),8:00am - 2:00pm,Sat,Active
+DOC0360,FAC003,IN1010000296,Dr. Ritu Kumari,General Medicine (Physicians),8:00am - 2:00pm,Sat,Active
+DOC0361,FAC002,IN1010000337,Dr. Deepak Kumar,General Medicine (Physicians),8:00am - 2:00pm,Sat,Active
+DOC0362,FAC002,IN1010000337,Dr. Nusrat Zabin,General Medicine (Physicians),8:00am - 2:00pm,Sat,Active
+DOC0363,FAC004,IN1010000310,Dr. Birmani Bharti,General Medicine (Physicians),8:00am - 2:00pm,Sat,Active
+DOC0364,FAC006,IN1010000280,Dr. Abhay Kumar,General Medicine (Physicians),8:00am - 2:00pm,Sat,Active
+DOC0365,FAC006,IN1010000280,Dr. Shambhu Sharan Pandey,General Medicine (Physicians),8:00am - 2:00pm,Sat,Active
+DOC0366,FAC007,IN1010000304,Dr. Bipin Kumar,General Medicine (Physicians),8:00am - 2:00pm,Sat,Active
+DOC0367,FAC007,IN1010000304,Dr. Saket Kumar Bharti,General Medicine (Physicians),8:00am - 2:00pm,Sat,Active
+DOC0368,FAC007,IN1010000304,Dr. Shivam Sonali,General Medicine (Physicians),8:00am - 2:00pm,Sat,Active
+DOC0369,FAC007,IN1010000304,Dr. Uma Shankar Gupta,General Medicine (Physicians),8:00am - 2:00pm,Sat,Active
+DOC0370,FAC007,IN1010000304,Dr. Vijay kumar,General Medicine (Physicians),8:00am - 2:00pm,Sat,Active
+DOC0371,FAC005,IN1010000345,Dr. Ankit Kumar,General Medicine (Physicians),8:00am - 2:00pm,Sat,Active
+DOC0372,FAC005,IN1010000345,Dr. Anmol Kumar,General Medicine (Physicians),8:00am - 2:00pm,Sat,Active
+DOC0373,FAC005,IN1010000345,Dr. Asha (MOIC),General Medicine (Physicians),8:00am - 2:00pm,Sat,Active
+DOC0374,FAC005,IN1010000345,Dr. Narendra Mohan Sinha,General Medicine (Physicians),8:00am - 2:00pm,Sat,Active
+DOC0375,FAC001,IN1010000318,Dr. Divya Thakur,Ophthalmology,2:00pm - 8:00pm,Sat,Active
+DOC0376,FAC001,IN1010000318,Dr. Krishna Murari,General Medicine (Physicians),2:00pm - 8:00pm,Sat,Active
+DOC0377,FAC001,IN1010000318,Dr. Priye Ranjan,Orthopedics,2:00pm - 8:00pm,Sat,Active
+DOC0378,FAC001,IN1010000318,Dr. Ravi Shankar,General Medicine (Physicians),2:00pm - 8:00pm,Sat,Active
+DOC0379,FAC001,IN1010000318,Dr. Saurabh Kumar,General Medicine (Physicians),2:00pm - 8:00pm,Sat,Active
+DOC0380,FAC001,IN1010000318,Dr.Rupam Kumari,Gynecologist,2:00pm - 8:00pm,Sat,Active
+DOC0381,FAC001,IN1010000318,Raju Kumar (Ophthalmic Assistant),General Medicine (Physicians),2:00pm - 8:00pm,Sat,Active
+DOC0382,FAC003,IN1010000296,Dr. Nitesh Kumar,General Medicine (Physicians),2:00pm - 8:00pm,Sat,Active
+DOC0383,FAC002,IN1010000337,Dr. Nusrat Zabin,General Medicine (Physicians),2:00pm - 8:00pm,Sat,Active
+DOC0384,FAC002,IN1010000337,Dr. Upma Kumari,General Medicine (Physicians),2:00pm - 8:00pm,Sat,Active
+DOC0385,FAC004,IN1010000310,Dr. Ashish Ranjan,General Medicine (Physicians),2:00pm - 8:00pm,Sat,Active
+DOC0386,FAC007,IN1010000304,Dr. Bipin Kumar,General Medicine (Physicians),2:00pm - 8:00pm,Sat,Active
+DOC0387,FAC005,IN1010000345,Dr. Ankit Kumar,General Medicine (Physicians),2:00pm - 8:00pm,Sat,Active
+DOC0388,FAC005,IN1010000345,Dr. Anmol Kumar,General Medicine (Physicians),2:00pm - 8:00pm,Sat,Active
+DOC0389,FAC005,IN1010000345,Dr. Asha (MOIC),General Medicine (Physicians),2:00pm - 8:00pm,Sat,Active
+DOC0390,FAC005,IN1010000345,Dr. Niwas Kumar,General Medicine (Physicians),2:00pm - 8:00pm,Sat,Active
+DOC0391,FAC001,IN1010000318,Dr. Ravi Shankar,General Medicine (Physicians),8:00pm - 8:00am,Sat,Active
+DOC0392,FAC001,IN1010000318,Dr. Shailendra Kumar,General Medicine (Physicians),8:00pm - 8:00am,Sat,Active
+DOC0393,FAC001,IN1010000318,Dr. Vipin Kumar Chaudhary,Pediatrician,8:00pm - 8:00am,Sat,Active
+DOC0394,FAC001,IN1010000318,Dr.Rupam Kumari,Gynecologist,8:00pm - 8:00am,Sat,Active
+DOC0395,FAC003,IN1010000296,Dr. Nitesh Kumar,General Medicine (Physicians),8:00pm - 8:00am,Sat,Active
+DOC0396,FAC002,IN1010000337,Dr. Prince Kumar,General Medicine (Physicians),8:00pm - 8:00am,Sat,Active
+DOC0397,FAC004,IN1010000310,Dr. Amrendra Kumar,General Medicine (Physicians),8:00pm - 8:00am,Sat,Active
+DOC0398,FAC007,IN1010000304,Dr. Saket Kumar Bharti,General Medicine (Physicians),8:00pm - 8:00am,Sat,Active
+DOC0399,FAC005,IN1010000345,Dr. Ankit Kumar,General Medicine (Physicians),8:00pm - 8:00am,Sat,Active
+DOC0400,FAC005,IN1010000345,Dr. Anmol Kumar,General Medicine (Physicians),8:00pm - 8:00am,Sat,Active
+DOC0401,FAC005,IN1010000345,Dr. Asha (MOIC),General Medicine (Physicians),8:00pm - 8:00am,Sat,Active
+DOC0402,FAC005,IN1010000345,Dr. Narendra Mohan Sinha,General Medicine (Physicians),8:00pm - 8:00am,Sat,Active
