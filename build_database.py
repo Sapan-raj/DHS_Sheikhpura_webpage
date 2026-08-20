@@ -102,15 +102,16 @@ SETTINGS = [
 
 # ───────────────────────── 2. NAVIGATION ─────────────────────────
 NAV = [
-    ("NAV01", "Home",              "होम",                    "index.html",      "", 1, "Yes", "Internal", "home",     "_self"),
-    ("NAV02", "Find a Health Centre","स्वास्थ्य केंद्र खोजें",   "facilities.html", "", 2, "Yes", "Internal", "hospital", "_self"),
-    ("NAV03", "Free Services",     "नि:शुल्क सेवाएं",           "benefits.html",   "", 3, "Yes", "Internal", "heart",    "_self"),
-    ("NAV04", "Health Programmes", "स्वास्थ्य कार्यक्रम",        "programmes.html", "", 4, "Yes", "Internal", "hospital", "_self"),
-    ("NAV05", "Events & News",     "कार्यक्रम एवं समाचार",      "events.html",     "", 5, "Yes", "Internal", "bell",     "_self"),
-    ("NAV06", "Notices",           "सूचनाएँ",                  "notices.html",    "", 6, "Yes", "Internal", "bell",     "_self"),
-    ("NAV07", "Documents",         "दस्तावेज़",                "documents.html",  "", 7, "Yes", "Internal", "download", "_self"),
-    ("NAV08", "Contact Us",        "संपर्क करें",              "contact.html",    "", 8, "Yes", "Internal", "phone",    "_self"),
-    ("NAV09", "BHAVYA Portal",     "भव्य पोर्टल",              "https://mera.bhavyabiharhealth.in/", "", 9, "Yes", "External", "external", "_blank"),
+    ("NAV01", "Home",              "होम",                    "index.html",      "", 1,  "Yes", "Internal", "home",     "_self"),
+    ("NAV02", "Find a Health Centre","स्वास्थ्य केंद्र खोजें",   "facilities.html", "", 2,  "Yes", "Internal", "hospital", "_self"),
+    ("NAV10", "File a Complaint",  "शिकायत दर्ज करें",         "grievance.html",  "", 3,  "Yes", "Internal", "shield",   "_self"),
+    ("NAV03", "Free Services",     "नि:शुल्क सेवाएं",           "benefits.html",   "", 4,  "Yes", "Internal", "heart",    "_self"),
+    ("NAV04", "Health Programmes", "स्वास्थ्य कार्यक्रम",        "programmes.html", "", 5,  "Yes", "Internal", "hospital", "_self"),
+    ("NAV05", "Events & News",     "कार्यक्रम एवं समाचार",      "events.html",     "", 6,  "Yes", "Internal", "bell",     "_self"),
+    ("NAV06", "Notices",           "सूचनाएँ",                  "notices.html",    "", 7,  "Yes", "Internal", "bell",     "_self"),
+    ("NAV07", "Documents",         "दस्तावेज़",                "documents.html",  "", 8,  "Yes", "Internal", "download", "_self"),
+    ("NAV08", "Contact Us",        "संपर्क करें",              "contact.html",    "", 9,  "Yes", "Internal", "phone",    "_self"),
+    ("NAV09", "BHAVYA Portal",     "भव्य पोर्टल",              "https://mera.bhavyabiharhealth.in/", "", 10, "Yes", "External", "external", "_blank"),
 ]
 
 # ───────────────────────── 3. FINANCIAL YEARS ─────────────────────────
@@ -278,6 +279,7 @@ HOME = [
     ("sec_notices",    "section", "Notices & Announcements", "सूचनाएँ एवं घोषणाएँ", "From the District Health Society", "", "", "notices.html", "All notices", 12, "Active"),
     ("sec_quicklinks", "section", "Quick Links", "त्वरित लिंक", "Frequently used portals", "", "", "", "", 13, "Active"),
     ("about_text",     "richtext","About this portal", "इस पोर्टल के बारे में", "", "The District Health Society, Sheikhpura implements the National Health Mission across the district. This portal exists so that every resident can find out what health services they are entitled to, where to go for them, what to carry, and who to call — without having to ask anyone. Every service listed here is provided free of cost at government health facilities.", "", "", "", 14, "Active"),
+    ("sec_grievance",  "section", "Have a Complaint or Suggestion?", "शिकायत या सुझाव है?", "Tell us — we will follow up", "Report an issue at a government health facility, or suggest an improvement. The District Control Command Centre reviews every submission each week and calls you back.", "", "grievance.html", "File a Complaint", 15, "Active"),
 ]
 
 # ───────────────────────── 9. IMPORTANT LINKS ─────────────────────────
@@ -387,6 +389,22 @@ PCATS = [
     ("PCAT16", "Government Initiative",  "government-initiative",  "#1B3A5C", "gov",       16, "Active"),
     ("PCAT17", "Important Announcement", "important-announcement", "#B42318", "alert",     17, "Active"),
     ("PCAT18", "Other",                  "other",                  "#475467", "dot",       18, "Active"),
+]
+
+# ───────────── 13b. GRIEVANCE_CATEGORIES — the complaint form's dropdown ─────────────
+# Public, non-sensitive lookup data — unlike Grievances itself, this sheet IS
+# wired into Code.gs's SHEET_MAP (see the note in that file).
+GCATS = [
+    ("GCAT01", "Facility Cleanliness / Hygiene", 1,  "Active"),
+    ("GCAT02", "Staff Behaviour",                2,  "Active"),
+    ("GCAT03", "Medicine Availability",          3,  "Active"),
+    ("GCAT04", "Doctor / Staff Availability",    4,  "Active"),
+    ("GCAT05", "Waiting Time",                   5,  "Active"),
+    ("GCAT06", "Ambulance Service",              6,  "Active"),
+    ("GCAT07", "Corruption / Bribery Demand",    7,  "Active"),
+    ("GCAT08", "Infrastructure / Equipment",     8,  "Active"),
+    ("GCAT09", "Suggestion for Improvement",     9,  "Active"),
+    ("GCAT10", "Other",                          10, "Active"),
 ]
 
 # ───────────── 14. POSTS — What's New / Events / News ─────────────
@@ -594,6 +612,10 @@ LISTS = [
     ("Footer_Block",     "link",                    ""),
     ("Footer_Block",     "contact",                 ""),
     ("Footer_Block",     "legal",                   ""),
+    ("Grievance_Status", "New",                     "Just submitted, not yet reviewed"),
+    ("Grievance_Status", "Under Review",            "DCCC is looking into it"),
+    ("Grievance_Status", "Resolved",                "Addressed — a Resolution_Note is shown to the citizen"),
+    ("Grievance_Status", "Closed",                  "No further action — duplicate, spam or out of scope"),
 ]
 
 README = [
@@ -604,7 +626,7 @@ README = [
     ("3", "Turning a row off",
      "Set Status to Inactive. Do not delete rows — deleting breaks the ID references used by other sheets."),
     ("4", "Sheets you will edit most",
-     "Notices (weekly), Documents and PIP_Documents (whenever a file is published), Programs_FMR (once a year), Financial_Years (once a year)."),
+     "Notices (weekly), Documents (whenever a file is published), Programs_FMR (once a year), Financial_Years (once a year). Review Grievances weekly from the Admin dashboard — never edit that sheet directly."),
     ("5", "Adding a new financial year",
      "Step 1: add one row to Financial_Years and set Is_Current=Yes on it and No on the old one. Step 2: copy last year's rows in Programs_FMR, change Year_ID to the new year, then add/remove FMR codes as per the new RoP. Step 3: add document rows. Nothing else."),
     ("6", "Why FMR codes repeat per year",
@@ -617,6 +639,8 @@ README = [
      "The website validates every row on load. Rows with a missing required field are skipped and listed on the Admin dashboard — the site never breaks because of a bad row."),
     ("10", "Publishing changes",
      "Edits appear on the website within the cache window (default 30 minutes), or immediately after clicking 'Clear cache & sync now' on the Admin dashboard."),
+    ("11", "Grievances is different from every other sheet",
+     "It holds resident names, phone numbers and complaint text submitted through grievance.html. It is never sent to the public website — not even in stripped form, unlike Facility_Doctors. Review and update it only from the Admin dashboard's Grievances panel, never by editing this sheet directly."),
 ]
 
 
@@ -730,6 +754,22 @@ def main():
            "Floor", "Status"], FACILITY_DEPARTMENTS,
           {"Department_Name": 32, "Floor": 18})
 
+    sheet(wb, "Grievance_Categories",
+          ["Category_ID", "Category_Name", "Display_Order", "Status"], GCATS,
+          {"Category_Name": 40})
+
+    # Grievances starts EMPTY — it fills as residents submit complaints through
+    # grievance.html. It is never seeded here, and — critically — it is never
+    # added to Code.gs's SHEET_MAP or export_json.py's SHEET_MAP: this sheet
+    # holds citizen names, phone numbers and complaint text, and is meant to
+    # be reachable only through the authenticated Grievances admin panel.
+    sheet(wb, "Grievances",
+          ["Grievance_ID", "Citizen_Name", "Citizen_Phone", "Category_ID", "Description",
+           "Status", "Priority", "Resolution_Note", "Internal_Notes",
+           "Submitted_Date", "Updated_Date", "Resolved_Date"], [],
+          {"Citizen_Name": 24, "Citizen_Phone": 16, "Description": 70,
+           "Resolution_Note": 50, "Internal_Notes": 50})
+
     ws = sheet(wb, "_Lists", ["List_Name", "Value", "Meaning"], LISTS,
                {"List_Name": 20, "Value": 30, "Meaning": 60})
     ws.sheet_properties.tabColor = "98A2B3"
@@ -773,6 +813,11 @@ def main():
     add_dv("Facilities",         "U", "Status",          len(FACILITIES))
     add_dv("Facility_Doctors",   "H", "Status",          len(FACILITY_DOCTORS))
     add_dv("Facility_Departments","G", "Status",         len(FACILITY_DEPARTMENTS))
+    add_dv("Grievance_Categories","D", "Status",         len(GCATS))
+    # Grievances starts empty and grows via the live API, not by hand — so the
+    # validation range is generous headroom (500 rows), not tied to len(rows).
+    add_dv("Grievances",         "F", "Grievance_Status", 500)
+    add_dv("Grievances",         "G", "Priority",         500)
 
     wb.save(OUT)
 
@@ -796,6 +841,7 @@ def main():
     uniq("Post_Categories", [r[0] for r in PCATS])
     uniq("Posts", [r[0] for r in POSTS])
     uniq("Post_Media", [r[0] for r in POST_MEDIA])
+    uniq("Grievance_Categories", [r[0] for r in GCATS])
 
     # Posts: slug must be unique and URL-safe; FKs and status must be valid
     pcat_ids = {r[0] for r in PCATS}
@@ -904,6 +950,8 @@ def main():
         print(f"       -> {bad_coord} facilities have no usable coordinate; directions suppressed")
     bcodes = len({r[1] for r in BENEFITS})
     print(f"  Program_Benefits    {len(BENEFITS):>4}   across {bcodes} FMR codes")
+    print(f"  Grievance_Categories{len(GCATS):>4}")
+    print(f"  Grievances             0   starts empty — fills via grievance.html")
     print(f"  _Lists              {len(LISTS):>4}")
     print(f"\nIntegrity: {'PASS — no errors' if not errs else 'FAIL'}")
     for e in errs:

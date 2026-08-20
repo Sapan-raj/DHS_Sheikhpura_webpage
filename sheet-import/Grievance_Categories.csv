@@ -1,0 +1,11 @@
+Category_ID,Category_Name,Display_Order,Status
+GCAT01,Facility Cleanliness / Hygiene,1,Active
+GCAT02,Staff Behaviour,2,Active
+GCAT03,Medicine Availability,3,Active
+GCAT04,Doctor / Staff Availability,4,Active
+GCAT05,Waiting Time,5,Active
+GCAT06,Ambulance Service,6,Active
+GCAT07,Corruption / Bribery Demand,7,Active
+GCAT08,Infrastructure / Equipment,8,Active
+GCAT09,Suggestion for Improvement,9,Active
+GCAT10,Other,10,Active

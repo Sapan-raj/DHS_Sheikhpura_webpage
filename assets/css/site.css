@@ -292,12 +292,14 @@ table.data .num { text-align: right; font-variant-numeric: tabular-nums; white-s
 .filters--4 { grid-template-columns: 2fr repeat(3, 1fr) auto; }
 .filters--5 { grid-template-columns: 2fr repeat(4, 1fr) auto; }
 .field label { display: block; font-size: .76rem; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--text-muted); margin-bottom: 5px; }
-.field input, .field select {
+.field input, .field select, .field textarea {
   width: 100%; padding: 9px var(--s3); font: inherit; font-size: .88rem;
   border: 1px solid var(--border-str); border-radius: var(--radius);
   background: var(--surface); color: var(--text);
 }
-.field input:focus, .field select:focus { border-color: var(--navy); outline: 2px solid rgba(242,153,74,.35); outline-offset: 0; }
+.field textarea { resize: vertical; min-height: 110px; }
+.field input:focus, .field select:focus, .field textarea:focus { border-color: var(--navy); outline: 2px solid rgba(242,153,74,.35); outline-offset: 0; }
+.field .hint { display: block; font-size: .74rem; color: var(--text-muted); margin-top: 4px; font-weight: 400; text-transform: none; letter-spacing: 0; }
 .search-field { position: relative; }
 .search-field input { padding-left: 34px; }
 .search-field::before {
@@ -460,6 +462,13 @@ table.data .num { text-align: right; font-variant-numeric: tabular-nums; white-s
 [data-theme="dark"] .st-Published { background: #0D2B1A; }
 [data-theme="dark"] .st-Scheduled { background: #3B2A08; }
 [data-theme="dark"] .st-Archived  { background: #2E100C; }
+/* Grievance statuses — same 4-colour language as Posts above. */
+.st-New            { background: var(--bg-sunken); color: var(--text-muted); }
+.st-Under-Review    { background: #FEF0C7; color: var(--amber); }
+.st-Resolved       { background: #E7F6EC; color: var(--green); }
+.st-Closed         { background: var(--bg-sunken); color: var(--text-muted); }
+[data-theme="dark"] .st-Under-Review { background: #3B2A08; }
+[data-theme="dark"] .st-Resolved     { background: #0D2B1A; }
 .row-actions { display: flex; gap: 4px; flex-wrap: wrap; }
 .row-actions button {
   font: inherit; font-size: .72rem; padding: 4px 9px; cursor: pointer; min-height: 24px;

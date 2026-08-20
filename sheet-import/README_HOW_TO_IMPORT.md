@@ -99,3 +99,42 @@ Home → Free Services → Health Programmes → Events & News → Notices → D
   The 35 purely administrative heads (programme management, technical assistance,
   untied grants) no longer appear anywhere public
 - **No budget figures, no FMR codes, no PIP or RoP documents, anywhere**
+
+---
+
+## Adding the Grievance / Complaint module (new tabs)
+
+**Two new tabs**, added at the same time as the `Code.gs` and website update for this feature:
+
+| Tab | Rows | What it is |
+|---|---|---|
+| `Grievance_Categories` | 10 | The category dropdown on the public complaint form. Public — just names. |
+| `Grievances` | starts empty | Every complaint/suggestion a resident files: name, phone, description, status. **Admin-only, forever.** |
+
+1. Right-click any tab → **Insert sheet** → name it `Grievance_Categories` → **File → Import →
+   Upload** → `Grievance_Categories.csv` → **Replace current sheet** → **Convert text to
+   numbers: OFF**.
+2. Repeat for a new `Grievances` tab, importing `Grievances.csv` (header row only — it starts
+   empty and fills up as residents submit complaints).
+3. Format `Grievance_ID` (column A of `Grievances`) and `Citizen_Phone` (column C) as
+   **Format → Number → Plain text**, same reason as `FMR_Code` above — a leading-zero ID or a
+   phone number must never be silently reinterpreted as a number.
+
+### ⚠️ Do not add `Grievances` to `SHEET_MAP` in `Code.gs` — ever
+
+This is the entire privacy guarantee for the feature. `SHEET_MAP` is what `getData()` loads,
+what the 6-hour server cache holds, and what the public `?action=data` endpoint returns —
+**every sheet listed there eventually reaches a browser**, filtered at best. `Grievances`
+holds names, phone numbers and complaint text, so it is deliberately never added to that list.
+It is read and written only by the admin-authenticated `grievanceList`/`grievanceUpdate`
+actions and the public (but tightly scoped) `grievanceSubmit`/`grievanceStatusLookup` actions,
+all of which talk to the sheet directly. `Grievance_Categories` **is** meant to be in
+`SHEET_MAP` — it holds nothing sensitive and the public complaint form needs to read it before
+a citizen has submitted anything.
+
+If you ever add a column to `Grievances`, there is nothing to update in the public payload —
+because it was never there. That is the point.
+
+**Activate this exactly the same way as the belt-and-braces guard above:** paste the updated
+`Code.gs`, then **Deploy → Manage deployments → ✏️ → New version → Deploy** — not *New
+deployment*.

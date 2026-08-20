@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<base href="/">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>File a Complaint — District Health Society, Sheikhpura</title>
+<meta name="description" content="Report a grievance, suggestion or issue about a government health facility in Sheikhpura district. Reviewed weekly by the District Control Command Centre, which will call you back.">
+<link rel="icon" href="assets/img/favicon.svg">
+<link rel="stylesheet" href="assets/css/site.css">
+<style>
+  /* Reference IDs are uppercase, but don't shout the placeholder too. */
+  #sRef { text-transform: uppercase; }
+  #sRef::placeholder { text-transform: none; }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#page">Skip to main content</a>
+<div id="shell-top"></div>
+<div id="crumbs"></div>
+<main id="page"><div class="container section"><div class="skel" style="height:90px;margin-bottom:20px"></div><div class="skel" style="height:340px"></div></div></main>
+<div id="shell-footer"></div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/ui.js"></script>
+<script>
+UI.boot('grievance.html', function (d) {
+  var Q = PortalData.query, esc = PortalData.esc;
+  UI.crumbs([{ label: 'File a Complaint' }]);
+
+  var API = String((window.PORTAL_CONFIG || {}).API_URL || '').trim();
+  var page = document.getElementById('page');
+
+  /* Write-only feature — there is no offline equivalent, so a missing API
+     service stops here rather than rendering a form that can never submit. */
+  if (!API) {
+    var S = d.settings || {};
+    var fallback = [S.helpline_104, S.helpline_102, S.contact_phone].filter(Boolean)[0];
+    page.innerHTML =
+      '<section class="section"><div class="container" style="max-width:70ch">' +
+        '<div class="section-head"><h2>File a Complaint</h2></div>' +
+        '<div class="alert alert-warn">This form needs a live connection to the district’s data service, ' +
+        'which is not configured right now.' +
+        (fallback ? ' In the meantime, please call <a href="tel:' + esc(fallback) + '">' + esc(fallback) + '</a>.' : '') +
+        '</div>' +
+      '</div></section>';
+    return;
+  }
+
+  /* No token — grievanceSubmit / grievanceStatusLookup are the two public,
+     unauthenticated write/read actions Code.gs exposes for this feature. */
+  function post(payload) {
+    return fetch(API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    }).then(function (r) { return r.json(); });
+  }
+
+  var cats = Q.grievanceCategories(d);
+  var formLoadedAt = Date.now();
+
+  /* No categories means the Grievance_Categories sheet is missing or every row is
+     Inactive. The server requires a valid category, so rendering the form anyway
+     would let someone write the whole complaint and then be refused with nothing
+     to pick. Show the status-check tab only, and a phone number instead. */
+  if (!cats.length) {
+    var S2 = d.settings || {};
+    var call = [S2.helpline_104, S2.contact_phone, S2.helpline_102].filter(Boolean)[0];
+    page.innerHTML =
+      '<section class="section"><div class="container" style="max-width:70ch">' +
+        '<div class="section-head"><h2>File a Complaint</h2></div>' +
+        '<div class="alert alert-warn">The complaint form is not available just yet. ' +
+        (call ? 'To report something now, please call <a href="tel:' + esc(call) + '">' + esc(call) + '</a>.'
+              : 'Please try again shortly.') +
+        '</div>' +
+      '</div></section>';
+    return;
+  }
+
+  page.innerHTML =
+    '<section class="section"><div class="container" style="max-width:78ch">' +
+      '<div class="section-head"><h2>Have a Complaint or Suggestion?</h2>' +
+        '<p>Tell us about an issue at a government health facility, or suggest an improvement. ' +
+        'The District Control Command Centre reviews every submission each week and will call you back.</p>' +
+      '</div>' +
+
+      '<div class="wn-tabs" role="tablist" aria-label="Grievance module" style="margin-bottom:18px">' +
+        '<button type="button" role="tab" id="tabFile" aria-controls="panelFile" aria-selected="true">File a Complaint</button>' +
+        '<button type="button" role="tab" id="tabCheck" aria-controls="panelCheck" aria-selected="false">Check Status</button>' +
+      '</div>' +
+
+      '<div role="tabpanel" id="panelFile" aria-labelledby="tabFile">' +
+        '<div class="card" id="fileCard">' +
+          '<div id="fMsg"></div>' +
+          '<form id="grvForm" novalidate>' +
+            '<div class="grid grid-2">' +
+              '<div class="field"><label for="gName">Your name</label>' +
+                '<input id="gName" type="text" maxlength="100" required autocomplete="name"></div>' +
+              '<div class="field"><label for="gPhone">Mobile number</label>' +
+                '<input id="gPhone" type="tel" inputmode="numeric" maxlength="10" required autocomplete="tel" placeholder="10-digit mobile number">' +
+                '<span class="hint">Used only by the District Control Command Centre to call you back. Never shown publicly.</span></div>' +
+            '</div>' +
+            '<div class="field"><label for="gCat">Category</label><select id="gCat" required>' +
+              '<option value="">Choose a category…</option>' +
+              cats.map(function (c) { return '<option value="' + esc(c.Category_ID) + '">' + esc(c.Category_Name) + '</option>'; }).join('') +
+            '</select></div>' +
+            '<div class="field"><label for="gDesc">Describe the issue or suggestion</label>' +
+              '<textarea id="gDesc" maxlength="1000" required placeholder="What happened, where, and when — as much detail as you can give."></textarea>' +
+              '<span class="hint">Up to 1000 characters.</span></div>' +
+            '<div class="visually-hidden" aria-hidden="true">' +
+              '<label for="gWebsite">Leave this field blank</label>' +
+              '<input id="gWebsite" name="website" type="text" tabindex="-1" autocomplete="off">' +
+            '</div>' +
+            '<button type="submit" class="btn btn-primary" id="gSubmit">Submit complaint</button>' +
+          '</form>' +
+        '</div>' +
+        '<div class="card" id="successCard" style="display:none"></div>' +
+      '</div>' +
+
+      '<div role="tabpanel" id="panelCheck" aria-labelledby="tabCheck" hidden>' +
+        '<div class="card">' +
+          '<div id="sMsg"></div>' +
+          '<form id="statusForm" novalidate>' +
+            '<div class="grid grid-2">' +
+              '<div class="field"><label for="sRef">Reference ID</label>' +
+                '<input id="sRef" type="text" maxlength="10" required placeholder="e.g. GRV0007"></div>' +
+              '<div class="field"><label for="sPhone">Mobile number used when filing</label>' +
+                '<input id="sPhone" type="tel" inputmode="numeric" maxlength="10" required autocomplete="tel"></div>' +
+            '</div>' +
+            '<button type="submit" class="btn btn-primary">Check status</button>' +
+          '</form>' +
+        '</div>' +
+        '<div class="card" id="statusResult" style="display:none"></div>' +
+      '</div>' +
+    '</div></section>';
+
+  /* ---- tabs ---- */
+  var tabFile = document.getElementById('tabFile'), tabCheck = document.getElementById('tabCheck');
+  var panelFile = document.getElementById('panelFile'), panelCheck = document.getElementById('panelCheck');
+  function showTab(which) {
+    var onFile = which === 'file';
+    tabFile.setAttribute('aria-selected', String(onFile));
+    tabCheck.setAttribute('aria-selected', String(!onFile));
+    panelFile.hidden = !onFile;
+    panelCheck.hidden = onFile;
+  }
+  tabFile.addEventListener('click', function () { showTab('file'); });
+  tabCheck.addEventListener('click', function () { showTab('check'); });
+  if (UI.param('tab') === 'check') showTab('check');
+  if (UI.param('ref')) document.getElementById('sRef').value = UI.param('ref');
+
+  /* ---- File a Complaint ---- */
+  function say(id, kind, msg) {
+    document.getElementById(id).innerHTML = msg ? '<div class="alert alert-' + kind + '">' + esc(msg) + '</div>' : '';
+  }
+
+  document.getElementById('grvForm').addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    say('fMsg', 'err', '');
+
+    var name = document.getElementById('gName').value.trim();
+    var phone = document.getElementById('gPhone').value.trim();
+    var categoryId = document.getElementById('gCat').value;
+    var description = document.getElementById('gDesc').value.trim();
+
+    if (!name) return say('fMsg', 'err', 'Please enter your name.');
+    if (!/^[6-9]\d{9}$/.test(phone)) return say('fMsg', 'err', 'Please enter a valid 10-digit mobile number.');
+    if (!categoryId) return say('fMsg', 'err', 'Please choose a category.');
+    if (!description) return say('fMsg', 'err', 'Please describe your complaint or suggestion.');
+
+    var btn = document.getElementById('gSubmit');
+    btn.disabled = true; btn.textContent = 'Submitting…';
+
+    post({
+      action: 'grievanceSubmit',
+      name: name, phone: phone, categoryId: categoryId, description: description,
+      website: document.getElementById('gWebsite').value,
+      formLoadedAt: formLoadedAt
+    }).then(function (r) {
+      if (!r || !r.ok) {
+        btn.disabled = false; btn.textContent = 'Submit complaint';
+        return say('fMsg', 'err', (r && r.error) || 'Something went wrong. Please try again.');
+      }
+      document.getElementById('fileCard').style.display = 'none';
+      var sc = document.getElementById('successCard');
+      sc.style.display = '';
+      sc.innerHTML =
+        '<div class="alert alert-ok">Your complaint has been recorded. The District Control Command Centre ' +
+        'reviews complaints every week and will call you.</div>' +
+        '<p style="margin:16px 0 4px">Your reference ID:</p>' +
+        '<p><span class="chip chip--code" style="font-size:1.1rem;padding:8px 16px">' + esc(r.referenceId) + '</span></p>' +
+        '<p class="hint" style="display:block;margin-top:10px">Save this ID and your mobile number — you will need both to check the status later.</p>' +
+        '<button type="button" class="btn btn-outline" id="goCheck" style="margin-top:10px">Check status now →</button>';
+      document.getElementById('goCheck').addEventListener('click', function () {
+        document.getElementById('sRef').value = r.referenceId;
+        showTab('check');
+      });
+    }).catch(function () {
+      btn.disabled = false; btn.textContent = 'Submit complaint';
+      say('fMsg', 'err', 'Could not reach the server. Please check your connection and try again.');
+    });
+  });
+
+  /* ---- Check Status ---- */
+  document.getElementById('statusForm').addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    say('sMsg', 'err', '');
+    var referenceId = document.getElementById('sRef').value.trim().toUpperCase();
+    var phone = document.getElementById('sPhone').value.trim();
+    if (!referenceId || !phone) return say('sMsg', 'err', 'Please enter both your reference ID and mobile number.');
+
+    var result = document.getElementById('statusResult');
+    result.style.display = 'none';
+
+    post({ action: 'grievanceStatusLookup', referenceId: referenceId, phone: phone }).then(function (r) {
+      if (!r || !r.ok || !r.found) {
+        return say('sMsg', 'warn', 'No complaint found with that reference ID and mobile number. Please check both and try again.');
+      }
+      result.style.display = '';
+      result.innerHTML =
+        '<p style="margin:0 0 10px">Status: ' + UI.statusPill(r.status) + '</p>' +
+        '<p style="color:var(--text-muted)">Submitted: ' + esc(PortalData.fmtDate(r.submittedDate) || r.submittedDate) +
+        ' &middot; Last updated: ' + esc(PortalData.fmtDate(r.updatedDate) || r.updatedDate) + '</p>' +
+        (r.resolutionNote
+          ? '<div class="alert alert-ok" style="margin-top:14px"><strong>Response from the district:</strong><br>' + esc(r.resolutionNote) + '</div>'
+          : '<p style="margin-top:14px;color:var(--text-muted)">Still being reviewed. The District Control Command Centre will call you.</p>');
+    }).catch(function () {
+      say('sMsg', 'err', 'Could not reach the server. Please check your connection and try again.');
+    });
+  });
+});
+</script>
+</body>
+</html>

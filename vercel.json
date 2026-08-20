@@ -4,8 +4,7 @@
   "trailingSlash": false,
 
   "rewrites": [
-    { "source": "/events/:slug", "destination": "/event.html?slug=:slug" },
-    { "source": "/pip/:fy", "destination": "/pip.html?fy=:fy" }
+    { "source": "/events/:slug", "destination": "/event.html?slug=:slug" }
   ],
 
   "headers": [

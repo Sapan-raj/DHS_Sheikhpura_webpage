@@ -181,6 +181,7 @@
       facilities: raw.facilities || [],
       facilityDoctors: raw.facilityDoctors || [],
       facilityDepartments: raw.facilityDepartments || [],
+      grievanceCategories: raw.grievanceCategories || [],
       validation: raw.validation || { errors: [], warnings: [] },
       degraded: raw._degraded || ''
     };
@@ -202,7 +203,8 @@
      ['benefits', 'Benefit_ID', 'Program_Benefits'],
      ['facilities', 'Facility_ID', 'Facilities'],
      ['facilityDoctors', 'Roster_ID', 'Facility_Doctors'],
-     ['facilityDepartments', 'Dept_ID', 'Facility_Departments']
+     ['facilityDepartments', 'Dept_ID', 'Facility_Departments'],
+     ['grievanceCategories', 'Category_ID', 'Grievance_Categories']
     ].forEach(function (t) {
       var seen = {};
       d[t[0]] = d[t[0]].filter(function (r) {
@@ -692,6 +694,14 @@
       return active(d.benefits).map(function (b) { return b.Benefit_Type; })
         .filter(function (v, i, a) { return v && a.indexOf(v) === i; }).sort();
     },
+
+    /* ── Grievances ──
+       Submission, status lookup and admin listing all talk to Code.gs
+       directly (grievanceSubmit / grievanceStatusLookup / grievanceList /
+       grievanceUpdate) and never touch `d` — the Grievances sheet is not in
+       SHEET_MAP and never reaches this shared, cached dataset. Only the
+       category lookup (non-sensitive) flows through the normal pipeline. */
+    grievanceCategories: function (d) { return active(d.grievanceCategories).sort(byOrder); },
 
     /**
      * Public post list. Only live posts (Published, or Scheduled and due).

@@ -19,6 +19,10 @@
  *   POST {action:'session', token}                 -> {valid}
  *   POST {action:'refresh', token}                 -> clears cache
  *   POST {action:'logout', token}                  -> revokes token
+ *   POST {action:'grievanceSubmit', ...}            -> public, no token; {referenceId}
+ *   POST {action:'grievanceStatusLookup', ...}      -> public, no token; {found, status, ...}
+ *   POST {action:'grievanceList', token}            -> admin only; every grievance
+ *   POST {action:'grievanceUpdate', token, ...}     -> admin only; set status/priority/notes
  */
 
 /* ───────────────────────── CONFIG ───────────────────────── */
@@ -41,7 +45,8 @@ var SHEET_MAP = {
   'Program_Benefits':    'benefits',
   'Facilities':          'facilities',
   'Facility_Doctors':    'facilityDoctors',
-  'Facility_Departments':'facilityDepartments'
+  'Facility_Departments':'facilityDepartments',
+  'Grievance_Categories':'grievanceCategories'
 };
 
 /* ── Media storage (Google Drive) ──
@@ -87,7 +92,8 @@ var REQUIRED = {
   benefits:       ['Benefit_ID', 'FMR_Code', 'Benefit_Title'],
   facilities:     ['Facility_ID', 'Facility_Name', 'Facility_Type', 'Block'],
   facilityDoctors:['Roster_ID', 'Facility_ID'],
-  facilityDepartments: ['Dept_ID', 'Facility_ID', 'Department_Name']
+  facilityDepartments: ['Dept_ID', 'Facility_ID', 'Department_Name'],
+  grievanceCategories: ['Category_ID', 'Category_Name']
 };
 
 var PK = {
@@ -97,7 +103,8 @@ var PK = {
   contacts: 'Contact_ID', footer: 'Footer_ID',
   postCategories: 'Category_ID', posts: 'Post_ID', postMedia: 'Media_ID',
   benefits: 'Benefit_ID', facilities: 'Facility_ID',
-  facilityDoctors: 'Roster_ID', facilityDepartments: 'Dept_ID'
+  facilityDoctors: 'Roster_ID', facilityDepartments: 'Dept_ID',
+  grievanceCategories: 'Category_ID'
 };
 
 /* Column order written back to the Posts sheet. Must match the header row. */
@@ -111,6 +118,32 @@ var POST_COLUMNS = [
 var MEDIA_COLUMNS = [
   'Media_ID', 'Post_ID', 'Media_URL', 'Media_Type', 'Caption',
   'File_Name', 'File_Size_KB', 'Display_Order', 'Status'
+];
+
+/* ═══════════════════ GRIEVANCES ═══════════════════
+   The Grievances sheet is deliberately NEVER a key in SHEET_MAP. getData()
+   only ever loads sheets listed there, and that same object is what gets
+   cached (6 h) and returned by the public ?action=data endpoint — so a
+   sheet that is never a SHEET_MAP key cannot reach either of those places,
+   structurally, no matter what publicView() does or forgets to do later.
+   It is read and written only through the direct SpreadsheetApp calls
+   below (sheetRows/objectRows), the same bypass postSave/postDelete/
+   postSetStatus already use for Posts. Grievance_Categories is the
+   opposite: non-sensitive lookup data, so it rides the normal SHEET_MAP
+   pipeline like Post_Categories/Program_Categories. */
+var GRV_ID_PREFIX      = 'GRV';
+var GRV_ID_WIDTH       = 4;
+var GRV_HONEYPOT_FIELD = 'website';       // must match the hidden field name in grievance.html
+var GRV_MIN_FILL_MS    = 4000;            // reject a submit faster than this after the form rendered
+var GRV_PHONE_RE       = /^[6-9]\d{9}$/;  // 10-digit Indian mobile
+var GRV_NAME_MAX       = 100;
+var GRV_DESC_MAX       = 1000;
+var GRV_STATUSES       = ['New', 'Under Review', 'Resolved', 'Closed'];
+var GRV_PRIORITIES     = ['High', 'Normal', 'Low'];
+var GRV_COLUMNS = [
+  'Grievance_ID', 'Citizen_Name', 'Citizen_Phone', 'Category_ID', 'Description',
+  'Status', 'Priority', 'Resolution_Note', 'Internal_Notes',
+  'Submitted_Date', 'Updated_Date', 'Resolved_Date'
 ];
 
 /* ───────────────────────── ROUTING ───────────────────────── */
@@ -157,6 +190,14 @@ function doPost(e) {
       case 'postDelete':  requireAuth(body.token); return json(postDelete(body));
       case 'postStatus':  requireAuth(body.token); return json(postSetStatus(body));
       case 'postList':    requireAuth(body.token); return json(postListAll());
+
+      /* ── Grievances ── the only writes besides login that are public,
+         because a citizen filing a complaint is not an authenticated admin. */
+      case 'grievanceSubmit':       return json(grievanceSubmit(body));
+      case 'grievanceStatusLookup': return json(grievanceStatusLookup(body));
+
+      case 'grievanceList':   requireAuth(body.token); return json(grievanceListAll());
+      case 'grievanceUpdate': requireAuth(body.token); return json(grievanceUpdate(body));
 
       default:
         return json({ ok: false, error: 'Unknown action' });
@@ -669,6 +710,28 @@ function today() {
   return Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd');
 }
 
+/**
+ * Turns a raw sheetRows().values grid into plain objects, keyed by header.
+ * Unlike readSheet() this does NOT apply REQUIRED/PK checks or feed
+ * crossValidate() — it is used only for sheets read outside the SHEET_MAP
+ * pipeline (Grievances), where that shared validation report does not apply.
+ */
+function objectRows(values) {
+  if (!values || values.length < 2) return [];
+  var headers = values[0].map(function (h) { return String(h).trim(); });
+  var out = [];
+  for (var r = 1; r < values.length; r++) {
+    var raw = values[r];
+    if (raw.every(function (c) { return c === '' || c === null; })) continue;
+    var obj = {};
+    for (var c = 0; c < headers.length; c++) {
+      if (headers[c]) obj[headers[c]] = normalise(raw[c]);
+    }
+    out.push(obj);
+  }
+  return out;
+}
+
 /** Create or update one post, plus its gallery rows. */
 function postSave(body) {
   var p = body.post || {};
@@ -840,6 +903,150 @@ function postListAll() {
     posts: d.posts.map(function (p) { p._galleryCount = counts[p.Post_ID] || 0; return p; }),
     categories: d.postCategories
   };
+}
+
+/* ═══════════════════ GRIEVANCES ═══════════════════
+   See the constants block near the top for why this sheet is never a
+   SHEET_MAP key. Every function below reads/writes it directly via
+   sheetRows('Grievances') and is never touched by getData()/crossValidate(). */
+
+/**
+ * Public — no auth. A citizen filing a complaint or suggestion.
+ *
+ * Anti-spam: a filled honeypot field, or a submission faster than
+ * GRV_MIN_FILL_MS after the form rendered, is treated as a bot. Both cases
+ * return a normal-looking success with a fake reference ID (reserved in the
+ * 9000–9999 band so it can never collide with a real sequential ID) WITHOUT
+ * touching the sheet at all — a bot gets no signal that anything different
+ * happened, and no failed-attempt trail is left for it to learn from.
+ */
+function grievanceSubmit(body) {
+  var isBot = String(body[GRV_HONEYPOT_FIELD] || '').trim() !== '' ||
+              (Date.now() - Number(body.formLoadedAt || 0)) < GRV_MIN_FILL_MS;
+  if (isBot) {
+    return {
+      ok: true,
+      referenceId: GRV_ID_PREFIX + String(9000 + (Date.now() % 1000)).padStart(GRV_ID_WIDTH, '0'),
+      message: 'Your complaint has been recorded.'
+    };
+  }
+
+  var name = String(body.name || '').trim();
+  var phone = String(body.phone || '').trim();
+  var categoryId = String(body.categoryId || '').trim();
+  var description = String(body.description || '').trim();
+
+  if (!name) return { ok: false, error: 'Please enter your name.' };
+  if (name.length > GRV_NAME_MAX) return { ok: false, error: 'Name is too long.' };
+  if (!GRV_PHONE_RE.test(phone)) return { ok: false, error: 'Please enter a valid 10-digit mobile number.' };
+  if (!categoryId) return { ok: false, error: 'Please choose a category.' };
+  if (!description) return { ok: false, error: 'Please describe your complaint or suggestion.' };
+  if (description.length > GRV_DESC_MAX) return { ok: false, error: 'Description is too long (max ' + GRV_DESC_MAX + ' characters).' };
+
+  var cats = objectRows(sheetRows('Grievance_Categories').values);
+  var validCat = cats.some(function (c) { return c.Category_ID === categoryId; });
+  if (!validCat) return { ok: false, error: 'Please choose a valid category.' };
+
+  var lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  try {
+    var t = sheetRows('Grievances');
+    var idCol = t.values.length ? t.values[0].map(function (h) { return String(h).trim(); }).indexOf('Grievance_ID') : 0;
+    var id = nextId(t.values, idCol, GRV_ID_PREFIX, GRV_ID_WIDTH);
+    var rec = {
+      Grievance_ID: id, Citizen_Name: name, Citizen_Phone: phone,
+      Category_ID: categoryId, Description: description,
+      Status: 'New', Priority: 'Normal', Resolution_Note: '', Internal_Notes: '',
+      Submitted_Date: today(), Updated_Date: today(), Resolved_Date: ''
+    };
+    var row = GRV_COLUMNS.map(function (c) { return rec[c] === undefined ? '' : String(rec[c]); });
+    t.sh.appendRow(row);
+    /* No CacheService invalidation — Grievances was never in that cache. */
+    return { ok: true, referenceId: id, message: 'Your complaint has been recorded.' };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+/**
+ * Public — no auth. Looks up one grievance by reference ID AND phone —
+ * both must match. Returns only status/resolution/dates, never name, phone,
+ * description, priority or internal notes. A mismatch on either field (or a
+ * reference ID that doesn't exist) returns the SAME generic "not found"
+ * response, so a caller can never learn which part was wrong.
+ */
+function grievanceStatusLookup(body) {
+  var id = String(body.referenceId || '').trim().toUpperCase();
+  var phone = String(body.phone || '').trim();
+  if (!id || !phone) return { ok: true, found: false };
+
+  var rows = objectRows(sheetRows('Grievances').values);
+  var match = rows.filter(function (r) {
+    return String(r.Grievance_ID || '').toUpperCase() === id &&
+           String(r.Citizen_Phone || '').trim() === phone;
+  })[0];
+
+  if (!match) return { ok: true, found: false };
+  return {
+    ok: true, found: true,
+    status: match.Status, resolutionNote: match.Resolution_Note,
+    submittedDate: match.Submitted_Date, updatedDate: match.Updated_Date
+  };
+}
+
+/** Admin only — every grievance, unfiltered, plus the category names for the table. */
+function grievanceListAll() {
+  var rows = objectRows(sheetRows('Grievances').values);
+  return { ok: true, grievances: rows, categories: getData(true).grievanceCategories };
+}
+
+/**
+ * Admin only — updates Status/Priority/Resolution_Note/Internal_Notes on one
+ * grievance by cell, mirroring postSetStatus's header-column-lookup style so
+ * Citizen_Name/Citizen_Phone/Submitted_Date are never touched by an update.
+ */
+function grievanceUpdate(body) {
+  var id = String(body.grievanceId || '').trim();
+  if (!id) return { ok: false, error: 'No grievance id supplied.' };
+  if (body.status && GRV_STATUSES.indexOf(body.status) === -1) {
+    return { ok: false, error: 'Invalid status.' };
+  }
+  if (body.priority && GRV_PRIORITIES.indexOf(body.priority) === -1) {
+    return { ok: false, error: 'Invalid priority.' };
+  }
+
+  var lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  try {
+    var t = sheetRows('Grievances');
+    var headers = t.values[0].map(function (h) { return String(h).trim(); });
+    var idCol = headers.indexOf('Grievance_ID');
+    var stCol = headers.indexOf('Status');
+    var prCol = headers.indexOf('Priority');
+    var rnCol = headers.indexOf('Resolution_Note');
+    var inCol = headers.indexOf('Internal_Notes');
+    var updCol = headers.indexOf('Updated_Date');
+    var resCol = headers.indexOf('Resolved_Date');
+
+    for (var i = 1; i < t.values.length; i++) {
+      if (String(t.values[i][idCol]).trim() !== id) continue;
+
+      if (body.status !== undefined)         t.sh.getRange(i + 1, stCol + 1).setValue(body.status);
+      if (body.priority !== undefined)       t.sh.getRange(i + 1, prCol + 1).setValue(body.priority);
+      if (body.resolutionNote !== undefined) t.sh.getRange(i + 1, rnCol + 1).setValue(body.resolutionNote);
+      if (body.internalNotes !== undefined)  t.sh.getRange(i + 1, inCol + 1).setValue(body.internalNotes);
+      t.sh.getRange(i + 1, updCol + 1).setValue(today());
+
+      var isResolvedNow = body.status === 'Resolved' || body.status === 'Closed';
+      if (isResolvedNow && !String(t.values[i][resCol]).trim()) {
+        t.sh.getRange(i + 1, resCol + 1).setValue(today());
+      }
+      return { ok: true, message: 'Grievance updated.' };
+    }
+    return { ok: false, error: 'Grievance not found: ' + id };
+  } finally {
+    lock.releaseLock();
+  }
 }
 
 /* ───────────────────────── AUTH ───────────────────────── */

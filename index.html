@@ -101,6 +101,19 @@ UI.boot('index.html', function (d) {
     '</div></section>');
   }
 
+  /* ---- Have a complaint or suggestion? — secondary action, so a plain card
+          rather than a full gradient band; sits between Free Services and
+          What's New. ---- */
+  var grvSec = Q.home(d, 'sec_grievance');
+  H.push('<section class="section section--alt"><div class="container"><div class="card">' +
+    '<h2>' + esc(grvSec ? UI.t(grvSec.Title_EN, grvSec.Title_HI) : 'Have a Complaint or Suggestion?') + '</h2>' +
+    '<p style="max-width:80ch">' + esc((grvSec && grvSec.Body_Text) ||
+      'Report an issue at a government health facility, or suggest an improvement. ' +
+      'The District Control Command Centre reviews every submission each week and calls you back.') + '</p>' +
+    '<a class="btn btn-primary" href="' + esc((grvSec && grvSec.Link_URL) || 'grievance.html') + '">' +
+      esc((grvSec && grvSec.Link_Label) || 'File a Complaint') + ' →</a>' +
+  '</div></div></section>');
+
   /* ---- What's New / Events — sits high on the page, straight after the hero ---- */
   var wnSec = Q.home(d, 'sec_whatsnew');
   var wnAll = Q.posts(d, { limit: 6 });

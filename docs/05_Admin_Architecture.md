@@ -86,6 +86,7 @@ Apps Script does not expose the client IP, so throttling is per-username. For a 
 | Deep link to the Google Sheet (only after authentication) | ✅ |
 | Validation report — every skipped row and every warning, with sheet name, row/ID and reason | ✅ |
 | Inline how-to for the common content tasks | ✅ |
+| **Manage Grievances** — filterable table of every complaint/suggestion, with status/priority/resolution-note editing | ✅ |
 
 ## What it deliberately does not do
 
@@ -113,13 +114,49 @@ The admin area is therefore a **control panel**: authenticate, inspect health, p
 | Admin page indexed by search engines | `<meta name="robots" content="noindex, nofollow">` |
 | Man-in-the-middle | Apps Script is HTTPS-only; host the frontend over HTTPS too |
 | A bad sheet row breaks the site | validated server-side **and** client-side; bad rows are dropped and reported, never rendered |
+| Grievance data (names, phones, complaints) reaching a browser | `Grievances` is never a `SHEET_MAP` key — absent from `getData()`, the cache and `?action=data` by construction, not by filtering. See below |
+| Bot-spammed complaint form | silent honeypot field + minimum-fill-time check; a bot receives an indistinguishable fake success, never an error |
+| Enumerating other citizens' complaints | status lookup requires reference ID **and** phone to match; identical generic response for either being wrong |
 
 ### Residual risks — stated plainly
 
 1. **Single shared administrator account.** Adequate for one district office; there is no per-user audit trail. If several people need access, add a `Users` sheet with per-user salted hashes and a role column — the token payload already carries a username field for exactly this.
-2. **Apps Script has no IP-level rate limiting.** Read endpoints are public by design (the content is public), so the exposure is load, not disclosure. Google's own quotas provide the backstop.
+2. **Apps Script has no IP-level rate limiting.** Read endpoints are public by design (the content is public), so the exposure is load, not disclosure. Google's own quotas provide the backstop. The one write endpoint that is also public, `grievanceSubmit`, inherits the same limitation — it relies on the honeypot/timing checks below rather than a rate limit, since Apps Script exposes no caller IP to rate-limit against.
 3. **`sessionStorage` is readable by same-origin JavaScript.** Mitigated by escaping every rendered value; a stored-XSS bug would still be serious, which is why escaping is centralised in one function rather than scattered.
 4. **Local-preview mode does not enforce sign-in.** When `API_URL` is empty there is no service to authenticate against and the data is a public JSON file, so there is nothing to protect. The dashboard says so explicitly. It is not a production configuration.
+5. **`grievanceStatusLookup` has no attempt limit.** Unlike `login`, repeated lookup attempts aren't locked out — accepted because the ID space is sequential (an attacker still needs the correct phone number for a given ID, and the data returned per lookup is limited to status and a resolution note, never the complaint itself). Proportionate to the risk today; revisit if abuse is observed.
+
+---
+
+## Grievances — a public write endpoint, held to the same standard
+
+Everything above secures the *admin* side. `grievanceSubmit` and `grievanceStatusLookup` are
+different in kind — the site's only actions an unauthenticated visitor can call to change or read
+something that isn't already fully public — so they get their own model rather than reusing
+`requireAuth`.
+
+**Writing without a login, safely.** `grievanceSubmit` never calls `requireAuth()` — a citizen
+filing a complaint has no account. In its place: a hidden honeypot field (real visitors never see
+or fill it) and a minimum-fill-time check (a submission faster than 4 seconds after the form
+rendered is almost certainly scripted, not typed). Either one silently returns a normal-looking
+success — a reference ID in a reserved numeric band that can never collide with a real one — but
+writes nothing. The distinction from the admin lockout above is deliberate: locking out a
+*bot* and telling it so just teaches it to slow down; a fake success gives it nothing to learn
+from.
+
+**Reading without a login, narrowly.** `grievanceStatusLookup` requires both the reference ID and
+the submitting phone number to match one row — the same "identical error either way" principle as
+`login`'s uniform failure message, applied to prevent someone from fishing for the status of a
+complaint that isn't theirs. The response is a narrow, fixed shape: status, resolution note, two
+dates. Never the name, phone, description, priority, or the admin's internal notes — those exist
+only in the response `grievanceListAll()` returns to an authenticated caller.
+
+**Why this can be looser than a login endpoint.** The asymmetry is intentional: a compromised
+admin session can rewrite anything on the site, so login gets a lockout, a delay and a signed
+token. A worst-case abuse of `grievanceSubmit` writes junk rows an admin discards during weekly
+review; a worst-case abuse of `grievanceStatusLookup` (with a guessed phone number) reveals a
+status and a sentence of resolution text, nothing more. The controls are proportionate to what's
+actually at stake on each side.
 
 ---
 

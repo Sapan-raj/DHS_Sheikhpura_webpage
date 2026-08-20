@@ -467,6 +467,14 @@
     return '<div class="state"><div class="ico">◌</div><h3>' + esc(title) + '</h3><p>' + esc(msg) + '</p></div>';
   }
 
+  /** "Under Review" -> CSS-safe "Under-Review" modifier. Shared by the public
+      grievance status lookup and the admin Grievances table — two call
+      sites, the bar this codebase uses for promoting a render helper here. */
+  function statusPill(status) {
+    var cls = String(status || '').trim().replace(/\s+/g, '-');
+    return '<span class="status-pill st-' + esc(cls) + '">' + esc(status || '—') + '</span>';
+  }
+
   function errorState(msg) {
     return '<div class="state"><div class="ico">⚠</div><h3>Data could not be loaded</h3>' +
            '<p>' + esc(msg) + '</p>' +
@@ -543,7 +551,7 @@
     postCard: postCard, postCover: postCover, postArt: postArt, benefitCard: benefitCard,
     facilityCard: facilityCard, facilityTypeName: facilityTypeName,
     directionsButton: directionsButton,
-    postTiming: postTiming, postWhen: postWhen,
+    postTiming: postTiming, postWhen: postWhen, statusPill: statusPill,
     skeleton: skeleton, icon: icon, t: t, lang: lang,
     param: param, pathSeg: pathSeg, route: route, money: money,
     setTheme: setTheme, Prefs: Prefs

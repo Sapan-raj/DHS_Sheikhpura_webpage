@@ -17,7 +17,7 @@
 > `publicView()`, so an accidental restore cannot re-expose them. The portal is now
 > built entirely around what residents can use. See §22.
 
-*Last updated: 19 August 2026 · citizen-first rebuild + health facilities module*
+*Last updated: 20 August 2026 · grievance/complaint module added*
 
 ---
 
@@ -26,7 +26,7 @@
 1. [At a glance](#1-at-a-glance)
 2. [Origin — what the reference site taught us](#2-origin--what-the-reference-site-taught-us)
 3. [Architecture](#3-architecture)
-4. [Data model — all 17 sheets](#4-data-model--all-17-sheets)
+4. [Data model — all 21 sheets](#4-data-model--all-21-sheets)
 5. [Pages and routes](#5-pages-and-routes)
 6. [Code reference](#6-code-reference)
 7. [Apps Script API reference](#7-apps-script-api-reference)
@@ -46,6 +46,7 @@
 21. [What to do next](#21-what-to-do-next)
 22. [The citizen-first change](#22-the-citizen-first-change-18-august-2026)
 23. [Health facilities module](#23-health-facilities-module)
+24. [Grievance / Complaint module](#24-grievance--complaint-module)
 
 ---
 
@@ -61,12 +62,12 @@
 | **Frameworks** | None. No React, no jQuery, no Bootstrap, no build step, no npm |
 | **Hosting** | Vercel (static), from GitHub — **live** |
 | **Data source** | `google-sheets` via Apps Script — **live**, not the bundled snapshot |
-| **Validation** | **0 errors**, 56 warnings (all expected — see §17) |
+| **Validation** | **0 errors**, 34 warnings (all expected — see §17) |
 | **Master sheet** | `1V2FbGpfVuX1Z7OhL0yEWQMs43t4QgvwQ4DSfmHEm0vs` |
-| **Pages** | 12 — PIP removed; Health Programmes, Find a Health Centre and facility detail added |
-| **Sheets** | 19 data + 1 README |
-| **Sample records** | 453 |
-| **Public payload** | 151.2 KB |
+| **Pages** | 13 — PIP removed; Health Programmes, Find a Health Centre, facility detail and File a Complaint added |
+| **Sheets** | 21 data + 1 README |
+| **Records** | 1,098 (Grievances starts empty and grows as residents submit) |
+| **Public payload** | 326 KB |
 | **CSS** | 34 KB, one file |
 | **JS** | 74 KB across 4 files |
 
@@ -152,7 +153,7 @@ FY 2026-27 adds `NDCP.7`, `NDCP.9`, `NCD.9`, `NCD.12`, `HSS.15`–`HSS.21`; remo
 ```
 ┌────────────────┐   editor    ┌──────────────────┐   HTTPS/JSON   ┌───────────────┐        ┌────────┐
 │  Google Sheet  │ ──────────► │  Apps Script     │ ─────────────► │  Static site  │ ─────► │  User  │
-│  17 sheets     │             │  Web App         │                │  on Vercel    │        │        │
+│  19 sheets     │             │  Web App         │                │  on Vercel    │        │        │
 │  PRIVATE       │ ◄────────── │  runs as owner   │ ◄───────────── │  no server    │        │        │
 └────────────────┘  read/write └──────────────────┘  POST + token  └───────────────┘        └────────┘
         ▲                              ▲                                   ▲
@@ -212,15 +213,14 @@ The site never renders a blank page or a stack trace. Individual bad rows disapp
 
 ---
 
-## 4. Data model — all 17 sheets
+## 4. Data model — all 21 sheets
 
-453 sample rows. Every website section maps to exactly one sheet.
+1,098 rows across 21 data sheets (plus an in-workbook `README` tab = 22 tabs). Every website section maps to exactly one sheet. `Grievances` is the one exception to "maps to a public page" — see §24.
 
 ### Relationships
 
 ```
 Financial_Years (Year_ID) ──┬─→ Programs_FMR (Year_ID, Category_ID) ──→ Documents (Program_ID)
-                            ├─→ PIP_Documents (Year_ID)
                             └─→ Documents (Year_ID)
 
 Program_Categories (Category_ID) ──┬─→ Programs_FMR (Category_ID)
@@ -229,6 +229,11 @@ Program_Categories (Category_ID) ──┬─→ Programs_FMR (Category_ID)
 Post_Categories (Category_ID) ──→ Posts (Category_ID) ──→ Post_Media (Post_ID)
 
 Programs_FMR (FMR_Code) ──→ Program_Benefits (FMR_Code)   what citizens actually get
+
+Facilities (Facility_ID) ──┬─→ Facility_Doctors (Facility_ID)
+                           └─→ Facility_Departments (Facility_ID)
+
+Grievance_Categories (Category_ID) ──→ Grievances (Category_ID)   admin-only, never SHEET_MAP — see §24
 
 Navigation (Parent_Menu_ID → Menu_ID)  self-referencing, one level
 
@@ -245,26 +250,32 @@ Settings · Home_Content · Important_Links · Notices · Contact_Information ·
 
 ### Row counts
 
-| Sheet | Rows | Cols | Purpose |
-|---|---|---|---|
-| `README` | 10 | 3 | In-workbook instructions for the admin |
-| `Settings` | 32 | 5 | Key–value site configuration |
-| `Navigation` | 9 | 10 | Menu structure |
-| `Financial_Years` | 4 | 8 | FY list |
-| `PIP_Documents` | 12 | 12 | Headline document strip per year |
-| `Program_Categories` | 5 | 7 | The five flexi pools |
-| `Programs_FMR` | **157** | 12 | ★ FMR budget heads, year-scoped |
-| `Documents` | 35 | 14 | Central document repository |
-| `Home_Content` | 14 | 11 | Every editable homepage string |
-| `Important_Links` | 14 | 11 | External portal links |
-| `Notices` | 6 | 13 | Circulars and announcements |
-| `Contact_Information` | 5 | 15 | Office contacts |
-| `Footer` | 15 | 10 | Footer blocks and links |
-| `Post_Categories` | 18 | 7 | Event/news taxonomy |
-| `Posts` | 10 | 23 | ★ What's New / Events / News |
-| `Post_Media` | 8 | 9 | Gallery images, one row per image |
-| `Program_Benefits` | **40** | 15 | ★ What a citizen gets — free services, eligibility, where to go |
-| `_Lists` | 66 | 3 | Controlled vocabularies for dropdowns |
+| Sheet | Rows | Purpose |
+|---|---|---|
+| `README` | 10 | In-workbook instructions for the admin |
+| `Settings` | 32 | Key–value site configuration |
+| `Navigation` | 9 | Menu structure |
+| `Financial_Years` | 4 | FY list |
+| `Program_Categories` | 5 | The five flexi pools |
+| `Programs_FMR` | **157** | ★ Programme heads, year-scoped — internal lookup, never a public page |
+| `Documents` | 5 | Public document repository |
+| `Home_Content` | 15 | Every editable homepage string |
+| `Important_Links` | 14 | External portal links |
+| `Notices` | 6 | Circulars and announcements |
+| `Contact_Information` | 5 | Office contacts |
+| `Footer` | 17 | Footer blocks and links |
+| `Post_Categories` | 18 | Event/news taxonomy |
+| `Posts` | 10 | ★ What's New / Events / News |
+| `Post_Media` | 8 | Gallery images, one row per image |
+| `Program_Benefits` | **40** | ★ What a citizen gets — free services, eligibility, where to go |
+| `Facilities` | **127** | ★ Every government health centre in the district |
+| `Facility_Doctors` | **402** | Specialist roster — names stripped before publication |
+| `Facility_Departments` | 150 | Departments, room numbers, floors |
+| `Grievance_Categories` | 10 | Complaint-form dropdown — public, non-sensitive |
+| `Grievances` | 0 → grows | ★ Citizen complaints/suggestions — **admin-only, never public**, see §24 |
+| `_Lists` | 68 | Controlled vocabularies for dropdowns |
+
+`PIP_Documents` was **deleted** in the citizen-first change (§22). Nothing references it.
 
 ---
 
@@ -319,17 +330,7 @@ Sample: FY2627 (current) · FY2526 · FY2425 · FY2324 (archived, documents-only
 
 ---
 
-### 4.4 `PIP_Documents` — 12 rows
-
-The headline strip at the top of a financial year.
-
-`Doc_ID` (PK) · `Year_ID` (FK) · `Document_Name` · `Document_Type` · `Description` · `File_URL` · `File_Type` · `File_Size_MB` · `Issue_Date` · `Upload_Date` · `Display_Order` · `Status`
-
-Types: PIP · RoP · Supplementary PIP · Supplementary Approval · Budget Allocation Letter · Revised Budget · Letter · Other
-
----
-
-### 4.5 `Program_Categories` — 5 rows
+### 4.4 `Program_Categories` — 5 rows
 
 Global master. Year-specific allocation/guideline **files** live in `Documents`, so this never needs duplicating per year.
 
@@ -343,7 +344,7 @@ Global master. Year-specific allocation/guideline **files** live in `Documents`,
 
 ---
 
-### 4.6 `Programs_FMR` — 157 rows ★ core table
+### 4.5 `Programs_FMR` — 157 rows ★ core table
 
 One row = one FMR budget head **in one financial year**.
 
@@ -355,31 +356,27 @@ One row = one FMR budget head **in one financial year**.
 | `FMR_Code` | Text | ✓ | Unique **within a year** |
 | `Program_Name` / `_HI` | Text | EN only | |
 | `Program_Description` | Text | | Detail page |
-| `Budget_Allocation_Lakh` | Number | | ₹ lakh |
-| `Budget_Guidelines` | Text | | What the head funds |
 | `Nodal_Officer` | Text | | |
 | `Display_Order` | Number | ✓ | Within the category |
 | `Status` | List | ✓ | |
 
 Distribution: **FY2627 = 59 · FY2526 = 49 · FY2425 = 49**
 
-> ⚠️ Sample `Budget_Allocation_Lakh` figures are **illustrative placeholders**, not published Sheikhpura allocations. Replace from the district RoP.
+> **No money columns.** `Budget_Allocation_Lakh` and `Budget_Guidelines` were deleted from this sheet in the citizen-first change (§22). The table survives only as the join target for `Program_Benefits`; residents never see an FMR code.
 
 ---
 
-### 4.7 `Documents` — 35 rows
+### 4.6 `Documents` — 5 rows
 
-Everything that is not the year headline strip. Same column names as `PIP_Documents` so the Documents page can union both.
+The public document repository. Financial documents (PIP, RoP, allocation letters) were removed in §22; what remains is guidelines, formats and circulars residents may actually want.
 
 `Document_ID` (PK) · `Year_ID` · `Category_ID` · `Program_ID` · `Document_Title` · `Document_Type` · `Description` · `File_URL` · `File_Type` · `File_Size_MB` · `Upload_Date` · `Display_Order` · `Status` · `Is_Featured`
 
 Types: Category Allocation · Category Guidelines · Programme Guideline · Format · Report · Circular · Letter · Other
 
-**How the PIP table finds its files:** the *Budget Allocation* button looks up `Documents` where `Year_ID` + `Category_ID` match and `Document_Type = Category Allocation`; *Budget Guidelines* does the same with `Category Guidelines`. This reproduces the reference site's `rowspan`-merged columns with **no merged cells**.
-
 ---
 
-### 4.8 `Home_Content` — 14 rows
+### 4.7 `Home_Content` — 14 rows
 
 `Section_Key` (PK, never change) · `Section_Type` · `Title_EN` / `_HI` · `Subtitle` · `Body_Text` · `Icon` · `Link_URL` · `Link_Label` · `Display_Order` · `Status`
 
@@ -391,7 +388,7 @@ Keys: `hero_title` · `hero_subtitle` · `hero_cta2` · `notice_banner` · `stat
 
 ---
 
-### 4.9 `Important_Links` — 14 rows
+### 4.8 `Important_Links` — 14 rows
 
 `Link_ID` (PK) · `Link_Name` · `URL` · `Description` · `Icon` · `Category` · `Display_Order` · `Status` · `Is_External` · `Show_In_Footer` · `Show_On_Home`
 
@@ -399,7 +396,7 @@ Categories: National · State · District · Portal
 
 ---
 
-### 4.10 `Notices` — 6 rows
+### 4.9 `Notices` — 6 rows
 
 `Notice_ID` (PK) · `Title` · `Description` · `Notice_Date` · `Category` · `Priority` · `Attachment_URL` · `External_URL` · `Is_Featured` · `Is_New` · `Status` · `Display_Order` · `Expiry_Date`
 
@@ -407,7 +404,7 @@ Categories: National · State · District · Portal
 
 ---
 
-### 4.11 `Contact_Information` — 5 rows
+### 4.10 `Contact_Information` — 5 rows
 
 `Contact_ID` (PK) · `Office_Name` · `Designation` · `Person_Name` · `Address` · `District` · `State` · `PIN` · `Phone` · `Alt_Phone` · `Email` · `Office_Hours` · `Google_Maps_URL` · `Display_Order` · `Status`
 
@@ -415,13 +412,13 @@ Social URLs live in `Settings`, not here.
 
 ---
 
-### 4.12 `Footer` — 15 rows
+### 4.11 `Footer` — 15 rows
 
 `Footer_ID` (PK) · `Block_Type` (`about`/`link`/`contact`/`legal`) · `Block_Title` · `Label` · `URL` · `Content_Text` · `Column_Number` (1–4 = columns, 5 = bottom bar) · `Display_Order` · `Status` · `Is_External`
 
 ---
 
-### 4.13 `Post_Categories` — 18 rows
+### 4.12 `Post_Categories` — 18 rows
 
 `Category_ID` (PK) · `Category_Name` · `Slug` · `Colour` (hex chip colour) · `Icon` · `Display_Order` · `Status`
 
@@ -431,7 +428,7 @@ Add a row → it appears in the composer dropdown and the public filter immediat
 
 ---
 
-### 4.14 `Posts` — 10 rows ★ What's New / Events
+### 4.13 `Posts` — 10 rows ★ What's New / Events
 
 Written by the **admin composer**, not by hand.
 
@@ -472,7 +469,7 @@ Public payload carries **8** (Draft and unreleased Scheduled withheld).
 
 ---
 
-### 4.15 `Post_Media` — 8 rows
+### 4.14 `Post_Media` — 8 rows
 
 **One row per image**, not a delimited list in one cell.
 
@@ -480,7 +477,7 @@ Public payload carries **8** (Draft and unreleased Scheduled withheld).
 
 ---
 
-### 4.16 `Program_Benefits` — 40 rows ★ citizen entitlements
+### 4.15 `Program_Benefits` — 40 rows ★ citizen entitlements
 
 The portal is for the **people of Sheikhpura**, not only for officials. `Programs_FMR`
 answers *"what does this budget head fund"*; this answers *"what do I get, am I
@@ -517,15 +514,58 @@ Coverage: 40 benefits across 24 FMR codes. Codes with no citizen-facing benefit
 
 ---
 
-### 4.18 `_Lists` — 66 rows
+### 4.16 `Facilities` — 127 rows ★ every health centre
 
-Controlled vocabularies backing every dropdown: `List_Name` · `Value` · `Meaning`.
+The finder behind `facilities.html` and `facility.html`.
 
-Lists: Status · Yes_No · Document_Type · File_Type · Priority · Notice_Category · Link_Type · Link_Category · Section_Type · Footer_Block · **Content_Type** · **Post_Status** · **Media_Type**
+`Facility_ID` (PK) · `Facility_Name` · `Facility_Name_HI` · `Facility_Type` · `Block` · `Category` · `HFR_ID` · `Latitude` · `Longitude` · `Coord_Status` · `Google_Maps_URL` · `Emergency_24x7` · `Operating_Hours` · `Bed_Count` · `Incharge_Designation` · `Incharge_Name` · `Contact_Phone` · `Key_Services` · `Address_Details` · `Drug_Stock_URL` · `Status` · `Display_Order`
+
+Types: `DH` 1 · `CHC` 4 · `PHC` 2 · `APHC` 15 · `HSC` 105 (Ayushman Arogya Mandir).
+Blocks: Ariyari 23 · Barbigha 22 · Chewara 19 · Ghatkusumbha 10 · Sheikhpura 37 · Shekhopur Sarai 16.
+
+**`Coord_Status` is derived, never typed.** `import_facilities.py` tests each
+coordinate against the district bounding box (lat 24.95–25.40, lon 85.55–86.15)
+and writes `ok` · `outside` · `unparseable` · `missing`. Only `ok` earns a
+directions link — see §23.
+
+`HFR_ID` is the national Health Facility Registry identifier. It is public by
+design and is shown on the facility page.
 
 ---
 
-### 4.19 Derived, never stored
+### 4.17 `Facility_Doctors` — 402 rows
+
+Which specialisation sits where, on which day, in which shift.
+
+`Roster_ID` (PK) · `Facility_ID` (FK) · `HFR_ID` · **`Doctor_Name`** · `Specialization` · `Shift_Timing` · `Weekday` · `Status`
+
+> **`Doctor_Name` and `HFR_ID` never leave the server.** `publicView()` rebuilds
+> each row from a six-key whitelist — `Roster_ID`, `Facility_ID`,
+> `Specialization`, `Shift_Timing`, `Weekday`, `Status`. The district keeps 71
+> real names here so the roster stays maintainable; residents see the
+> specialisation and the timing. Verified against the live payload **by value**,
+> not merely by field name (§13.2).
+
+---
+
+### 4.18 `Facility_Departments` — 150 rows
+
+`Dept_ID` (PK) · `Facility_ID` (FK) · `HFR_ID` · `Department_Name` · `Room_No` · `Floor` · `Status`
+
+Room numbers and floors for the larger facilities — what a visitor needs after
+walking through the gate.
+
+---
+
+### 4.19 `_Lists` — 68 rows
+
+Controlled vocabularies backing every dropdown: `List_Name` · `Value` · `Meaning`.
+
+Lists: Status · Yes_No · Document_Type · File_Type · Priority · Notice_Category · Link_Type · Link_Category · Section_Type · Footer_Block · **Content_Type** · **Post_Status** · **Media_Type** · **Grievance_Status**
+
+---
+
+### 4.20 Derived, never stored
 
 | Concept | Computed from | Why not a column |
 |---|---|---|
@@ -543,19 +583,24 @@ Lists: Status · Yes_No · Document_Type · File_Type · Priority · Notice_Cate
 | Page | Route | What it does |
 |---|---|---|
 | **Home** | `/index.html` | Hero · announcement strip · **Free Services for You** · **What's New** (tabbed) · stat tiles · programme categories · latest documents · notices · quick links · about |
-| **PIP** | `/pip.html`, `?fy=2025-26`, `/pip/2025-26` | Year selector · key documents · in-page search + category filter · one block per flexi pool with allocation/guideline buttons and the FMR table |
+| **Health Programmes** | `/programmes.html` | The 24 programmes residents can use, grouped by health area |
 | **Programme detail** | `/program.html?fy=2026-27&fmr=RCH.1` | **"What you get from this programme"** first · full head detail · category docs · at-a-glance · **same code in other years** · sibling heads |
+| **Find a Health Centre** | `/facilities.html`, `?block=Barbigha` | ★ 127 centres · block cards · search · Block / Type / Service filters · 24×7-only toggle · pagination |
+| **Facility detail** | `/facility.html?id=FAC001` | Services · departments with room and floor · specialist roster (no names) · directions when the coordinate is verified · medicine-stock link |
 | **Free Services** | `/benefits.html` | ★ Citizen-facing. 40 entitlements grouped by health area, searchable, with a "Know your rights" panel |
+| **File a Complaint** | `/grievance.html` | ★ Two tabs: file a complaint/suggestion (name, phone, category, description) · check status by reference ID + phone. See §24 |
 | **Documents** | `/documents.html` | Searchable repository, 4 filters, pagination |
 | **Notices** | `/notices.html` | Search, category, priority, include-archived |
 | **Events** | `/events.html` | Search · type · when (upcoming/past) · category · pagination |
 | **Event detail** | `/event.html?slug=…`, `/events/<slug>` | Hero · body · photo gallery with lightbox · attachments · sidebar · related |
 | **Contact** | `/contact.html` | Helpline tiles · office cards · maps links |
-| **Admin** | `/admin.html` | Login · dashboard · **post composer** · Manage Posts · validation report · sync |
+| **Admin** | `/admin.html` | Login · dashboard · **post composer** · Manage Posts · **Manage Grievances** · validation report · sync |
 
 ### Pretty URLs
 
-`vercel.json` rewrites `/events/:slug` → `/event.html?slug=:slug` and `/pip/:fy` → `/pip.html?fy=:fy`.
+`vercel.json` rewrites `/events/:slug` → `/event.html?slug=:slug`. The `/pip/:fy` rewrite was removed with the page.
+
+`cleanUrls` is deliberately **false** — every internal link carries the `.html` extension, so `/facilities` is not a route; `/facilities.html` is.
 
 Two things were required to make these work, and both are easy to miss:
 
@@ -583,13 +628,13 @@ window.PORTAL_CONFIG = {
 };
 ```
 
-### `assets/js/data.js` — 583 lines
+### `assets/js/data.js` — 795 lines
 
 Fetch, cache, validate, query. **No DOM access.**
 
 **Exports:** `load` `query` `clear` `esc` `yes` `num` `validUrl` `fmtDate` `fmtRange` `parseDate` `parseWhen` `active` `byOrder`
 
-**`PortalData.query` (25 methods):**
+**`PortalData.query` (26 methods):**
 
 | Group | Methods |
 |---|---|
@@ -597,6 +642,8 @@ Fetch, cache, validate, query. **No DOM access.**
 | Years | `years` `currentYear` `yearBySlug` |
 | Programmes | `categories` `programs` `programById` `programByCode` |
 | Documents | `categoryDoc` `pipDocs` `docsForProgram` `allDocuments` |
+| Facilities | `facilities` `facilityById` `blocks` `facilityTypes` `facilityServices` `facilityDoctors` `facilityDepartments` `facilityStats` |
+| Grievances | `grievanceCategories` — submit/lookup/list/update all talk to `Code.gs` directly, bypassing `d` entirely (see §24) |
 | Posts | `postCategories` `posts` `postBySlug` `postGallery` `postStats` |
 | Site | `notices` `links` `contacts` `nav` `home` `homeByType` `footer` |
 | Other | `search` `stats` |
@@ -607,11 +654,11 @@ Fetch, cache, validate, query. **No DOM access.**
 - `validUrl()` — accepts only `http(s)` and internal `.html`; rejects `javascript:`, `data:`, and the `NEEDS MANUAL INPUT` placeholder.
 - `fmtRange()` — collapses `01 Aug – 07 Aug 2026` to `01–07 Aug 2026`.
 
-### `assets/js/ui.js` — 452 lines
+### `assets/js/ui.js` — 559 lines
 
 Shell, theme, language, shared components. **No content.**
 
-**Exports:** `boot` `renderShell` `renderFooter` `crumbs` `docRow` `docIcon` `postCard` `postCover` `postArt` `postTiming` `postWhen` `emptyState` `errorState` `skeleton` `icon` `t` `lang` `param` `pathSeg` `route` `money` `setTheme` `Prefs`
+**Exports:** `boot` `renderShell` `renderFooter` `crumbs` `docRow` `docIcon` `postCard` `postCover` `postArt` `postTiming` `postWhen` `statusPill` `emptyState` `errorState` `skeleton` `icon` `t` `lang` `param` `pathSeg` `route` `money` `setTheme` `Prefs`
 
 `UI.boot(activePage, render)` is the standard page entry point: load data → paint shell → hand data to the page → paint footer → catch any failure into a retry-able error state.
 
@@ -625,20 +672,20 @@ Constants: `MAX_EDGE = 1600` · `QUALITY = 0.82` · `MAX_UPLOAD_BYTES = 5 MB` ·
 
 **Contains no storage credential.** Uploads post to the authenticated Apps Script endpoint.
 
-### `assets/css/site.css` — 627 lines, 34 KB
+### `assets/css/site.css` — 727 lines, 39 KB
 
 One stylesheet, CSS-variable tokens, no framework.
 
-### `apps-script/Code.gs` — 897 lines
+### `apps-script/Code.gs` — 1,201 lines
 
-34 functions across routing, data, posts/media, and auth. Full reference in §7.
+39 functions across routing, data, posts/media, grievances, and auth. Full reference in §7.
 
 ### Python tooling
 
 | File | Purpose |
 |---|---|
-| `build_database.py` (948 lines) | Generates the `.xlsx` from scratch, runs integrity checks. **Overwrites** — never run against live content. |
-| `export_json.py` (132 lines) | `.xlsx` → `assets/data/portal-data.json`. Applies the same publish filter as the API and reports what it withheld. |
+| `build_database.py` (962 lines) | Generates the `.xlsx` from scratch, runs integrity checks. **Overwrites** — never run against live content. |
+| `export_json.py` (148 lines) | `.xlsx` → `assets/data/portal-data.json`. Applies the same publish filter as the API and reports what it withheld. |
 
 ---
 
@@ -655,6 +702,16 @@ Deployed **Execute as: Me / Access: Anyone**.
 | `?action=validate` | Validation report only |
 | `?action=data&fresh=1` | Bypasses the server cache |
 
+### Public, no auth (POST, `Content-Type: text/plain`) — writes without a login
+
+Besides `login`, these are the **only** POST actions that don't call `requireAuth()` — a citizen filing a
+complaint is not signed in. See §24 for the anti-spam and anti-enumeration design behind them.
+
+| Action | Payload | Does |
+|---|---|---|
+| `grievanceSubmit` | `name`, `phone`, `categoryId`, `description`, `website` (honeypot), `formLoadedAt` | Appends one row to `Grievances`; returns `{referenceId}` |
+| `grievanceStatusLookup` | `referenceId`, `phone` | Both must match one row; returns status/resolution/dates only — never name, phone, description or internal notes |
+
 ### Authenticated (POST, `Content-Type: text/plain`)
 
 | Action | Payload | Does |
@@ -668,6 +725,8 @@ Deployed **Execute as: Me / Access: Anyone**.
 | `postDelete` | `postId` | Removes post and gallery rows |
 | `postStatus` | `postId`, `status` | Publish / unpublish / archive without opening the composer |
 | `postList` | `token` | **All** posts including drafts |
+| `grievanceList` | `token` | **Every** grievance — the only way to read `Grievances`, since it's never in the cached public dataset |
+| `grievanceUpdate` | `token`, `grievanceId`, `status`, `priority`, `resolutionNote`, `internalNotes` | Updates one grievance by cell; stamps `Resolved_Date` once |
 
 > **`Content-Type: text/plain` is deliberate.** Apps Script cannot answer a CORS preflight (`OPTIONS`). `text/plain` keeps every request a "simple request", so preflight never happens. Do not change it on the client.
 
@@ -684,6 +743,8 @@ out.posts = d.posts.filter(p => {
 
 Applied on **every** public GET. Drafts and unreleased scheduled posts are never sent to the browser, so they cannot be read from the network tab. `export_json.py` applies the identical rule.
 
+`Grievances` needs no entry here — it never reaches `publicView()` in the first place. It is not a key in `SHEET_MAP`, so `getData()` never loads it, the 6 h cache never holds it, and `?action=data` cannot return it. See §24.
+
 ### Validation performed server-side
 
 Missing required fields · duplicate PKs · unknown foreign keys · duplicate FMR code within a year · duplicate or blank post slug · scheduled-without-date · orphan gallery rows · invalid file URLs · ≠1 current year · years with no data.
@@ -692,7 +753,7 @@ Bad rows are **dropped and reported**, never rendered.
 
 ### Concurrency
 
-`postSave`, `postDelete` and `postStatus` take a `LockService` script lock (20 s) so two admins on two devices cannot interleave writes.
+`postSave`, `postDelete`, `postStatus`, `grievanceSubmit` and `grievanceUpdate` all take a `LockService` script lock (20 s) so two admins on two devices — or two citizens submitting at once — cannot interleave writes.
 
 ---
 
@@ -741,6 +802,9 @@ Stateless · tamper-evident · 8-hour expiry · revocable via deny-list · store
 | Admin page indexed | `noindex, nofollow` + `X-Robots-Tag` |
 | Clickjacking | `X-Frame-Options: SAMEORIGIN`, `frame-ancestors 'self'` |
 | MIME sniffing | `X-Content-Type-Options: nosniff` |
+| Grievance data (names, phones, complaints) leaking publicly | `Grievances` is never a `SHEET_MAP` key — structurally absent from `getData()`, the cache and `?action=data`, not just field-stripped. See §24 |
+| Bot-spammed complaint form | Silent honeypot field + minimum-fill-time check — both fail as an indistinguishable fake success, never an error a bot can learn from |
+| Enumerating other citizens' complaints | `grievanceStatusLookup` requires reference ID **and** phone to match; identical generic response whichever one is wrong |
 
 ### Content Security Policy (`vercel.json`)
 
@@ -924,7 +988,17 @@ first request after a cache expiry. Every subsequent visitor is served from cach
 > **Deploy → Manage deployments → ✏️ → Version: New version → Deploy.**
 >
 > *New deployment* mints a **different `/exec` URL**, which silently orphans the
-> site until `config.js` is updated and pushed. This has happened once already.
+> site until `config.js` is updated and pushed.
+>
+> **Check the Deployment ID before you click Deploy.** A project can hold several
+> deployments, and the panel opens on whichever you last touched — not necessarily
+> the one the site calls. Updating a deployment never changes its ID, so the ID
+> shown must begin with the same characters as `API_URL` in `config.js`
+> (currently `AKfycbwZ8OFOMmOU…`). Deploying a new version of the *wrong* entry
+> reports "Deployment successfully updated" and changes nothing the public sees.
+>
+> Both mistakes have happened once each; each cost a debugging round-trip because
+> the failure is silent and the success message is identical.
 
 ### 13.1 The three-part deployment, and how to tell what is stale
 
@@ -948,25 +1022,59 @@ the symptoms are not always obvious:
 
 ### 13.2 Verified live state — 19 August 2026
 
-Checked against the live `?action=status` and `?action=validate`:
+All three parts are in sync. Checked against the live `?action=status&fresh=1`
+and `?action=data&fresh=1`, and against the rendered site:
 
 | | State |
 |---|---|
-| **Code (Vercel)** | ✅ current — commit `124e6d8` |
-| **Content (Sheet)** | ⚠️ citizen-first workbook imported; **facilities tabs not yet present** |
-| **API (Apps Script)** | ⚠️ **stale** — still expects `PIP_Documents` |
-| Live errors | **1** — *"PIP_Documents — Sheet missing from workbook"* |
-| Live warnings | 14 — 8 gallery rows awaiting images, 5 unpublished document links, 1 documents-only year |
+| **Code (Vercel)** | ✅ current |
+| **Content (Sheet)** | ✅ 20-tab workbook imported — `Sheikhpura Website`, edited 19 Aug 2026 17:49 |
+| **API (Apps Script)** | ✅ **Version 12**, deployment `AKfycbwZ8OFOMmOU…` |
+| Live errors | **0** — the `PIP_Documents` error is cleared |
+| Live warnings | 34 — all data-quality, none blocking |
 
-The single error is a **useful diagnostic, not a fault**: the sheet correctly no
-longer has a `PIP_Documents` tab, but the deployed script still lists it in
-`SHEET_MAP`. Pasting the current `Code.gs` and redeploying clears it.
+**Collections served:**
 
-`counts` shows `benefits 40`, `documents 5`, `navigation 8` — so the citizen-first
-content is live. It shows no `facilities`, `facilityDoctors` or
-`facilityDepartments`, so the **facilities module is in the code and the repo but
-not yet in the sheet**. Until the 20-tab workbook is imported, `facilities.html`
-renders an empty finder.
+| | |
+|---|---|
+| `facilities` | 127 |
+| `facilityDoctors` | 402 |
+| `facilityDepartments` | 150 |
+| `benefits` | 40 |
+| `programs` | 157 |
+| `navigation` | 9 |
+| `documents` | 5 |
+| `posts` | 8 public (10 in sheet — 2 withheld) |
+
+**Privacy verified against the live payload.** A raw string scan of all 334 KB
+returned by `?action=data` finds **zero** occurrences of `Doctor_Name`, `HPR_ID`,
+`Allocation`, `Budget`, `Expenditure`, `Approved_Amount`, `Password` or
+`SHEET_ID`. Scanned by **value** as well as by field name: none of the 71 real
+doctor names in the sheet appears, and the string `Dr.` occurs zero times.
+
+`HFR_ID` *does* appear (277 times) and is meant to — it is the national Health
+Facility Registry identifier on `facilities` and `facilityDepartments`, shown on
+the facility page by design. The doctor roster carries no `HFR_ID`. The 402 roster rows carry exactly six keys — `Roster_ID`,
+`Facility_ID`, `Specialization`, `Shift_Timing`, `Weekday`, `Status`. The
+district maintains 71 real doctor names in the sheet; none of them reach a
+browser.
+
+**Rendering verified.** `/facilities.html` shows 127 centres, six block cards and
+populated Block / Type / Service filters. `/facility.html?id=FAC001` shows the
+District Hospital's 13 services, 45 departments and seven specialisations with
+days and shifts — and no names. Console is clean; every asset returns 200 or 304.
+
+**The 34 warnings:**
+
+| Count | Warning |
+|---|---|
+| 20 | facility has no usable location (14 `outside` the district box, 6 `missing`) — directions withheld |
+| 8 | gallery row has no image uploaded yet |
+| 5 | document `File_URL` not set — link shown as unavailable |
+| 1 | financial year with no programmes and no documents — hidden from the selector |
+
+Each one is the system **declining to show something wrong** rather than failing.
+107 of 127 centres offer directions; the other 20 show address text only.
 
 ---
 
@@ -1043,7 +1151,7 @@ Without a manual sync, changes appear on their own within the cache window.
 |---|---|
 | Publish an event or news post | **Admin Panel** → Posts & Events → ＋ Create New Post |
 | Add a notice | `Notices` → new row |
-| Publish a document | Upload to Drive → share → add row in `Documents` (or `PIP_Documents` for headline PIP/RoP) |
+| Publish a document | Upload to Drive → share → add row in `Documents` |
 | Add an FMR budget head | `Programs_FMR` → new row with the right `Year_ID` **and** `Category_ID` |
 | Open a new financial year | `Financial_Years` row (`Is_Current=Yes`), copy last year's `Programs_FMR` block, change `Year_ID`, update `Settings.current_financial_year` |
 | Add an event category | `Post_Categories` → new row |
@@ -1132,6 +1240,8 @@ Everything below was tested in a real browser against the running site — not a
 
 ### Live deployment verification (18 Aug 2026)
 
+> Historical. `/pip/<fy>` was still a route on this date; the page was deleted the following day (§22). The 19 Aug re-verification is below.
+
 Run against the **production** site and the **live** Apps Script endpoint, not locally.
 
 | Check | Result |
@@ -1148,6 +1258,26 @@ Run against the **production** site and the **live** Apps Script endpoint, not l
 | Console errors | none |
 | CSP · HSTS · nosniff · frame-options | all present on the live response |
 | `admin.html` | `X-Robots-Tag: noindex, nofollow` |
+
+### Live re-verification after the facilities go-live (19 Aug 2026)
+
+Run against production and the live endpoint with `fresh=1` to bypass the 6 h cache.
+
+| Check | Result |
+|---|---|
+| Apps Script deployment | **Version 12**, `AKfycbwZ8OFOMmOU…` — the ID `config.js` calls |
+| Validation errors | **0** — the `PIP_Documents` error cleared |
+| `facilities` / `facilityDoctors` / `facilityDepartments` | **127 / 402 / 150** |
+| `benefits` / `programs` / `posts` | 40 / 157 / 8 public (10 in sheet) |
+| **Doctor names in the public payload** | **none** — all 71 sheet values absent; `Dr.` appears 0 times |
+| `Doctor_Name` as a field name | absent — six-key whitelist only |
+| Financial field names (`Allocation`, `Budget`, `Expenditure`, `Approved_Amount`) | absent |
+| `Password`, `SHEET_ID` | absent |
+| `/facilities.html` | 127 centres, 6 block cards, all three filters populated |
+| `/facility.html?id=FAC001` | 13 services, 45 departments, 7 specialisations with days and shifts, no names |
+| Directions offered | 107 of 127 — the other 20 withheld on `Coord_Status` |
+| Console errors | none |
+| Asset responses | all 200 or 304 |
 
 ### Bugs found and fixed during deployment
 
@@ -1192,28 +1322,33 @@ Run against the **production** site and the **live** Apps Script endpoint, not l
 
 ## 17. NEEDS MANUAL INPUT register
 
-**Live status: 0 errors, 56 warnings.** Nothing is broken. Every warning is an
-item of content the district office still has to supply.
+**Live status: 0 errors, 34 warnings.** Nothing is broken. Every warning is either
+an item of content the district office still has to supply, or the site declining
+to show something it cannot verify.
 
-### What the 56 live warnings are
+### What the 34 live warnings are
 
 | Count | Warning | Effect on the public site |
 |---|---|---|
-| **47** | `File_URL` not published | Every download button reads *"Not yet published"* |
+| **20** | Facility has no usable coordinate (14 `outside` the district box, 6 `missing`) | Address shown, **no directions link** |
 | **8** | Gallery row has no image yet | Caption exists, no photo shown |
+| **5** | `File_URL` not published | Download button reads *"Not yet published"* |
 | **1** | FY 2023-24 has documents but no programme rows | Labelled *"— archived (documents only)"* in the year selector |
 
 A further **5 warnings appear on the Admin dashboard but not in the API response** —
 the `(VERIFY …)` cash amounts. That check lives in `data.js` (client-side), so it is
 raised when the browser processes the data, not by Apps Script.
 
+The count fell from 56 to 34 when the financial documents were removed (§22), then
+rose again by 20 when the facilities module landed — each new warning is the map
+link being **withheld** rather than pointing somewhere wrong.
+
 ### Outstanding content
 
 | Sheet | Field | Rows | Needed |
 |---|---|---|---|
 | `Settings` | `Setting_Value` | `contact_email`, `contact_phone` | Official district health email + phone |
-| `PIP_Documents` | `File_URL` | 12 | Drive links to the district PIP, RoP, letters |
-| `Documents` | `File_URL` | 35 | Drive links to allocation and guideline files |
+| `Documents` | `File_URL` | 5 | Drive links to the remaining guideline and format files |
 | `Contact_Information` | `Person_Name`, `Phone`, `Email` | CON01–CON04 | Names and numbers of serving officers |
 | `Notices` | `Attachment_URL` | NOT03 | Meeting circular |
 | `Posts` | `Attachment_URL` | POST007 | AAM reporting format |
@@ -1235,8 +1370,8 @@ Delete the `(VERIFY …)` text once each figure is confirmed and the warning cle
 ### Also verify
 
 - PIN code `811105` and LGD district code `225` — plausible, unconfirmed
-- Every `Budget_Allocation_Lakh` — **illustrative placeholders**, replace from the district RoP
 - The eight sample posts are realistic district content but remain **sample data**
+- `FAC111 Government Engineering College` — confirm it belongs in a health-facility list
 
 ### 🔴 Open security item
 
@@ -1255,26 +1390,26 @@ the script reads the sheet as the owner, and the public never touches it.
 |---|---|---|
 | **Pages** | | |
 | `index.html` | 203 | Home |
-| `pip.html` | 192 | PIP by financial year |
 | `program.html` | 148 | FMR head detail |
 | `documents.html` | 131 | Document repository |
 | `notices.html` | 101 | Notices |
 | `events.html` | 114 | Events listing |
 | `event.html` | 176 | Post detail + gallery |
 | `contact.html` | 95 | Contacts |
-| `admin.html` | 455 | Login, dashboard, posts management |
+| `grievance.html` | 213 | File a complaint / check status |
+| `admin.html` | 706 | Login, dashboard, posts + grievances management |
 | **Code** | | |
 | `assets/js/config.js` | 32 | ← the only file edited to connect data |
-| `assets/js/data.js` | 583 | Fetch, cache, validate, query |
-| `assets/js/ui.js` | 452 | Shell, theme, shared components |
+| `assets/js/data.js` | 795 | Fetch, cache, validate, query |
+| `assets/js/ui.js` | 559 | Shell, theme, shared components |
 | `assets/js/composer.js` | 587 | Post composer + image compression |
-| `assets/css/site.css` | 627 | One stylesheet |
-| `apps-script/Code.gs` | 897 | API + auth + media + post CRUD |
+| `assets/css/site.css` | 727 | One stylesheet |
+| `apps-script/Code.gs` | 1,201 | API + auth + media + post/grievance CRUD |
 | **Data** | | |
-| `Sheikhpura_Health_PIP_Website_Database.xlsx` | — | Master workbook, 17 sheets |
-| `assets/data/portal-data.json` | 4357 | Generated public snapshot |
-| `build_database.py` | 948 | Generates the workbook |
-| `export_json.py` | 132 | Workbook → JSON |
+| `Sheikhpura_Health_PIP_Website_Database.xlsx` | — | Master workbook, 21 data sheets + README |
+| `assets/data/portal-data.json` | 12,221 | Generated public snapshot |
+| `build_database.py` | 962 | Generates the workbook |
+| `export_json.py` | 148 | Workbook → JSON |
 | **Config** | | |
 | `vercel.json` | 51 | Rewrites, CSP, headers |
 | `.gitignore` | 29 | |
@@ -1350,8 +1485,11 @@ the script reads the sheet as the owner, and the public never touches it.
 ### ✅ Done
 
 - [x] Repository pushed to GitHub (`Sapan-raj/DHS_Sheikhpura_webpage`)
-- [x] Deployed on Vercel — all 13 routes live, security headers applied
-- [x] Google Sheet built and validated — 18 tabs, 0 structural errors
+- [x] Deployed on Vercel — all 12 pages live, security headers applied
+- [x] Google Sheet built and validated — 20 tabs, 0 structural errors
+- [x] Facilities module live — 127 centres, 402 roster rows, 150 departments
+- [x] Apps Script **Version 12** deployed to the ID `config.js` calls
+- [x] Doctor names verified absent from the public payload, by value
 - [x] `Program_Benefits` added — 40 citizen entitlements across 24 FMR codes
 - [x] Apps Script installed, `setupCredentials()` run, deployed as a Web App
 - [x] `API_URL` connected — site reads the live sheet
@@ -1359,14 +1497,20 @@ the script reads the sheet as the owner, and the public never touches it.
 
 ### 🔴 Next — security
 
-- [ ] **Set the Google Sheet to Restricted.** Still world-readable; nothing depends on it being public any more.
+- [ ] **Set the Google Sheet to Restricted.** Still world-readable — and it now holds **71 real doctor names**. The API strips them; the sheet does not. Anyone with the link reads them directly.
+- [ ] **Delete the unused Apps Script deployment** (`AKfycbxIvy…`). Two live deployments is how the 19 Aug drift happened twice.
 
 ### 🟠 Next — content, before telling the public about it
 
-- [ ] Replace the 47 `File_URL` placeholders (§17) — until then every download says *"Not yet published"*
+- [ ] **Fix the 14 wrong facility coordinates** — five are catastrophically wrong (France, Switzerland, Nagpur, Sikkim, Varanasi). Directions are withheld, so nobody is misdirected, but 20 centres show no map link
+- [ ] Fill `Contact_Phone` — **0 of 127** facilities have one
+- [ ] Fill `Incharge_Name` — **0 of 127**
+- [ ] Fill `Facility_Name_HI` — **0 of 127**; needs a local person, not transliteration
+- [ ] Confirm `FAC111 Government Engineering College` belongs in a health-facility list
+- [ ] Add `Drug_Stock_URL` for the 7 priority facilities (DH, CHC ×4, PHC ×2)
+- [ ] Replace the 5 remaining `File_URL` placeholders (§17)
 - [ ] Confirm the 5 `(VERIFY …)` cash amounts
 - [ ] Fill officer names, phones and the district email
-- [ ] Replace `Budget_Allocation_Lakh` figures from the district RoP
 - [ ] Confirm PIN `811105` and LGD code `225`
 
 ### 🟢 Next — prove the write path
@@ -1506,15 +1650,11 @@ The eAushadhi stock link is carried only for DH / CHC / PHC / APHC — the facil
 where it is meaningful. Where the link is missing the page shows
 *"Medicine availability link not yet added"*, so the district can fill them in later.
 
-### Not yet live
+### Live as of 19 August 2026
 
-As of 19 August 2026 the facilities module is **deployed in code but absent from
-the sheet**. Two steps activate it:
-
-1. Import the 20-tab workbook (**File → Import → Replace spreadsheet**), then set
-   `Facilities` column **D** and `Program_Benefits` column **B** to **Plain text**
-2. Paste the current `apps-script/Code.gs` and **Manage deployments → New version**
-   — the doctor-name strip lives there, so this step is not optional
+The facilities module is fully live: sheet imported, `Code.gs` deployed as
+Version 12, 0 validation errors, doctor names confirmed stripped from the public
+payload. Nothing further is needed to activate it.
 
 ### Outstanding for the district
 
@@ -1525,4 +1665,87 @@ the sheet**. Two steps activate it:
 | `Contact_Phone` | **0 of 127** | No phone number shown for any centre |
 | `Incharge_Name` | 0 of 127 | Designation shown, no name |
 | `Facility_Name_HI` | 0 of 127 | Village names have no Hindi |
+| `FAC111 Government Engineering College` | 1 | Listed as an HSC — verify whether it belongs |
+
+---
+
+## 24. Grievance / Complaint module
+
+Residents can report a grievance, suggestion or issue about a government health facility, and
+check its status later — the first feature on the portal where an anonymous member of the public
+writes data into the system, not just reads it. The District Control Command Centre (DCCC)
+reviews submissions weekly from the Admin dashboard and follows up by phone.
+
+| Sheet | Rows | Contents |
+|---|---|---|
+| `Grievance_Categories` | 10 | The category dropdown on the public form — public, non-sensitive |
+| `Grievances` | starts at 0 | One row per submission: name, phone, category, description, status, priority, resolution note, internal notes |
+
+### Two safety rules built into the module
+
+**1. `Grievances` is never a public sheet — structurally, not just by filtering.** Every other
+sensitive collection on this site (`Facility_Doctors`) is fetched into the shared cached dataset
+and then field-stripped by `publicView()` before a response goes out — safe today because someone
+remembered to strip it. `Grievances` gets a stronger guarantee: it is **never a key in
+`SHEET_MAP`**, so `getData()` never loads it, the 6-hour `CacheService` cache never holds it, and
+`?action=data` cannot return it — regardless of what a future change to `publicView()` does or
+forgets to do. It is read and written only through direct `SpreadsheetApp` calls in four
+functions (`grievanceSubmit`, `grievanceStatusLookup`, `grievanceListAll`, `grievanceUpdate`),
+the same bypass `postSave`/`postDelete`/`postSetStatus` already use for `Posts`. `export_json.py`
+carries the identical omission for the offline snapshot — the second of the two independent
+guards this project already uses for financial data (§22) applied to a new kind of secret.
+
+**2. Bots get a fake success, never an error to learn from.** `grievanceSubmit` is the site's
+first unauthenticated write action, so it needed its own defence — there was no existing
+rate-limiter or CAPTCHA to reuse (Apps Script exposes no caller IP to build one on). A filled
+honeypot field, or a submission faster than 4 seconds after the form rendered, is treated as a
+bot: the response looks exactly like a real success (a reference ID in the reserved `9000`–`9999`
+band), but nothing is written to the sheet. A bot cannot distinguish "rejected" from "accepted,"
+so it has no signal to adapt to. Genuine validation errors (missing name, bad phone format, no
+category) are shown normally — only the two bot checks are silent.
+
+### Pages
+
+| Page | Purpose |
+|---|---|
+| `grievance.html` | Two tabs: **File a Complaint** (name, phone, category, description) and **Check Status** (reference ID + phone lookup) |
+
+`Q.grievanceCategories()` populates the category dropdown through the normal public data
+pipeline. Submission, status lookup, admin listing and admin updates all POST to `Code.gs`
+directly and never touch the shared `d` object — see §7 for the four actions involved.
+
+### Status lookup — no enumeration
+
+`grievanceStatusLookup` requires **both** the reference ID and the phone number used at
+submission to match one row. A wrong ID and a wrong phone return the identical generic "not
+found" response, so a caller can never learn which one was incorrect — the same
+no-account-enumeration principle already used for admin login (§8). The response itself carries
+only `status`, `resolutionNote`, `submittedDate` and `updatedDate` — never the citizen's name,
+phone, description, priority, or the admin's internal notes.
+
+### Admin workflow
+
+**Admin dashboard → Grievances card → Manage Grievances** — a filterable table (search, category,
+status, priority) mirroring the existing Manage Posts pattern, with stat tiles (Total / New /
+Under Review / Resolved this week / Closed). Opening one grievance shows the full complaint
+alongside a form to set **Status** (`New` → `Under Review` → `Resolved`/`Closed`), **Priority**
+(`High`/`Normal`/`Low`, for triage during the weekly review), a **Resolution Note** the citizen
+will see on their next status check, and **Internal Notes** that never leave the server. Rows are
+never deleted — a submission that turns out to be spam is closed with a note explaining why,
+matching the sheet-wide "never delete, set Status" convention (§4).
+
+### No automated notification
+
+There is no auto-email or SMS on submission or status change. The DCCC calls the citizen
+directly using the phone number they provided — this was a deliberate choice to avoid adding a
+paid SMS gateway or an email-collection field the requirements didn't call for.
+
+### Outstanding for the district
+
+| Item | What's needed |
+|---|---|
+| Live sheet | Add the `Grievance_Categories` and `Grievances` tabs (see `sheet-import/README_HOW_TO_IMPORT.md`) |
+| Live Apps Script | Deploy the updated `Code.gs` — **Manage deployments → New version**, not *New deployment* |
+| Sheet sharing | The Google Sheet should already be Restricted per §17; `Grievances` makes that more important, not less |
+| End-to-end test | Submit a real complaint, confirm it in the Admin dashboard, update its status, confirm the citizen-facing status check reflects it — see the verification steps used when this module was built |
 | `FAC111 Government Engineering College` | 1 | Listed as an HSC — verify whether it belongs |

@@ -8,9 +8,9 @@ A citizen-first health portal for the **District Health Society, Sheikhpura, Bih
 
 **🟢 Live:** <https://dhs-sheikhpura-webpage-is6g.vercel.app>
 
-Code and content deploy separately. As of 19 Aug 2026 the **health facilities
-module is in the code but not yet in the sheet** — import the 20-tab workbook and
-redeploy `Code.gs` to activate it. See [`MASTER_REFERENCE.md` §13.2](MASTER_REFERENCE.md).
+Reading the live Google Sheet through Apps Script. **0 validation errors**,
+127 health centres, 402 roster entries — and 0 doctor names in the public payload.
+Verified against production: [`MASTER_REFERENCE.md` §13.2](MASTER_REFERENCE.md).
 
 ---
 
@@ -54,6 +54,7 @@ Sheikhpura_PIP_Portal/
 ├── facilities.html         Find a health centre — 127 centres, by block, with directions
 ├── facility.html           One centre: services, hours, doctors, departments, map
 ├── benefits.html           Free health services — what you get, where to go, what to carry
+├── grievance.html          File a complaint or suggestion; check status by reference ID + phone
 ├── programmes.html         The 24 health programmes residents can use
 ├── program.html            One programme: what it does and what you get
 ├── documents.html          Searchable repository, filtered + paginated
@@ -61,7 +62,7 @@ Sheikhpura_PIP_Portal/
 ├── events.html             Events & What's New listing
 ├── event.html              Post detail page with photo gallery + lightbox
 ├── contact.html            District office contacts
-├── admin.html              Admin login, dashboard, post composer, Manage Posts
+├── admin.html              Admin login, dashboard, post composer, Manage Posts, Manage Grievances
 │
 ├── assets/
 │   ├── css/site.css        One stylesheet (~40 KB), CSS-variable tokens
@@ -84,7 +85,7 @@ Sheikhpura_PIP_Portal/
 
 ## Data model
 
-19 data sheets, 1,155 records.
+21 data sheets, 1,098 records (`Grievances` starts empty and grows as residents submit).
 
 ```
 Facilities ──┬─→ Facility_Doctors        127 health centres, 6 blocks
@@ -95,6 +96,8 @@ Program_Categories ──────→ Programs_FMR
 
 Post_Categories ──→ Posts ──→ Post_Media         What's New / Events
 
+Grievance_Categories ──→ Grievances              complaints/suggestions — admin-only, see below
+
 Settings · Navigation · Home_Content · Important_Links · Notices ·
 Contact_Information · Footer · Financial_Years · Documents
 ```
@@ -104,6 +107,8 @@ Contact_Information · Footer · Financial_Years · Documents
 **A wrong map pin is worse than none.** `import_facilities.py` checks every facility coordinate against the district bounding box; 14 of 127 fell outside — five of them thousands of kilometres away. Directions are offered only where the location is verified.
 
 **Doctor names are never published.** The roster lives in the sheet so the district can maintain it, but `publicView()` and `export_json.py` both strip `Doctor_Name` and `HPR_ID`. Residents see specialisation, days and shift.
+
+**Grievances go further than stripping — they're structurally absent from the public site.** Unlike `Facility_Doctors`, `Grievances` is never a key in `SHEET_MAP` at all, so it never reaches `getData()`, the server cache, or `?action=data`. It's read and written only through four dedicated Apps Script actions, two of them public (`grievanceSubmit`, `grievanceStatusLookup`) and two admin-only (`grievanceList`, `grievanceUpdate`). Full detail: [`MASTER_REFERENCE.md` §24](MASTER_REFERENCE.md).
 
 **The same principle in the Events module:** `Status` records only *intent* (Draft / Published / Scheduled / Archived). Whether a post is **live**, and whether an event is **Upcoming / Ongoing / Past**, are computed from the dates at render time — so nobody has to remember to change a status when a date passes, and a scheduled post appears on its own.
 
@@ -153,7 +158,9 @@ Tested in-browser against the running site, not asserted:
 | Tap targets | all 67 controls ≥ 24×24 px |
 | Theme / font size | token-based, reversible, persisted |
 | Console errors | none on any page |
-| **Live deployment** — 13 routes, live sheet, 0 errors, drafts withheld, admin auth rejecting | verified against production |
+| **Live deployment** — 12 pages, live sheet, 0 errors, drafts withheld, admin auth rejecting | verified against production |
+| **Facilities live** — 127 centres, 402 roster rows, 150 departments, 0 errors | verified against production |
+| **Doctor names** — all 71 sheet values scanned for in the public payload | 0 found; `Dr.` appears 0 times |
 | **Events** — post validation (duplicate ID, duplicate slug, blank slug, unknown category, scheduled-without-date, orphan media) | all 6 caught; good posts survive |
 | **Events** — draft & unreleased scheduled posts | withheld server-side; absent from the public payload |
 | **Events** — scheduling | past-due scheduled post visible, future one hidden, no cron job |

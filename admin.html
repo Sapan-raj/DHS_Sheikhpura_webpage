@@ -102,6 +102,29 @@
 
     function allPosts() { return adminPosts || d.posts; }
 
+    /* ---------- Grievances ----------
+       Unlike Posts, Grievances is never part of `d` — the sheet is never a
+       SHEET_MAP key, so it never reaches the public payload or the shared
+       6h cache. The only way to read it, even here, is this authenticated
+       grievanceList action. */
+    var adminGrievances = null, grievanceCats = null;
+
+    function loadAdminGrievances() {
+      if (!API) return Promise.resolve([]);
+      return post({ action: 'grievanceList', token: token() })
+        .then(function (r) {
+          if (r && r.ok) { adminGrievances = r.grievances; grievanceCats = r.categories; }
+          return adminGrievances || [];
+        })
+        .catch(function () { return adminGrievances || []; });
+    }
+
+    function allGrievances() { return adminGrievances || []; }
+    function grvCategoryName(id) {
+      var c = (grievanceCats || []).filter(function (x) { return x.Category_ID === id; })[0];
+      return c ? c.Category_Name : '—';
+    }
+
     function openComposer(existing) {
       var mount = document.getElementById('page');
       mount.innerHTML = '<section class="section"><div class="container">' +
@@ -273,6 +296,198 @@
       loadAdminPosts().then(function () { drawStats(); drawTable(); });
     }
 
+    function renderGrievances() {
+      var mount = document.getElementById('page');
+
+      mount.innerHTML = '<section class="section"><div class="container">' +
+        '<div class="section-head"><div class="head-row">' +
+          '<div><h2>Grievances</h2><p>Complaints and suggestions filed by residents. Review weekly and follow up by phone.</p></div>' +
+          '<div class="spacer"></div>' +
+          '<button class="btn btn-outline btn-sm" type="button" id="backDash2">← Dashboard</button>' +
+        '</div></div>' +
+        '<div id="gMsg"></div>' +
+        '<div class="admin-grid" id="gStats"></div>' +
+        '<div class="filters filters--4">' +
+          '<div class="field search-field"><label for="gq">Search</label><input id="gq" type="search" placeholder="Name, phone or description…"></div>' +
+          '<div class="field"><label for="gcat">Category</label><select id="gcat"><option value="">All</option>' +
+            (grievanceCats || []).map(function (c) { return '<option value="' + esc(c.Category_ID) + '">' + esc(c.Category_Name) + '</option>'; }).join('') +
+          '</select></div>' +
+          '<div class="field"><label for="gst">Status</label><select id="gst"><option value="">All</option><option>New</option><option>Under Review</option><option>Resolved</option><option>Closed</option></select></div>' +
+          '<div class="field"><label for="gpr">Priority</label><select id="gpr"><option value="">All</option><option>High</option><option>Normal</option><option>Low</option></select></div>' +
+        '</div>' +
+        '<div class="result-line" id="grl"></div>' +
+        '<div class="table-wrap"><table class="data"><thead><tr>' +
+          '<th style="width:100px">Reference</th><th>Name</th><th style="width:130px">Phone</th>' +
+          '<th style="width:160px">Category</th><th style="width:120px">Status</th>' +
+          '<th style="width:90px">Priority</th><th style="width:110px">Submitted</th><th style="width:90px">Actions</th>' +
+        '</tr></thead><tbody id="gBody"></tbody></table></div>' +
+      '</div></section>';
+
+      document.getElementById('backDash2').addEventListener('click', renderDashboard);
+
+      function gmsg(kind, text) {
+        document.getElementById('gMsg').innerHTML = text
+          ? '<div class="alert alert-' + kind + '">' + esc(text) + '</div>' : '';
+      }
+
+      function drawGStats() {
+        var rows = allGrievances();
+        var weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 7);
+        var s = { total: rows.length, New: 0, 'Under Review': 0, Resolved: 0, Closed: 0, resolvedWeek: 0 };
+        rows.forEach(function (r) {
+          if (s[r.Status] !== undefined) s[r.Status]++;
+          var rd = PortalData.parseDate(r.Resolved_Date);
+          if (rd && rd >= weekAgo && (r.Status === 'Resolved' || r.Status === 'Closed')) s.resolvedWeek++;
+        });
+        document.getElementById('gStats').innerHTML = [
+          [s.total, 'Total'], [s.New, 'New', 'var(--accent)'],
+          [s['Under Review'], 'Under Review', 'var(--amber)'],
+          [s.resolvedWeek, 'Resolved this week', 'var(--green)'],
+          [s.Closed, 'Closed']
+        ].map(function (t) {
+          return '<div class="card stat"' + (t[2] ? ' style="border-left-color:' + t[2] + '"' : '') + '>' +
+            '<div class="num"' + (t[2] ? ' style="color:' + t[2] + '"' : '') + '>' + t[0] + '</div>' +
+            '<div class="lbl">' + t[1] + '</div></div>';
+        }).join('');
+      }
+
+      function drawGTable() {
+        var q = document.getElementById('gq').value.toLowerCase().trim();
+        var cat = document.getElementById('gcat').value;
+        var st = document.getElementById('gst').value;
+        var pr = document.getElementById('gpr').value;
+
+        var rows = allGrievances().filter(function (r) {
+          if (cat && r.Category_ID !== cat) return false;
+          if (st && r.Status !== st) return false;
+          if (pr && r.Priority !== pr) return false;
+          if (q && [r.Citizen_Name, r.Citizen_Phone, r.Description].join(' ').toLowerCase().indexOf(q) === -1) return false;
+          return true;
+        }).sort(function (a, b) {
+          var da = PortalData.parseDate(a.Submitted_Date), db = PortalData.parseDate(b.Submitted_Date);
+          return (db ? db.getTime() : 0) - (da ? da.getTime() : 0);
+        });
+
+        document.getElementById('grl').innerHTML = '<strong>' + rows.length + '</strong> grievance' + (rows.length === 1 ? '' : 's');
+        document.getElementById('gBody').innerHTML = rows.length ? rows.map(function (r) {
+          return '<tr>' +
+            '<td data-label="Reference"><span class="chip chip--code">' + esc(r.Grievance_ID) + '</span></td>' +
+            '<td data-label="Name">' + esc(r.Citizen_Name) + '</td>' +
+            '<td data-label="Phone"><a href="tel:' + esc(r.Citizen_Phone) + '">' + esc(r.Citizen_Phone) + '</a></td>' +
+            '<td data-label="Category">' + esc(grvCategoryName(r.Category_ID)) + '</td>' +
+            '<td data-label="Status">' + UI.statusPill(r.Status) + '</td>' +
+            '<td data-label="Priority">' + (r.Priority === 'High' ? '<span class="chip chip--high">High</span>' : esc(r.Priority || '—')) + '</td>' +
+            '<td data-label="Submitted">' + esc(PortalData.fmtDate(r.Submitted_Date) || '—') + '</td>' +
+            '<td data-label="Actions"><div class="row-actions">' +
+              '<button type="button" data-act="open" data-id="' + esc(r.Grievance_ID) + '">Open</button>' +
+            '</div></td></tr>';
+        }).join('') : '<tr><td colspan="8">' + UI.emptyState('No grievances match',
+          'Try clearing the filters. New submissions from grievance.html will appear here.') + '</td></tr>';
+
+        Array.prototype.forEach.call(document.querySelectorAll('#gBody button[data-act]'), function (b) {
+          b.addEventListener('click', function () { openGrievanceDetail(this.dataset.id); });
+        });
+      }
+
+      ['gq', 'gcat', 'gst', 'gpr'].forEach(function (id) {
+        document.getElementById(id).addEventListener(id === 'gq' ? 'input' : 'change', drawGTable);
+      });
+
+      if (!API) {
+        gmsg('warn', 'Local preview mode — no data service is configured, so grievances cannot be loaded.');
+      }
+      loadAdminGrievances().then(function () { drawGStats(); drawGTable(); });
+    }
+
+    /**
+     * Full-page detail + update view — same weight-class as openComposer():
+     * this codebase has no modal pattern, so a heavier edit UI replaces
+     * #page and returns to renderGrievances() when done, rather than
+     * inventing a new interaction pattern for one feature.
+     */
+    function openGrievanceDetail(id) {
+      var g = allGrievances().filter(function (x) { return x.Grievance_ID === id; })[0];
+      if (!g) return;
+      var mount = document.getElementById('page');
+
+      mount.innerHTML = '<section class="section"><div class="container">' +
+        '<div class="section-head"><div class="head-row">' +
+          '<div><h2>' + esc(g.Grievance_ID) + '</h2><p>Filed ' + esc(PortalData.fmtDate(g.Submitted_Date) || g.Submitted_Date) + '</p></div>' +
+          '<div class="spacer"></div>' +
+          '<button class="btn btn-outline btn-sm" type="button" id="backGrv">← Back to Grievances</button>' +
+        '</div></div>' +
+        '<div id="dMsg"></div>' +
+        '<div class="grid grid-2" style="align-items:start">' +
+          '<div class="card">' +
+            '<h3 style="margin-top:0">Complaint details</h3>' +
+            '<dl class="kv">' +
+              '<dt>Name</dt><dd>' + esc(g.Citizen_Name) + '</dd>' +
+              '<dt>Phone</dt><dd><a href="tel:' + esc(g.Citizen_Phone) + '">' + esc(g.Citizen_Phone) + '</a></dd>' +
+              '<dt>Category</dt><dd>' + esc(grvCategoryName(g.Category_ID)) + '</dd>' +
+              '<dt>Submitted</dt><dd>' + esc(PortalData.fmtDate(g.Submitted_Date) || '—') + '</dd>' +
+              '<dt>Last updated</dt><dd>' + esc(PortalData.fmtDate(g.Updated_Date) || '—') + '</dd>' +
+              (g.Resolved_Date ? '<dt>Resolved on</dt><dd>' + esc(PortalData.fmtDate(g.Resolved_Date)) + '</dd>' : '') +
+            '</dl>' +
+            '<h4 style="margin-bottom:6px">Description</h4>' +
+            '<p style="white-space:pre-wrap">' + esc(g.Description) + '</p>' +
+          '</div>' +
+          '<div class="card">' +
+            '<h3 style="margin-top:0">Review</h3>' +
+            '<form id="gUpdateForm">' +
+              '<div class="grid grid-2">' +
+                '<div class="field"><label for="ust">Status</label><select id="ust">' +
+                  ['New', 'Under Review', 'Resolved', 'Closed'].map(function (s) {
+                    return '<option' + (s === g.Status ? ' selected' : '') + '>' + s + '</option>';
+                  }).join('') +
+                '</select></div>' +
+                '<div class="field"><label for="upr">Priority</label><select id="upr">' +
+                  ['High', 'Normal', 'Low'].map(function (p) {
+                    return '<option' + (p === g.Priority ? ' selected' : '') + '>' + p + '</option>';
+                  }).join('') +
+                '</select></div>' +
+              '</div>' +
+              '<div class="field"><label for="urn">Resolution note</label>' +
+                '<textarea id="urn" placeholder="Shown to the citizen when they check status.">' + esc(g.Resolution_Note || '') + '</textarea></div>' +
+              '<div class="field"><label for="uin">Internal notes</label>' +
+                '<textarea id="uin" placeholder="Admin only — never shown to the citizen.">' + esc(g.Internal_Notes || '') + '</textarea>' +
+                '<span class="hint">Never sent to the public status-lookup page.</span></div>' +
+              '<button class="btn btn-primary" type="submit" id="uSave">Save changes</button>' +
+            '</form>' +
+          '</div>' +
+        '</div></div></section>';
+
+      document.getElementById('backGrv').addEventListener('click', renderGrievances);
+
+      function dmsg(kind, text) {
+        document.getElementById('dMsg').innerHTML = text
+          ? '<div class="alert alert-' + kind + '">' + esc(text) + '</div>' : '';
+      }
+
+      document.getElementById('gUpdateForm').addEventListener('submit', function (ev) {
+        ev.preventDefault();
+        if (!API) return dmsg('warn', 'Local preview mode — no data service is configured, so this cannot be saved.');
+        var btn = document.getElementById('uSave');
+        btn.disabled = true; btn.textContent = 'Saving…';
+        post({
+          action: 'grievanceUpdate', token: token(), grievanceId: id,
+          status: document.getElementById('ust').value,
+          priority: document.getElementById('upr').value,
+          resolutionNote: document.getElementById('urn').value,
+          internalNotes: document.getElementById('uin').value
+        }).then(function (r) {
+          if (!r || !r.ok) {
+            btn.disabled = false; btn.textContent = 'Save changes';
+            return dmsg('err', (r && r.error) || 'Save failed.');
+          }
+          adminGrievances = null;
+          loadAdminGrievances().then(function () { renderGrievances(); });
+        }).catch(function (e) {
+          btn.disabled = false; btn.textContent = 'Save changes';
+          dmsg('err', 'Save failed: ' + e.message);
+        });
+      });
+    }
+
     /* ---------- dashboard ---------- */
     function renderDashboard() {
       var st = Q.stats(d);
@@ -311,6 +526,20 @@
             '<p style="font-size:.83rem;color:var(--text-muted);margin:14px 0 0">' +
               'Publish an event, campaign, achievement or announcement. Photos upload straight from this ' +
               'device — no need to host them anywhere first. Posts appear under What\'s New on the home page.</p>' +
+          '</div>' +
+
+          /* ---- Grievances ---- */
+          '<div class="card" style="margin-bottom:24px;border-top:4px solid var(--navy)">' +
+            '<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:16px">' +
+              '<h3 style="margin:0">Grievances</h3>' +
+              '<div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap">' +
+                '<button class="btn btn-outline btn-sm" type="button" id="dManageGrievances">Manage Grievances</button>' +
+                '<a class="btn btn-outline btn-sm" href="grievance.html" target="_blank" rel="noopener">View public page ↗</a>' +
+              '</div></div>' +
+            '<div class="admin-grid" id="dGrvStats" style="margin-bottom:0"></div>' +
+            '<p style="font-size:.83rem;color:var(--text-muted);margin:14px 0 0">' +
+              'Complaints and suggestions filed by residents at /grievance.html. Review weekly, set a status and ' +
+              'a resolution note, and follow up by phone — the citizen never sees your internal notes.</p>' +
           '</div>' +
 
           '<div class="grid grid-2" style="align-items:start">' +
@@ -354,7 +583,8 @@
           '<div class="card" style="margin-top:24px"><h3>How to update content</h3>' +
             '<dl class="kv">' +
               '<dt>Add a notice</dt><dd>One row in <strong>Notices</strong></dd>' +
-              '<dt>Publish a document</dt><dd>Upload the file, share it as “Anyone with the link”, then add a row in <strong>Documents</strong> (or <strong>PIP_Documents</strong> for a headline PIP/RoP file) with the link in <code>File_URL</code></dd>' +
+              '<dt>Publish a document</dt><dd>Upload the file, share it as “Anyone with the link”, then add a row in <strong>Documents</strong> with the link in <code>File_URL</code></dd>' +
+              '<dt>Review complaints</dt><dd>Weekly, via the <strong>Grievances</strong> card below — never edit the <strong>Grievances</strong> sheet directly, it is not part of the public data pipeline</dd>' +
               '<dt>Add a budget head</dt><dd>One row in <strong>Programs_FMR</strong> with the correct <code>Year_ID</code> and <code>Category_ID</code></dd>' +
               '<dt>Open a new financial year</dt><dd>One row in <strong>Financial_Years</strong> (set <code>Is_Current=Yes</code>), then copy last year’s <strong>Programs_FMR</strong> rows and change <code>Year_ID</code></dd>' +
               '<dt>Change home page text</dt><dd><strong>Home_Content</strong></dd>' +
@@ -385,6 +615,27 @@
           [s.total, 'Total'], [s.published, 'Published', 'var(--green)'],
           [s.draft, 'Drafts'], [s.scheduled, 'Scheduled', 'var(--amber)'],
           [s.archived, 'Archived'], [s.upcoming, 'Upcoming events', 'var(--accent)']
+        ].map(function (t) {
+          return '<div class="card stat"' + (t[2] ? ' style="border-left-color:' + t[2] + '"' : '') + '>' +
+            '<div class="num"' + (t[2] ? ' style="color:' + t[2] + '"' : '') + '>' + t[0] + '</div>' +
+            '<div class="lbl">' + t[1] + '</div></div>';
+        }).join('');
+      });
+
+      /* grievances panel */
+      document.getElementById('dManageGrievances').addEventListener('click', renderGrievances);
+      loadAdminGrievances().then(function () {
+        var rows = allGrievances();
+        var weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 7);
+        var s = { total: rows.length, New: 0 };
+        var resolvedWeek = 0;
+        rows.forEach(function (r) {
+          if (r.Status === 'New') s.New++;
+          var rd = PortalData.parseDate(r.Resolved_Date);
+          if (rd && rd >= weekAgo && (r.Status === 'Resolved' || r.Status === 'Closed')) resolvedWeek++;
+        });
+        document.getElementById('dGrvStats').innerHTML = [
+          [s.total, 'Total'], [s.New, 'New', 'var(--accent)'], [resolvedWeek, 'Resolved this week', 'var(--green)']
         ].map(function (t) {
           return '<div class="card stat"' + (t[2] ? ' style="border-left-color:' + t[2] + '"' : '') + '>' +
             '<div class="num"' + (t[2] ? ' style="color:' + t[2] + '"' : '') + '>' + t[0] + '</div>' +

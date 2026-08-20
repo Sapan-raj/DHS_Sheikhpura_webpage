@@ -1,8 +1,8 @@
 {
  "meta": {
-  "generated": "2026-08-19T16:55:30",
+  "generated": "2026-08-20T23:44:13",
   "source": "xlsx-export",
-  "version": "20260819165530"
+  "version": "20260820234413"
  },
  "settings": {
   "district_name": "Sheikhpura",
@@ -64,12 +64,24 @@
    "Target": "_self"
   },
   {
+   "Menu_ID": "NAV10",
+   "Menu_Label_EN": "File a Complaint",
+   "Menu_Label_HI": "शिकायत दर्ज करें",
+   "URL": "grievance.html",
+   "Parent_Menu_ID": "",
+   "Display_Order": 3,
+   "Is_Active": "Yes",
+   "Link_Type": "Internal",
+   "Icon": "shield",
+   "Target": "_self"
+  },
+  {
    "Menu_ID": "NAV03",
    "Menu_Label_EN": "Free Services",
    "Menu_Label_HI": "नि:शुल्क सेवाएं",
    "URL": "benefits.html",
    "Parent_Menu_ID": "",
-   "Display_Order": 3,
+   "Display_Order": 4,
    "Is_Active": "Yes",
    "Link_Type": "Internal",
    "Icon": "heart",
@@ -81,7 +93,7 @@
    "Menu_Label_HI": "स्वास्थ्य कार्यक्रम",
    "URL": "programmes.html",
    "Parent_Menu_ID": "",
-   "Display_Order": 4,
+   "Display_Order": 5,
    "Is_Active": "Yes",
    "Link_Type": "Internal",
    "Icon": "hospital",
@@ -93,7 +105,7 @@
    "Menu_Label_HI": "कार्यक्रम एवं समाचार",
    "URL": "events.html",
    "Parent_Menu_ID": "",
-   "Display_Order": 5,
+   "Display_Order": 6,
    "Is_Active": "Yes",
    "Link_Type": "Internal",
    "Icon": "bell",
@@ -105,7 +117,7 @@
    "Menu_Label_HI": "सूचनाएँ",
    "URL": "notices.html",
    "Parent_Menu_ID": "",
-   "Display_Order": 6,
+   "Display_Order": 7,
    "Is_Active": "Yes",
    "Link_Type": "Internal",
    "Icon": "bell",
@@ -117,7 +129,7 @@
    "Menu_Label_HI": "दस्तावेज़",
    "URL": "documents.html",
    "Parent_Menu_ID": "",
-   "Display_Order": 7,
+   "Display_Order": 8,
    "Is_Active": "Yes",
    "Link_Type": "Internal",
    "Icon": "download",
@@ -129,7 +141,7 @@
    "Menu_Label_HI": "संपर्क करें",
    "URL": "contact.html",
    "Parent_Menu_ID": "",
-   "Display_Order": 8,
+   "Display_Order": 9,
    "Is_Active": "Yes",
    "Link_Type": "Internal",
    "Icon": "phone",
@@ -141,7 +153,7 @@
    "Menu_Label_HI": "भव्य पोर्टल",
    "URL": "https://mera.bhavyabiharhealth.in/",
    "Parent_Menu_ID": "",
-   "Display_Order": 9,
+   "Display_Order": 10,
    "Is_Active": "Yes",
    "Link_Type": "External",
    "Icon": "external",
@@ -2399,6 +2411,19 @@
    "Link_URL": "",
    "Link_Label": "",
    "Display_Order": 14,
+   "Status": "Active"
+  },
+  {
+   "Section_Key": "sec_grievance",
+   "Section_Type": "section",
+   "Title_EN": "Have a Complaint or Suggestion?",
+   "Title_HI": "शिकायत या सुझाव है?",
+   "Subtitle": "Tell us — we will follow up",
+   "Body_Text": "Report an issue at a government health facility, or suggest an improvement. The District Control Command Centre reviews every submission each week and calls you back.",
+   "Icon": "",
+   "Link_URL": "grievance.html",
+   "Link_Label": "File a Complaint",
+   "Display_Order": 15,
    "Status": "Active"
   }
  ],
@@ -12128,6 +12153,68 @@
    "Department_Name": "HM/BHM Room",
    "Room_No": "18",
    "Floor": "Ground Floor",
+   "Status": "Active"
+  }
+ ],
+ "grievanceCategories": [
+  {
+   "Category_ID": "GCAT01",
+   "Category_Name": "Facility Cleanliness / Hygiene",
+   "Display_Order": 1,
+   "Status": "Active"
+  },
+  {
+   "Category_ID": "GCAT02",
+   "Category_Name": "Staff Behaviour",
+   "Display_Order": 2,
+   "Status": "Active"
+  },
+  {
+   "Category_ID": "GCAT03",
+   "Category_Name": "Medicine Availability",
+   "Display_Order": 3,
+   "Status": "Active"
+  },
+  {
+   "Category_ID": "GCAT04",
+   "Category_Name": "Doctor / Staff Availability",
+   "Display_Order": 4,
+   "Status": "Active"
+  },
+  {
+   "Category_ID": "GCAT05",
+   "Category_Name": "Waiting Time",
+   "Display_Order": 5,
+   "Status": "Active"
+  },
+  {
+   "Category_ID": "GCAT06",
+   "Category_Name": "Ambulance Service",
+   "Display_Order": 6,
+   "Status": "Active"
+  },
+  {
+   "Category_ID": "GCAT07",
+   "Category_Name": "Corruption / Bribery Demand",
+   "Display_Order": 7,
+   "Status": "Active"
+  },
+  {
+   "Category_ID": "GCAT08",
+   "Category_Name": "Infrastructure / Equipment",
+   "Display_Order": 8,
+   "Status": "Active"
+  },
+  {
+   "Category_ID": "GCAT09",
+   "Category_Name": "Suggestion for Improvement",
+   "Display_Order": 9,
+   "Status": "Active"
+  },
+  {
+   "Category_ID": "GCAT10",
+   "Category_Name": "Other",
+   "Display_Order": 10,
    "Status": "Active"
   }
  ],

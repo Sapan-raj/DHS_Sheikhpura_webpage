@@ -38,6 +38,12 @@ SHEET_MAP = {
     "Facilities":          "facilities",
     "Facility_Doctors":    "facilityDoctors",
     "Facility_Departments":"facilityDepartments",
+    "Grievance_Categories":"grievanceCategories",
+    # NOTE: "Grievances" is deliberately NEVER added here. This offline
+    # snapshot is served publicly (assets/data/portal-data.json), and
+    # Grievances holds citizen names/phone numbers/complaint text — the
+    # second of two independent guards (the other is Code.gs's SHEET_MAP)
+    # keeping that data out of anything a browser can fetch.
 }
 
 

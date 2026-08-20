@@ -3,6 +3,15 @@
 
 13 data sheets + 1 README sheet. 356 sample records. Every website section maps to exactly one sheet.
 
+> **This document predates several sheets** — `Program_Benefits`, `Facilities`,
+> `Facility_Doctors`, `Facility_Departments`, `Grievance_Categories` and `Grievances` are not yet
+> written up below, and Sheet 4 (`PIP_Documents`) and Sheet 7 (`Documents`, 35 rows) describe the
+> state *before* the citizen-first change removed the district's financial data (see
+> `MASTER_REFERENCE.md` §22). For the current, complete field-by-field reference, use
+> [`MASTER_REFERENCE.md` §4](../MASTER_REFERENCE.md) (all 21 sheets) and
+> [§24](../MASTER_REFERENCE.md) (`Grievance_Categories` / `Grievances`) until this file is
+> refreshed to match.
+
 **Conventions**
 - `Required` = the website skips the row if this is blank
 - `PK` = primary key (unique, never reused, never renumbered)
